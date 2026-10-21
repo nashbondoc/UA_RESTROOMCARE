@@ -1,18 +1,28 @@
-"""
-WSGI config for ua_restroomcare project.
-
-It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/5.0/howto/deployment/wsgi/
-"""
-
 import os
-from django.core.wsgi import get_wsgi_application
+import shutil
+import django
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ua_restroomcare.settings')
 
-application = get_wsgi_application()
+# Setup Django first before calling migrations or DB operations
+django.setup()
 
-# Alias for Vercel Serverless Function entry point
+from django.core.management import call_command
+from django.core.wsgi import get_wsgi_application
+
+# Ensure DB exists and tables are migrated in /tmp/db.sqlite3
+if os.environ.get('VERCEL'):
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    source_db = os.path.join(base_dir, 'db.sqlite3')
+    target_db = '/tmp/db.sqlite3'
+
+    if os.path.exists(source_db) and not os.path.exists(target_db):
+        shutil.copyfile(source_db, target_db)
+
+    try:
+        call_command('migrate', interactive=False)
+    except Exception as e:
+        print("Migration error on startup:", e)
+
+application = get_wsgi_application()
 app = application
