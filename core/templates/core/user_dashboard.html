@@ -1,0 +1,66 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col-12 col-md-8">
+        <h3 class="fw-bold mb-1" style="color: #ffffff !important;">
+            <i class="bi bi-clipboard-data text-warning me-2"></i>My Restroom Reports
+        </h3>
+        <p class="m-0" style="color: #94a3b8 !important;">
+            Track and view status updates for concerns you have submitted.
+        </p>
+    </div>
+    <div class="col-12 col-md-4 text-md-end mt-3 mt-md-0">
+        <a href="{% url 'submit_report' %}" class="btn btn-warning fw-bold rounded-pill px-4 shadow-sm text-dark">
+            <i class="bi bi-plus-lg me-1"></i> Submit New Report
+        </a>
+    </div>
+</div>
+
+<!-- Main Card Box -->
+<div class="p-4 p-md-5 rounded-4 shadow-lg" style="background-color: #ffffff !important; color: #0f172a !important; border: 1px solid #e2e8f0;">
+    {% if reports %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead style="background-color: #f1f5f9;">
+                    <tr>
+                        <th class="py-3 text-dark">Report ID</th>
+                        <th class="py-3 text-dark">Location</th>
+                        <th class="py-3 text-dark">Category</th>
+                        <th class="py-3 text-dark">Status</th>
+                        <th class="py-3 text-dark">Date Submitted</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for report in reports %}
+                    <tr>
+                        <td class="fw-bold text-primary">#{{ report.id }}</td>
+                        <td class="fw-semibold text-dark">{{ report.location }}</td>
+                        <td class="text-dark">{{ report.get_category_display }}</td>
+                        <td>
+                            <span class="badge px-3 py-2 rounded-pill fw-bold" style="background-color: #dbeafe; color: #1e40af;">
+                                {{ report.status }}
+                            </span>
+                            {% if report.is_urgent %}
+                                <span class="badge bg-danger ms-1">URGENT</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-muted small">{{ report.created_at|date:"M d, Y h:i A" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <div class="mb-3">
+                <i class="bi bi-inbox text-secondary" style="font-size: 3.5rem;"></i>
+            </div>
+            <h5 class="fw-bold mb-1" style="color: #0f172a !important;">No restroom reports submitted yet</h5>
+            <p class="text-muted small mb-4">You have not submitted any complaints or facility damage reports.</p>
+            <a href="{% url 'submit_report' %}" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm">
+                <i class="bi bi-plus-circle me-1"></i> Create First Report
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
