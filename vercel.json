@@ -1,10 +1,15 @@
 {
   "version": 2,
-  "framework": null,
-  "rewrites": [
+  "builds": [
     {
-      "source": "/(.*)",
-      "destination": "ua_restroomcare/wsgi.py"
+      "src": "ua_restroomcare/wsgi.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "ua_restroomcare/wsgi.py"
     }
   ]
 }
