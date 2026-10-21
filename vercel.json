@@ -1,26 +1,10 @@
 {
   "version": 2,
-  "builds": [
+  "framework": null,
+  "rewrites": [
     {
-      "src": "ua_restroomcare/wsgi.py",
-      "use": "@vercel/python"
-    },
-    {
-      "src": "build_files.sh",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "staticfiles_build"
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/static/(.*)",
-      "dest": "/static/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "ua_restroomcare/wsgi.py"
+      "source": "/(.*)",
+      "destination": "ua_restroomcare/wsgi.py"
     }
   ]
 }
