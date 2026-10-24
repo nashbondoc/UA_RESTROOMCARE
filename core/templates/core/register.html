@@ -1,0 +1,80 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 550px;">
+    <div class="card shadow-lg border-0 rounded-lg dark-card">
+        <div class="card-header bg-primary text-white text-center py-3">
+            <h4 class="mb-0 fw-bold">Student Registration</h4>
+            <small>UA Restroom Care System</small>
+        </div>
+        <div class="card-body p-4">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="row g-2 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">First Name</label>
+                        {{ form.first_name }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Last Name</label>
+                        {{ form.last_name }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    {{ form.username }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">School Email</label>
+                    {{ form.email }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Student ID Number</label>
+                    {{ form.student_id }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Upload School ID (Photo/Scan)</label>
+                    {{ form.id_picture }}
+                    <small class="text-muted d-block mt-1">Required for admin identity verification.</small>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Password</label>
+                        {{ form.password }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Confirm Password</label>
+                        {{ form.confirm_password }}
+                    </div>
+                </div>
+
+                {% if form.errors %}
+                    <div class="alert alert-danger p-2 small">
+                        Please check the highlighted fields above for errors.
+                    </div>
+                {% endif %}
+
+                <button type="submit" class="btn btn-primary w-100 py-2 mt-2 fw-bold">Submit Registration</button>
+            </form>
+        </div>
+        <div class="card-footer text-center py-3">
+            <small class="text-muted">Already have an account? <a href="{% url 'login' %}">Log in here</a></small>
+        </div>
+    </div>
+</div>
+{% endblock %}

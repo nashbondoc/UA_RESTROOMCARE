@@ -88,7 +88,69 @@
     </div>
 </div>
 
-<!-- Main Table Container -->
+<!-- Pending Student Registrations Container -->
+<div class="glass-card-pro p-3 p-md-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold text-white mb-0">
+            <i class="bi bi-person-check-fill text-warning me-2"></i>Pending Student Registrations
+        </h5>
+        <span class="badge bg-warning text-dark fw-bold rounded-pill px-3">
+            {{ stats.pending_registrations }} Pending
+        </span>
+    </div>
+
+    <div class="table-responsive-care">
+        <table class="table table-care align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Student ID</th>
+                    <th>ID Card Photo</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for profile in pending_students %}
+                <tr>
+                    <td><strong class="text-white">{{ profile.user.get_full_name|default:profile.user.username }}</strong></td>
+                    <td class="text-info">@{{ profile.user.username }}</td>
+                    <td class="text-light">{{ profile.user.email }}</td>
+                    <td><span class="badge bg-secondary px-2 py-1">{{ profile.student_id }}</span></td>
+                    <td>
+                        {% if profile.id_picture %}
+                            <a href="{{ profile.id_picture.url }}" target="_blank" class="btn btn-outline-info btn-sm rounded-pill px-3">
+                                <i class="bi bi-image me-1"></i> View ID Photo
+                            </a>
+                        {% else %}
+                            <span class="text-muted small">No ID Uploaded</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'verify_student' profile.id 'approve' %}" class="btn btn-success btn-sm fw-bold px-3 text-white">
+                                ✓ Approve
+                            </a>
+                            <a href="{% url 'verify_student' profile.id 'reject' %}" class="btn btn-outline-danger btn-sm fw-bold px-3" onclick="return confirm('Are you sure you want to reject and remove this student registration?');">
+                                ✕ Reject
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-4 text-secondary">
+                        <i class="bi bi-check-circle me-1 text-success"></i> No student registrations pending review.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Main Incident Table Container -->
 <div class="glass-card-pro p-3 p-md-4">
     <h5 class="fw-bold text-white mb-3"><i class="bi bi-droplet-half text-info me-2"></i>Campus Incident Queue</h5>
     <div class="table-responsive-care">

@@ -153,7 +153,7 @@
         <div class="container">
             <a class="navbar-brand d-flex align-items-center gap-2 gap-md-3" href="{% url 'dashboard' %}">
                 
-                <!-- NEW BIOMETRIC SECURITY LOGO -->
+                <!-- BIOMETRIC SECURITY LOGO -->
                 <svg class="svg-logo-animated" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
                   <defs>
                     <linearGradient id="metalShield" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -198,20 +198,27 @@
                 <span class="brand-title">UA RESTROOMCARE</span>
             </a>
 
-            {% if user.is_authenticated %}
             <div class="d-flex align-items-center gap-2 gap-md-3 ms-auto">
-                <div class="user-pill d-flex align-items-center gap-2">
-                    <i class="bi bi-shield-lock-fill text-info"></i>
-                    <span class="fw-semibold text-white small d-none d-sm-inline">{{ user.username }}</span>
-                    {% if user.profile %}
-                        <span class="badge bg-warning text-dark rounded-pill fw-bold" style="font-size: 0.65rem;">{{ user.profile.get_role_display }}</span>
-                    {% endif %}
-                </div>
-                <a href="{% url 'logout' %}" class="btn btn-outline-light btn-sm rounded-pill px-3 py-1.5 fw-medium" style="border-color: rgba(255,255,255,0.25);">
-                    <i class="bi bi-box-arrow-right"></i> <span class="d-none d-md-inline ms-1">Logout</span>
-                </a>
+                {% if user.is_authenticated %}
+                    <div class="user-pill d-flex align-items-center gap-2">
+                        <i class="bi bi-shield-lock-fill text-info"></i>
+                        <span class="fw-semibold text-white small d-none d-sm-inline">{{ user.username }}</span>
+                        {% if user.profile %}
+                            <span class="badge bg-warning text-dark rounded-pill fw-bold" style="font-size: 0.65rem;">{{ user.profile.get_role_display }}</span>
+                        {% endif %}
+                    </div>
+                    <a href="{% url 'logout' %}" class="btn btn-outline-light btn-sm rounded-pill px-3 py-1.5 fw-medium" style="border-color: rgba(255,255,255,0.25);">
+                        <i class="bi bi-box-arrow-right"></i> <span class="d-none d-md-inline ms-1">Logout</span>
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm rounded-pill px-3 py-1.5 fw-medium" style="border-color: rgba(255,255,255,0.25);">
+                        <i class="bi bi-box-arrow-in-right"></i> <span class="ms-1">Login</span>
+                    </a>
+                    <a href="{% url 'register' %}" class="btn btn-info btn-sm rounded-pill px-3 py-1.5 fw-bold text-dark">
+                        <i class="bi bi-person-plus-fill"></i> <span class="ms-1">Register</span>
+                    </a>
+                {% endif %}
             </div>
-            {% endif %}
         </div>
     </nav>
 
