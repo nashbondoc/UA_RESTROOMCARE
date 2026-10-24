@@ -116,8 +116,10 @@ def logout_view(request):
 
 @login_required
 def dashboard(request):
-    profile = getattr(request.user, 'profile', None)
-    if profile and profile.role == 'admin':
+    profile = getattr(request.user, 'userprofile', None) or getattr(request.user, 'profile', None)
+    
+    # Direct Redirect para sa Admin/Superuser/Staff Accounts
+    if request.user.is_superuser or request.user.is_staff or (profile and profile.role == 'admin'):
         return redirect('admin_dashboard')
     
     user_reports = RestroomReport.objects.filter(user=request.user).order_by('-created_at')
@@ -159,9 +161,12 @@ def submit_report(request):
 
 @login_required
 def admin_dashboard(request):
-    # RBAC Check: Ensure authorized personnel only
-    profile = getattr(request.user, 'profile', None)
-    if not profile or profile.role != 'admin':
+    profile = getattr(request.user, 'userprofile', None) or getattr(request.user, 'profile', None)
+    
+    # In-allow ang lahat ng Superuser/Staff maski pumasok silang walang 'admin' role sa UserProfile
+    is_admin_user = request.user.is_superuser or request.user.is_staff or (profile and profile.role == 'admin')
+    
+    if not is_admin_user:
         log_audit_event(request.user, "Unauthorized Access Attempt", "Attempted to view Admin Dashboard", request)
         messages.error(request, "Access denied. Administrative privileges required.")
         return redirect('dashboard')
@@ -192,9 +197,10 @@ def admin_dashboard(request):
 
 @login_required
 def verify_student(request, profile_id, action):
-    # Admin RBAC Check
-    profile = getattr(request.user, 'profile', None)
-    if not profile or profile.role != 'admin':
+    profile = getattr(request.user, 'userprofile', None) or getattr(request.user, 'profile', None)
+    is_admin_user = request.user.is_superuser or request.user.is_staff or (profile and profile.role == 'admin')
+    
+    if not is_admin_user:
         messages.error(request, "Access Denied.")
         return redirect('dashboard')
 
@@ -220,8 +226,10 @@ def verify_student(request, profile_id, action):
 
 @login_required
 def update_report_status(request, report_id):
-    profile = getattr(request.user, 'profile', None)
-    if not profile or profile.role != 'admin':
+    profile = getattr(request.user, 'userprofile', None) or getattr(request.user, 'profile', None)
+    is_admin_user = request.user.is_superuser or request.user.is_staff or (profile and profile.role == 'admin')
+    
+    if not is_admin_user:
         messages.error(request, "Access Denied.")
         return redirect('dashboard')
 
@@ -249,8 +257,10 @@ def update_report_status(request, report_id):
 
 @login_required
 def audit_logs_view(request):
-    profile = getattr(request.user, 'profile', None)
-    if not profile or profile.role != 'admin':
+    profile = getattr(request.user, 'userprofile', None) or getattr(request.user, 'profile', None)
+    is_admin_user = request.user.is_superuser or request.user.is_staff or (profile and profile.role == 'admin')
+    
+    if not is_admin_user:
         messages.error(request, "Access Denied.")
         return redirect('dashboard')
 
