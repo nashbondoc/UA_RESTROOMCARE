@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "ua_restroomcare/wsgi.py",
+      "src": "api/index.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "ua_restroomcare/wsgi.py"
+      "dest": "api/index.py"
     }
   ]
 }
