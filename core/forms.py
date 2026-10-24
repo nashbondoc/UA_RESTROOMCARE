@@ -4,6 +4,11 @@ from .models import RestroomReport, UserProfile
 
 
 class RestroomReportForm(forms.ModelForm):
+    photo = forms.ImageField(
+        required=True, 
+        widget=forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'})
+    )
+
     class Meta:
         model = RestroomReport
         fields = ['location', 'category', 'description', 'photo', 'is_urgent']
@@ -15,7 +20,6 @@ class RestroomReportForm(forms.ModelForm):
                 'rows': 4, 
                 'placeholder': 'Provide specific details regarding the concern...'
             }),
-            'photo': forms.FileInput(attrs={'class': 'form-control'}),
             'is_urgent': forms.CheckboxInput(attrs={'class': 'form-check-input', 'id': 'id_is_urgent'}),
         }
 
