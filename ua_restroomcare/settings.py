@@ -1,4 +1,5 @@
 import os
+import shutil
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -54,17 +55,30 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'ua_restroomcare.wsgi.app'
+WSGI_APPLICATION = 'ua_restroomcare.wsgi.application'
 
 
 # Database configuration
-# Directs SQLite to /tmp/db.sqlite3 on Vercel to bypass the read-only filesystem restriction
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '/tmp/db.sqlite3' if os.environ.get('VERCEL') else BASE_DIR / 'db.sqlite3',
+# Copies seeded local db.sqlite3 to /tmp/db.sqlite3 on Vercel read-write filesystem
+if os.environ.get('VERCEL'):
+    db_path = Path('/tmp/db.sqlite3')
+    original_db = BASE_DIR / 'db.sqlite3'
+    if original_db.exists() and not db_path.exists():
+        shutil.copyfile(original_db, db_path)
+    
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': db_path,
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
