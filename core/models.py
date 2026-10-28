@@ -13,10 +13,15 @@ class UserProfile(models.Model):
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='student')
     department = models.CharField(max_length=100, blank=True, null=True)
     
-    # Student ID Verification Fields
+    # Student ID Verification Fields (Front: Photo/Name, Back: ID Number/Barcode)
     student_id = models.CharField(max_length=50, blank=True, null=True, unique=True)
-    id_picture = models.ImageField(upload_to='student_ids/', blank=True, null=True)
+    id_picture = models.ImageField(upload_to='student_ids/', blank=True, null=True)  # Front
+    id_picture_back = models.ImageField(upload_to='student_ids/', blank=True, null=True)  # Back
     is_verified = models.BooleanField(default=False)
+
+    @property
+    def id_picture_front(self):
+        return self.id_picture
 
     def __str__(self):
         return f"{self.user.username} ({self.get_role_display()})"
@@ -39,7 +44,7 @@ class RestroomReport(models.Model):
         ('Supplies', 'Supplies'),
         ('Damaged Fixtures', 'Damaged Fixtures'),
         ('Other', 'Other'),
-        # Backward compatibility choices for existing test records
+        # Backward compatibility choices for existing records
         ('cleanliness', 'Cleanliness Issue'),
         ('water_soap', 'Lack of Water / Soap'),
         ('odor', 'Unpleasant Odor'),

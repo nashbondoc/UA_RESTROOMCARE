@@ -1,19 +1,18 @@
 {% extends 'core/base.html' %}
-{% block title %}Submit Restroom Incident Report — UA RESTROOMCARE{% endblock %}
+{% load static %}
+{% block title %}Submit Restroom Incident — UA RESTROOMCARE{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center my-2 my-md-4">
+<div class="row justify-content-center my-3 my-md-4">
     <div class="col-12 col-md-10 col-lg-8">
         <div class="glass-card-pro p-4 p-md-5">
 
             <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="p-3 rounded-circle" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.35);">
-                        <i class="bi bi-exclamation-triangle-fill text-warning fs-2"></i>
-                    </div>
+                    <img src="{% static 'img/ua_logo.png' %}" alt="UA Logo" style="width: 48px; height: 48px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.5));">
                     <div>
                         <h3 class="fw-bold text-white mb-0">Submit Incident Report</h3>
-                        <p class="text-secondary small mb-0">Report sanitation, maintenance, or safety concerns across campus</p>
+                        <p class="text-secondary small mb-0">Report sanitation, maintenance, or facility concerns across campus</p>
                     </div>
                 </div>
                 <a href="{% url 'dashboard' %}" class="btn btn-water-secondary btn-sm rounded-pill px-3 py-1.5">
@@ -21,22 +20,9 @@
                 </a>
             </div>
 
-            <!-- Anti-Spam & Rate Limit Info Card -->
-            <div class="p-3 mb-4 rounded-3 small" style="background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(56, 189, 248, 0.25);">
-                <div class="d-flex align-items-start gap-2">
-                    <i class="bi bi-shield-check text-info fs-5 mt-0.5"></i>
-                    <div>
-                        <strong class="text-info">Anti-Spam & Duplicate Incident Protection:</strong>
-                        <p class="mb-0 text-light opacity-90 mt-1">
-                            To ensure swift maintenance dispatch, the system automatically checks for duplicate active reports at the same facility and applies an hourly rate limit (maximum 3 reports/hour per account).
-                        </p>
-                    </div>
-                </div>
-            </div>
-
             {% if form.errors %}
-                <div class="alert alert-danger p-3 small mb-4 rounded-3 text-white" style="background: rgba(244, 63, 94, 0.25); border: 1px solid rgba(244, 63, 94, 0.5);">
-                    <div class="fw-bold mb-1"><i class="bi bi-exclamation-octagon-fill me-1"></i> Submission Issues:</div>
+                <div class="alert alert-danger p-3 small mb-4 rounded-3 text-white" style="background: rgba(244, 63, 94, 0.22); border: 1px solid rgba(244, 63, 94, 0.45);">
+                    <div class="fw-bold mb-1"><i class="bi bi-exclamation-octagon-fill me-1"></i> Submission Notice:</div>
                     <ul class="mb-0 ps-3">
                         {% for field in form %}
                             {% for error in field.errors %}
@@ -53,7 +39,7 @@
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
-                <!-- Location Select -->
+                <!-- Restroom Location Select -->
                 <div class="mb-3">
                     <label class="form-label small fw-semibold text-light">
                         <i class="bi bi-geo-alt-fill text-info me-1"></i>Restroom Location <span class="text-danger">*</span>
@@ -68,7 +54,6 @@
                         <i class="bi bi-tag-fill text-info me-1"></i>Issue Category <span class="text-danger">*</span>
                     </label>
                     {{ form.category }}
-                    <small class="text-secondary d-block mt-1">Categories: <strong>Plumbing</strong> (leaks, clog), <strong>Cleanliness</strong> (trash, biohazard), <strong>Supplies</strong> (soap, tissue), <strong>Damaged Fixtures</strong> (door locks, lights, mirrors), or <strong>Other</strong>.</small>
                 </div>
 
                 <!-- Detailed Description -->
@@ -79,38 +64,38 @@
                     {{ form.description }}
                 </div>
 
-                <!-- Required Photo Evidence with Live Preview -->
-                <div class="mb-4 p-3 rounded-3" style="background: rgba(15, 23, 42, 0.6); border: 1px dashed rgba(56, 189, 248, 0.35);">
+                <!-- Required Photo Evidence with Live Cyber Preview -->
+                <div class="mb-4 cyber-upload-card">
                     <label class="form-label small fw-bold text-white d-flex align-items-center gap-1.5">
                         <i class="bi bi-camera-fill text-info"></i> Attach Photo Evidence (Required) <span class="text-danger">*</span>
                     </label>
                     {{ form.photo }}
-                    <small class="text-secondary d-block mt-1">Photos verify the reported issue for physical maintenance staff dispatch (enctype="multipart/form-data").</small>
+                    <small class="text-secondary d-block mt-1">Upload clear photo evidence of the facility concern.</small>
                     
                     <div id="photo_preview_box" class="mt-3 text-center d-none">
-                        <div class="small text-info mb-1 fw-semibold"><i class="bi bi-eye"></i> Attached Evidence Preview:</div>
-                        <img id="photo_preview_img" src="#" alt="Report Photo Preview" class="img-fluid rounded-3 shadow" style="max-height: 240px; border: 2px solid #06b6d4;">
+                        <div class="small text-info mb-1 fw-semibold"><i class="bi bi-eye"></i> Evidence Preview:</div>
+                        <img id="photo_preview_img" src="#" alt="Report Photo Preview" class="img-fluid rounded-3 shadow" style="max-height: 220px; border: 2px solid var(--neon-cyan);">
                     </div>
                 </div>
 
-                <!-- Urgent Flag Toggle -->
-                <div class="mb-4 p-3 rounded-3" style="background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.35);">
+                <!-- Urgent Priority Toggle -->
+                <div class="mb-4 p-3 rounded-3" style="background: rgba(244, 63, 94, 0.08); border: 1px solid rgba(244, 63, 94, 0.3);">
                     <div class="form-check form-switch d-flex align-items-center gap-2">
                         {{ form.is_urgent }}
                         <label class="form-check-label fw-bold text-white mb-0" for="id_is_urgent" style="cursor: pointer;">
                             <span class="badge bg-danger text-white rounded-pill px-2.5 py-1 me-1 pulse-urgent">URGENT</span>
-                            Mark as High-Priority Maintenance Incident
+                            Mark as High-Priority Incident
                         </label>
                     </div>
                     <small class="text-secondary d-block mt-1 ps-4 ms-2">
-                        Check this box only for critical incidents such as major flooding, electrical hazards, broken locks trapping someone, or urgent hygiene hazards.
+                        Flag this incident for immediate emergency maintenance dispatch (e.g. major overflow, broken lock, safety hazard).
                     </small>
                 </div>
 
                 <!-- Submit Button -->
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-water-glow py-3 fw-bold">
-                        <i class="bi bi-send-fill me-1"></i> Submit Report to Maintenance
+                        <i class="bi bi-send-fill me-1"></i> Submit Maintenance Report
                     </button>
                 </div>
             </form>

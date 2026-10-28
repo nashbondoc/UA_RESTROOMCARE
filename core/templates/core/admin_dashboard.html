@@ -1,15 +1,14 @@
 {% extends 'core/base.html' %}
+{% load static %}
 {% block title %}Admin Control Center — UA RESTROOMCARE{% endblock %}
 
 {% block content %}
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
     <div class="d-flex align-items-center gap-3">
-        <div class="p-3 rounded-circle" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4);">
-            <i class="bi bi-speedometer2 text-warning fs-3"></i>
-        </div>
+        <img src="{% static 'img/ua_logo.png' %}" alt="UA Logo" style="width: 52px; height: 52px; object-fit: contain; filter: drop-shadow(0 0 14px rgba(245, 158, 11, 0.6));">
         <div>
-            <h2 class="fw-bold text-white mb-0">Admin Restroom Control Center</h2>
-            <p class="text-secondary small mb-0">Campus Facilities Management, OCR Identity Verification & Security Oversight</p>
+            <h2 class="fw-bold text-white mb-0">Restroom Operations Command</h2>
+            <p class="text-secondary small mb-0">Campus Facilities Management, Dual-ID Verification & Security Oversight</p>
         </div>
     </div>
     <div class="d-flex gap-2">
@@ -19,7 +18,7 @@
     </div>
 </div>
 
-<!-- System Status Metrics Grid (Total Reports, Pending, Under Review, In Progress, Resolved, Suspicious) -->
+<!-- System Status Metrics Grid -->
 <div class="row g-2 g-md-3 mb-4">
     <div class="col-6 col-md-4 col-lg-2">
         <div class="glass-card-pro p-3 text-center">
@@ -36,41 +35,41 @@
         </div>
     </div>
     <div class="col-6 col-md-4 col-lg-2">
-        <div class="glass-card-pro p-3 text-center" style="border-color: rgba(6, 182, 212, 0.35);">
+        <div class="glass-card-pro p-3 text-center" style="border-color: rgba(0, 240, 255, 0.35);">
             <div class="text-info small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px;">Under Review</div>
             <h3 class="fw-bold text-info mb-0 mt-1">{{ stats.under_review }}</h3>
-            <span class="badge bg-info text-dark rounded-pill mt-1" style="font-size: 0.65rem;">Being Evaluated</span>
+            <span class="badge bg-info text-dark rounded-pill mt-1" style="font-size: 0.65rem;">Evaluating</span>
         </div>
     </div>
     <div class="col-6 col-md-4 col-lg-2">
         <div class="glass-card-pro p-3 text-center" style="border-color: rgba(99, 102, 241, 0.35);">
             <div class="text-primary small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px; color: #a5b4fc !important;">In Progress</div>
             <h3 class="fw-bold text-white mb-0 mt-1">{{ stats.in_progress }}</h3>
-            <span class="badge rounded-pill mt-1" style="background: rgba(99, 102, 241, 0.3); color: #c7d2fe; font-size: 0.65rem;">Work Dispatched</span>
+            <span class="badge rounded-pill mt-1" style="background: rgba(99, 102, 241, 0.3); color: #c7d2fe; font-size: 0.65rem;">Dispatched</span>
         </div>
     </div>
     <div class="col-6 col-md-4 col-lg-2">
         <div class="glass-card-pro p-3 text-center" style="border-color: rgba(16, 185, 129, 0.35);">
             <div class="text-success small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px; color: #6ee7b7 !important;">Resolved</div>
             <h3 class="fw-bold text-success mb-0 mt-1">{{ stats.resolved }}</h3>
-            <span class="badge bg-success rounded-pill mt-1" style="font-size: 0.65rem;">Repairs Done</span>
+            <span class="badge bg-success rounded-pill mt-1" style="font-size: 0.65rem;">Complete</span>
         </div>
     </div>
     <div class="col-6 col-md-4 col-lg-2">
         <div class="glass-card-pro p-3 text-center" style="border-color: rgba(244, 63, 94, 0.35);">
-            <div class="text-danger small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px; color: #fda4af !important;">Suspicious Logs</div>
+            <div class="text-danger small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px; color: #fda4af !important;">Security Flags</div>
             <h3 class="fw-bold text-danger mb-0 mt-1">{{ stats.suspicious }}</h3>
-            <span class="badge bg-danger rounded-pill mt-1" style="font-size: 0.65rem;">Flagged Alerts</span>
+            <span class="badge bg-danger rounded-pill mt-1" style="font-size: 0.65rem;">Alerts</span>
         </div>
     </div>
 </div>
 
-<!-- SECTION 1: PENDING STUDENT REGISTRATIONS & VERIFICATION -->
+<!-- SECTION 1: PENDING STUDENT REGISTRATIONS & DUAL-ID VERIFICATION (FRONT & BACK) -->
 <div class="glass-card-pro p-3 p-md-4 mb-4">
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
         <div class="d-flex align-items-center gap-2">
-            <i class="bi bi-person-bounding-box text-warning fs-5"></i>
-            <h5 class="fw-bold text-white mb-0">Pending Student Account Verifications</h5>
+            <i class="bi bi-person-vcard-fill text-warning fs-5"></i>
+            <h5 class="fw-bold text-white mb-0">Pending Student Identity Verifications (Dual-Card Scans)</h5>
         </div>
         <span class="badge bg-warning text-dark fw-bold rounded-pill px-3 py-1.5">
             {{ stats.pending_registrations }} Requiring Approval
@@ -85,8 +84,8 @@
                     <th class="py-2.5 text-secondary text-uppercase small">Username</th>
                     <th class="py-2.5 text-secondary text-uppercase small">Institutional Email</th>
                     <th class="py-2.5 text-secondary text-uppercase small">Student ID #</th>
-                    <th class="py-2.5 text-secondary text-uppercase small">Uploaded ID Card</th>
-                    <th class="py-2.5 text-secondary text-uppercase small text-center">Verification Action</th>
+                    <th class="py-2.5 text-secondary text-uppercase small">ID Card Evidence</th>
+                    <th class="py-2.5 text-secondary text-uppercase small text-center">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -103,29 +102,61 @@
                         <span class="badge bg-secondary px-2.5 py-1 fw-bold">{{ profile.student_id|default:"N/A" }}</span>
                     </td>
                     <td>
-                        {% if profile.id_picture %}
-                            <button type="button" class="btn btn-sm btn-outline-info rounded-pill px-3 py-1" data-bs-toggle="modal" data-bs-target="#studentIdModal{{ profile.id }}">
-                                <i class="bi bi-image me-1"></i> Inspect ID Photo
-                            </button>
+                        <button type="button" class="btn btn-sm btn-outline-info rounded-pill px-3 py-1" data-bs-toggle="modal" data-bs-target="#studentDualIdModal{{ profile.id }}">
+                            <i class="bi bi-images me-1"></i> Inspect Front & Back
+                        </button>
 
-                            <!-- ID Modal -->
-                            <div class="modal fade" id="studentIdModal{{ profile.id }}" tabindex="-1" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content glass-card-pro p-3 text-start">
-                                        <div class="modal-header border-0 pb-1">
-                                            <h6 class="modal-title text-white fw-bold">Student ID: {{ profile.student_id }}</h6>
-                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        <!-- Dual ID Inspection Modal (Front & Back) -->
+                        <div class="modal fade" id="studentDualIdModal{{ profile.id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-lg">
+                                <div class="modal-content glass-card-pro p-3 text-start">
+                                    <div class="modal-header border-0 pb-1">
+                                        <h6 class="modal-title text-white fw-bold">
+                                            Identity Verification: {{ profile.user.get_full_name|default:profile.user.username }} (ID: {{ profile.student_id }})
+                                        </h6>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body py-2">
+                                        <div class="row g-3">
+                                            <!-- Front ID -->
+                                            <div class="col-12 col-md-6 text-center">
+                                                <div class="p-2 rounded-3 mb-2" style="background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.25);">
+                                                    <span class="small text-info fw-bold"><i class="bi bi-person-bounding-box me-1"></i> Front Face (Photo & Name)</span>
+                                                </div>
+                                                {% if profile.id_picture %}
+                                                    <img src="{{ profile.id_picture.url }}" alt="Front ID" class="img-fluid rounded-3 shadow" style="max-height: 280px; border: 1px solid rgba(0, 240, 255, 0.3);">
+                                                {% else %}
+                                                    <div class="p-4 text-secondary small">No front image uploaded</div>
+                                                {% endif %}
+                                            </div>
+
+                                            <!-- Back ID -->
+                                            <div class="col-12 col-md-6 text-center">
+                                                <div class="p-2 rounded-3 mb-2" style="background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.25);">
+                                                    <span class="small text-info fw-bold"><i class="bi bi-upc-scan me-1"></i> Back Face (Student ID & Barcode)</span>
+                                                </div>
+                                                {% if profile.id_picture_back %}
+                                                    <img src="{{ profile.id_picture_back.url }}" alt="Back ID" class="img-fluid rounded-3 shadow" style="max-height: 280px; border: 1px solid rgba(0, 240, 255, 0.3);">
+                                                {% else %}
+                                                    <div class="p-4 text-secondary small">No back image uploaded</div>
+                                                {% endif %}
+                                            </div>
                                         </div>
-                                        <div class="modal-body text-center py-2">
-                                            <img src="{{ profile.id_picture.url }}" alt="Student ID" class="img-fluid rounded-3 shadow" style="max-height: 400px;">
-                                            <p class="small text-secondary mt-2 mb-0">Student: {{ profile.user.get_full_name }} • {{ profile.user.email }}</p>
+                                    </div>
+                                    <div class="modal-footer border-0 pt-2 d-flex justify-content-between">
+                                        <small class="text-secondary">Email: {{ profile.user.email }}</small>
+                                        <div class="d-flex gap-2">
+                                            <a href="{% url 'verify_student' profile.id 'approve' %}" class="btn btn-success btn-sm rounded-pill px-3 fw-bold">
+                                                <i class="bi bi-check-lg"></i> Approve Identity
+                                            </a>
+                                            <a href="{% url 'verify_student' profile.id 'reject' %}" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold" onclick="return confirm('Reject and delete registration?');">
+                                                <i class="bi bi-trash3"></i> Reject
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        {% else %}
-                            <span class="text-secondary small">No ID file</span>
-                        {% endif %}
+                        </div>
                     </td>
                     <td class="text-center">
                         <div class="d-inline-flex gap-2">
@@ -141,7 +172,7 @@
                 {% empty %}
                 <tr>
                     <td colspan="6" class="text-center py-4 text-secondary">
-                        <i class="bi bi-check2-circle text-success fs-5 me-1"></i> No student registrations are currently awaiting manual approval.
+                        <i class="bi bi-check2-circle text-success fs-5 me-1"></i> No student identity verifications currently awaiting review.
                     </td>
                 </tr>
                 {% endfor %}
@@ -165,13 +196,13 @@
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0 text-light" style="--bs-table-bg: transparent; --bs-table-color: #f8fafc;">
             <thead>
-                <tr style="border-bottom: 2px solid rgba(56, 189, 248, 0.3);">
+                <tr style="border-bottom: 2px solid rgba(0, 240, 255, 0.3);">
                     <th class="py-2.5 text-secondary text-uppercase small">ID #</th>
                     <th class="py-2.5 text-secondary text-uppercase small">Reporter</th>
-                    <th class="py-2.5 text-secondary text-uppercase small">Restroom Location</th>
+                    <th class="py-2.5 text-secondary text-uppercase small">Facility Location</th>
                     <th class="py-2.5 text-secondary text-uppercase small">Category & Evidence</th>
                     <th class="py-2.5 text-secondary text-uppercase small">Current Status</th>
-                    <th class="py-2.5 text-secondary text-uppercase small">Update Status & Resolution Notes</th>
+                    <th class="py-2.5 text-secondary text-uppercase small">Update Status & Notes</th>
                 </tr>
             </thead>
             <tbody>
@@ -194,7 +225,7 @@
                         <small class="text-secondary">Flr {{ report.location.floor }} ({{ report.location.room_number }}) - {{ report.location.gender }}</small>
                     </td>
                     <td>
-                        <span class="badge rounded-pill px-2.5 py-1" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.15);">
+                        <span class="badge rounded-pill px-2.5 py-1" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);">
                             {{ report.get_category_display }}
                         </span>
                         {% if report.photo %}
@@ -211,7 +242,7 @@
                                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                         </div>
                                         <div class="modal-body text-center py-2">
-                                            <img src="{{ report.photo.url }}" alt="Evidence" class="img-fluid rounded-3 shadow" style="max-height: 400px;">
+                                            <img src="{{ report.photo.url }}" alt="Evidence" class="img-fluid rounded-3 shadow" style="max-height: 400px; border: 1px solid rgba(0, 240, 255, 0.3);">
                                             <p class="small text-secondary mt-2 mb-0"><strong>Description:</strong> {{ report.description }}</p>
                                         </div>
                                     </div>
@@ -244,7 +275,6 @@
                         {% endif %}
                     </td>
                     <td>
-                        <!-- Status Update Form with Resolution / Rejection Notes -->
                         <form method="post" action="{% url 'update_status' report.id %}">
                             {% csrf_token %}
                             <div class="input-group input-group-sm mb-1.5" style="max-width: 320px;">
@@ -266,7 +296,7 @@
                 {% empty %}
                 <tr>
                     <td colspan="6" class="text-center py-5 text-secondary">
-                        No maintenance reports have been recorded yet.
+                        No maintenance reports recorded.
                     </td>
                 </tr>
                 {% endfor %}
@@ -275,12 +305,12 @@
     </div>
 </div>
 
-<!-- SECTION 3: SUSPICIOUS ACTIVITY LOG (RATE LIMIT / SPAM / UNAUTHORIZED ATTEMPTS) -->
+<!-- SECTION 3: SUSPICIOUS ACTIVITY & ACCESS SECURITY LOG -->
 <div class="glass-card-pro p-3 p-md-4">
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
         <div class="d-flex align-items-center gap-2">
             <i class="bi bi-shield-slash-fill text-danger fs-5"></i>
-            <h5 class="fw-bold text-white mb-0">Suspicious Activity & Anti-Spam Security Log</h5>
+            <h5 class="fw-bold text-white mb-0">Suspicious Activity & Security Log</h5>
         </div>
         <span class="badge bg-danger rounded-pill px-3 py-1.5">
             {{ stats.suspicious }} Unreviewed Flags
@@ -318,7 +348,7 @@
                 {% empty %}
                 <tr>
                     <td colspan="5" class="text-center py-4 text-secondary">
-                        <i class="bi bi-shield-check text-success fs-5 me-1"></i> No unreviewed suspicious activities or spam attempts detected.
+                        <i class="bi bi-shield-check text-success fs-5 me-1"></i> No unreviewed suspicious activities detected.
                     </td>
                 </tr>
                 {% endfor %}

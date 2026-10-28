@@ -1,42 +1,38 @@
 {% extends 'core/base.html' %}
-{% block title %}Dedicated Admin Portal — UA RESTROOMCARE{% endblock %}
+{% load static %}
+{% block title %}Administrative Access — UA RESTROOMCARE{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center my-2 my-md-4">
+<div class="row justify-content-center my-3 my-md-5">
     <div class="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
-        <div class="glass-card-pro p-4 p-md-5 position-relative overflow-hidden text-center" style="border-color: rgba(245, 158, 11, 0.4); box-shadow: 0 20px 50px -10px rgba(245, 158, 11, 0.2);">
-            
-            <!-- High Security Emblem -->
+        <div class="glass-card-pro p-4 p-md-5 text-center" style="border-color: rgba(245, 158, 11, 0.45); box-shadow: 0 20px 50px -10px rgba(245, 158, 11, 0.25);">
+
+            <!-- UA Shield 3D Crest with Gold Glow -->
             <div class="mb-3 d-flex justify-content-center">
-                <div class="p-3 rounded-circle" style="background: radial-gradient(circle, rgba(245, 158, 11, 0.25) 0%, rgba(180, 83, 9, 0.08) 70%); border: 1px solid rgba(245, 158, 11, 0.5);">
-                    <i class="bi bi-shield-lock-fill text-warning" style="font-size: 2.8rem;"></i>
+                <div class="p-2.5 rounded-4 position-relative" style="background: radial-gradient(circle, rgba(245, 158, 11, 0.2) 0%, rgba(180, 83, 9, 0.05) 70%); border: 1px solid rgba(245, 158, 11, 0.45);">
+                    <img src="{% static 'img/ua_logo.png' %}" alt="UA RestroomCare Shield" class="img-fluid" style="width: 88px; height: 88px; object-fit: contain; filter: drop-shadow(0 0 16px rgba(245, 158, 11, 0.7));">
                 </div>
             </div>
 
             <div class="mb-2">
-                <span class="badge bg-warning text-dark fw-bold px-3 py-1 text-uppercase" style="letter-spacing: 1px; font-size: 0.7rem;">
-                    <i class="bi bi-lock-fill me-1"></i> Restricted Access
+                <span class="badge bg-warning text-dark fw-bold px-3 py-1 text-uppercase" style="letter-spacing: 1px; font-size: 0.68rem;">
+                    <i class="bi bi-shield-lock-fill me-1"></i> Authorized Personnel Only
                 </span>
             </div>
 
-            <h3 class="fw-bold text-white mb-1">Dedicated Admin Portal</h3>
-            <p class="text-secondary small mb-3">Campus Maintenance & Administration Control System</p>
-
-            <div class="alert alert-warning text-start p-2.5 small mb-3 border-0 rounded-3 text-dark fw-semibold" style="background: rgba(254, 240, 138, 0.95);">
-                <i class="bi bi-shield-exclamation me-1 fs-6"></i>
-                <strong>Notice:</strong> This portal is strictly for authorized personnel. Student logins will be rejected and logged to the security audit trail.
-            </div>
+            <h3 class="fw-bold text-white mb-1">Administrative Gateway</h3>
+            <p class="text-secondary small mb-4">Campus Facilities & Operations Command</p>
 
             <form method="post" action="{% url 'admin_login' %}" class="text-start">
                 {% csrf_token %}
 
                 <div class="mb-3">
-                    <label class="form-label small fw-semibold text-light">Administrator Username</label>
+                    <label class="form-label small fw-semibold text-light">Admin ID / Username</label>
                     <div class="input-group">
                         <span class="input-group-text bg-transparent text-secondary border-end-0" style="border-color: rgba(245, 158, 11, 0.3);">
-                            <i class="bi bi-person-fill-lock"></i>
+                            <i class="bi bi-person-fill-lock text-warning"></i>
                         </span>
-                        <input type="text" name="username" class="form-control form-control-water border-start-0 ps-1" placeholder="Admin username" value="{{ entered_username|default:'' }}" required autofocus autocomplete="username">
+                        <input type="text" name="username" class="form-control form-control-water border-start-0 ps-1" placeholder="Enter administrative username" value="{{ entered_username|default:'' }}" required autofocus autocomplete="username">
                     </div>
                 </div>
 
@@ -44,9 +40,9 @@
                     <label class="form-label small fw-semibold text-light">Admin Password</label>
                     <div class="input-group">
                         <span class="input-group-text bg-transparent text-secondary border-end-0" style="border-color: rgba(245, 158, 11, 0.3);">
-                            <i class="bi bi-key-fill"></i>
+                            <i class="bi bi-key-fill text-warning"></i>
                         </span>
-                        <input type="password" name="password" id="admin_password_input" class="form-control form-control-water border-start-0 ps-1" placeholder="Admin password" required autocomplete="current-password">
+                        <input type="password" name="password" id="admin_password_input" class="form-control form-control-water border-start-0 ps-1" placeholder="Enter password" required autocomplete="current-password">
                         <button class="btn btn-outline-secondary border-start-0" type="button" onclick="toggleAdminPasswordVisibility()" style="border-color: rgba(245, 158, 11, 0.3); color: #94a3b8;">
                             <i class="bi bi-eye" id="admin_toggle_icon"></i>
                         </button>
@@ -55,14 +51,14 @@
 
                 <div class="d-grid gap-2 mt-4">
                     <button type="submit" class="btn btn-warning fw-bold py-2.5 text-dark shadow-sm">
-                        <i class="bi bi-shield-check me-1"></i> Authorize Admin Session
+                        <i class="bi bi-shield-check me-1"></i> Authorize Session
                     </button>
                 </div>
             </form>
 
             <div class="mt-4 pt-3 border-top border-secondary border-opacity-25 text-center">
                 <a href="{% url 'login' %}" class="btn btn-water-secondary w-100 py-2 small fw-bold">
-                    <i class="bi bi-arrow-left me-1"></i> Return to Student / Faculty Portal
+                    <i class="bi bi-arrow-left me-1"></i> Return to Campus Portal
                 </a>
             </div>
 
@@ -88,4 +84,3 @@
     }
 </script>
 {% endblock %}
-

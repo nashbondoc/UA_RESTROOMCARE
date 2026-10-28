@@ -1,3 +1,4 @@
+import re
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordResetForm
@@ -30,7 +31,7 @@ class RestroomReportForm(forms.ModelForm):
             'id': 'report_photo_input',
             'required': 'required'
         }),
-        help_text="Required photo evidence of the maintenance or cleanliness issue."
+        help_text="Required photo evidence of the maintenance or sanitation issue."
     )
 
     class Meta:
@@ -44,7 +45,7 @@ class RestroomReportForm(forms.ModelForm):
             'description': forms.Textarea(attrs={
                 'class': 'form-control form-control-water',
                 'rows': 4,
-                'placeholder': 'Provide specific details regarding the concern (e.g. leaking sink, no running water, broken lock)...',
+                'placeholder': 'Provide specific details regarding the issue (e.g. leaking sink, damaged lock, low soap)...',
                 'required': 'required'
             }),
             'is_urgent': forms.CheckboxInput(attrs={
@@ -82,32 +83,43 @@ class StudentRegistrationForm(forms.ModelForm):
         required=True,
         widget=forms.EmailInput(attrs={
             'class': 'form-control form-control-water',
-            'placeholder': 'yourname@ua.edu.ph',
+            'placeholder': 'student.id@ua.edu.ph',
             'autocomplete': 'email'
         }),
-        help_text="Must be an official institutional email (@ua.edu.ph)"
+        help_text="Official university email (@ua.edu.ph)"
     )
     student_id = forms.CharField(
         max_length=50,
         required=True,
         widget=forms.TextInput(attrs={
             'class': 'form-control form-control-water',
-            'placeholder': 'Student ID Number (e.g. 2023-10023)'
+            'placeholder': 'Student ID Number (e.g. 2024-00123)'
         })
     )
     id_picture = forms.ImageField(
+        label="Student ID (Front)",
         required=True,
         widget=forms.FileInput(attrs={
             'class': 'form-control form-control-water',
             'accept': 'image/*',
-            'id': 'student_id_picture_input'
+            'id': 'student_id_picture_front'
         }),
-        help_text="Upload a clear photo/scan of your Student ID for identity verification."
+        help_text="Upload the FRONT of your Student ID (Student Photo & Full Name)."
+    )
+    id_picture_back = forms.ImageField(
+        label="Student ID (Back)",
+        required=True,
+        widget=forms.FileInput(attrs={
+            'class': 'form-control form-control-water',
+            'accept': 'image/*',
+            'id': 'student_id_picture_back'
+        }),
+        help_text="Upload the BACK of your Student ID (ID Number & Barcode)."
     )
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={
             'class': 'form-control form-control-water',
-            'placeholder': 'Create password (min 6 characters)'
+            'placeholder': 'Create secure password (min 6 characters)'
         }),
         min_length=6
     )
@@ -124,7 +136,7 @@ class StudentRegistrationForm(forms.ModelForm):
         widgets = {
             'username': forms.TextInput(attrs={
                 'class': 'form-control form-control-water',
-                'placeholder': 'Username (e.g. student.id or handle)',
+                'placeholder': 'Username (e.g. student.handle)',
                 'autocomplete': 'username'
             }),
         }
@@ -132,7 +144,7 @@ class StudentRegistrationForm(forms.ModelForm):
     def clean_email(self):
         email = self.cleaned_data.get('email', '').strip().lower()
         if not email.endswith('@ua.edu.ph'):
-            raise forms.ValidationError("Institutional verification error: Only official '@ua.edu.ph' email addresses are accepted.")
+            raise forms.ValidationError("Registration is restricted to institutional email addresses ending with '@ua.edu.ph'.")
         if User.objects.filter(email__iexact=email).exists():
             raise forms.ValidationError("This school email is already registered. Please sign in or use password recovery.")
         return email
@@ -141,8 +153,20 @@ class StudentRegistrationForm(forms.ModelForm):
         student_id = self.cleaned_data.get('student_id', '').strip()
         if not student_id:
             raise forms.ValidationError("Student ID is required.")
-        if UserProfile.objects.filter(student_id__iexact=student_id).exists():
-            raise forms.ValidationError("This Student ID number is already registered in the system.")
+        
+        # Strict Duplication Prevention Check
+        clean_target = re.sub(r'[^a-zA-Z0-9]', '', student_id).lower()
+        if not clean_target:
+            raise forms.ValidationError("Invalid Student ID format.")
+
+        for existing_id in UserProfile.objects.exclude(student_id__isnull=True).values_list('student_id', flat=True):
+            if existing_id:
+                existing_clean = re.sub(r'[^a-zA-Z0-9]', '', existing_id).lower()
+                if existing_clean == clean_target:
+                    raise forms.ValidationError(
+                        "Duplication Security Alert: An account with this Student ID has already been registered in the system. "
+                        "Each identity cannot be used to create another account."
+                    )
         return student_id
 
     def clean_username(self):
@@ -174,7 +198,7 @@ class InstitutionalPasswordResetForm(PasswordResetForm):
     def clean_email(self):
         email = self.cleaned_data.get('email', '').strip().lower()
         if not email.endswith('@ua.edu.ph'):
-            raise forms.ValidationError("Only institutional accounts ending with '@ua.edu.ph' can request password resets.")
+            raise forms.ValidationError("Only institutional accounts ending with '@ua.edu.ph' can request password recovery.")
         if not User.objects.filter(email__iexact=email).exists():
             raise forms.ValidationError("No registered account found with this institutional email.")
         return email

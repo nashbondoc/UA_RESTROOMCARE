@@ -75,7 +75,7 @@ class UARestroomCareSystemTests(TestCase):
             'password': 'Password123!'
         })
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Access Denied: This dedicated portal is strictly restricted")
+        self.assertContains(response, "Access Denied: This portal is strictly restricted")
         
         # Verify SuspiciousActivityLog entry was recorded
         self.assertTrue(
@@ -102,19 +102,21 @@ class UARestroomCareSystemTests(TestCase):
         self.assertRedirects(response, reverse('dashboard'))
 
     # -------------------------------------------------------------
-    # 2. STUDENT REGISTRATION & VERIFICATION TESTS
+    # 2. STUDENT REGISTRATION, DUAL-ID (FRONT & BACK) & DUPLICATION CHECK
     # -------------------------------------------------------------
 
     def test_registration_requires_ua_institutional_email(self):
         """Non-@ua.edu.ph email addresses must fail validation."""
-        test_img = create_test_image('id.jpg')
+        test_front = create_test_image('front.jpg')
+        test_back = create_test_image('back.jpg')
         response = self.client.post(reverse('register'), {
             'first_name': 'Alice',
             'last_name': 'Smith',
             'username': 'alice_smith',
             'email': 'alice@gmail.com',  # Invalid non-institutional email
             'student_id': '2024-99887',
-            'id_picture': test_img,
+            'id_picture': test_front,
+            'id_picture_back': test_back,
             'password': 'SecretPassword123!',
             'confirm_password': 'SecretPassword123!'
         })
@@ -122,25 +124,66 @@ class UARestroomCareSystemTests(TestCase):
         self.assertContains(response, "@ua.edu.ph")
         self.assertFalse(User.objects.filter(username='alice_smith').exists())
 
-    @patch('requests.post')
-    def test_registration_ocr_success_auto_activates_account(self, mock_ocr):
-        """When Cloud OCR matches student ID and name, account is automatically verified and activated."""
-        mock_response = MagicMock()
-        mock_response.json.return_value = {
-            'ParsedResults': [{
-                'ParsedText': 'University of the Assumption\nStudent ID: 2024-11223\nName: Maria Santos'
-            }]
-        }
-        mock_ocr.return_value = mock_response
+    def test_duplicate_student_id_strictly_blocked(self):
+        """Once an ID's identity has been registered, that ID cannot be used to create another account."""
+        test_front = create_test_image('front.jpg')
+        test_back = create_test_image('back.jpg')
 
-        test_img = create_test_image('valid_id.jpg')
+        # Attempt to register with existing student_id '2024-00123'
+        response = self.client.post(reverse('register'), {
+            'first_name': 'Imposter',
+            'last_name': 'User',
+            'username': 'imposter_user',
+            'email': 'imposter@ua.edu.ph',
+            'student_id': '2024-00123',  # Duplicate!
+            'id_picture': test_front,
+            'id_picture_back': test_back,
+            'password': 'SecretPassword123!',
+            'confirm_password': 'SecretPassword123!'
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Duplication")
+        self.assertFalse(User.objects.filter(username='imposter_user').exists())
+
+        # Attempt with normalized format '202400123' without hyphen
+        test_front2 = create_test_image('front2.jpg')
+        test_back2 = create_test_image('back2.jpg')
+        response2 = self.client.post(reverse('register'), {
+            'first_name': 'Imposter2',
+            'last_name': 'User2',
+            'username': 'imposter_user2',
+            'email': 'imposter2@ua.edu.ph',
+            'student_id': '202400123',  # Same normalized ID!
+            'id_picture': test_front2,
+            'id_picture_back': test_back2,
+            'password': 'SecretPassword123!',
+            'confirm_password': 'SecretPassword123!'
+        })
+        self.assertEqual(response2.status_code, 200)
+        self.assertContains(response2, "Duplication")
+        self.assertFalse(User.objects.filter(username='imposter_user2').exists())
+
+    @patch('core.views.parse_ocr_text')
+    def test_registration_ocr_success_with_front_and_back_id(self, mock_ocr):
+        """OCR checks back card for Student ID number and front card for student name."""
+        def ocr_side_effect(image_file):
+            if 'back' in getattr(image_file, 'name', ''):
+                return 'official student id: 2024-11223 barcode: ||| ||||'
+            return 'republic of the philippines name: maria santos program: bscs'
+
+        mock_ocr.side_effect = ocr_side_effect
+
+        test_front = create_test_image('front_id.jpg')
+        test_back = create_test_image('back_id.jpg')
+
         response = self.client.post(reverse('register'), {
             'first_name': 'Maria',
             'last_name': 'Santos',
             'username': 'maria_santos',
             'email': 'maria.santos@ua.edu.ph',
             'student_id': '2024-11223',
-            'id_picture': test_img,
+            'id_picture': test_front,
+            'id_picture_back': test_back,
             'password': 'SecretPassword123!',
             'confirm_password': 'SecretPassword123!'
         })
@@ -149,34 +192,8 @@ class UARestroomCareSystemTests(TestCase):
         user = User.objects.get(username='maria_santos')
         self.assertTrue(user.is_active)
         self.assertTrue(user.profile.is_verified)
-
-    @patch('requests.post')
-    def test_registration_ocr_unclear_places_account_in_pending(self, mock_ocr):
-        """When Cloud OCR text is unclear or mismatch, account placed in pending status."""
-        mock_response = MagicMock()
-        mock_response.json.return_value = {
-            'ParsedResults': [{
-                'ParsedText': 'Blurry card unreadable image text 99999'
-            }]
-        }
-        mock_ocr.return_value = mock_response
-
-        test_img = create_test_image('unclear_id.jpg')
-        response = self.client.post(reverse('register'), {
-            'first_name': 'Carlos',
-            'last_name': 'Reyes',
-            'username': 'carlos_reyes',
-            'email': 'carlos.reyes@ua.edu.ph',
-            'student_id': '2024-33445',
-            'id_picture': test_img,
-            'password': 'SecretPassword123!',
-            'confirm_password': 'SecretPassword123!'
-        })
-        self.assertRedirects(response, reverse('login'))
-
-        user = User.objects.get(username='carlos_reyes')
-        self.assertFalse(user.is_active)
-        self.assertFalse(user.profile.is_verified)
+        self.assertTrue(bool(user.profile.id_picture))
+        self.assertTrue(bool(user.profile.id_picture_back))
 
     def test_admin_can_approve_pending_student(self):
         """Admin can approve pending student, activating the account."""

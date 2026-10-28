@@ -1,19 +1,18 @@
 {% extends 'core/base.html' %}
+{% load static %}
 {% block title %}My Reports Dashboard — UA RESTROOMCARE{% endblock %}
 
 {% block content %}
 <div class="row align-items-center justify-content-between mb-4 g-3">
     <div class="col-12 col-md-8">
         <div class="d-flex align-items-center gap-3">
-            <div class="p-3 rounded-circle" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35);">
-                <i class="bi bi-clipboard-check-fill text-info fs-3"></i>
-            </div>
+            <img src="{% static 'img/ua_logo.png' %}" alt="UA Logo" style="width: 50px; height: 50px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.5));">
             <div>
-                <h3 class="fw-bold text-white mb-0">My Submitted Restroom Reports</h3>
+                <h3 class="fw-bold text-white mb-0">My Restroom Reports</h3>
                 <p class="text-secondary small mb-0">
                     Welcome, <strong class="text-light">{{ user.get_full_name|default:user.username }}</strong> 
                     {% if profile.student_id %}(ID: <code class="text-info">{{ profile.student_id }}</code>){% endif %}
-                    • Real-time resolution status tracking
+                    • Live status & resolution tracking
                 </p>
             </div>
         </div>
@@ -31,13 +30,13 @@
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0 text-light" style="--bs-table-bg: transparent; --bs-table-color: #f8fafc;">
                 <thead>
-                    <tr style="border-bottom: 2px solid rgba(56, 189, 248, 0.25);">
-                        <th class="py-3 text-secondary text-uppercase small">Report #</th>
-                        <th class="py-3 text-secondary text-uppercase small">Location</th>
+                    <tr style="border-bottom: 2px solid rgba(0, 240, 255, 0.25);">
+                        <th class="py-3 text-secondary text-uppercase small">Incident #</th>
+                        <th class="py-3 text-secondary text-uppercase small">Facility Location</th>
                         <th class="py-3 text-secondary text-uppercase small">Category</th>
                         <th class="py-3 text-secondary text-uppercase small">Photo Evidence</th>
-                        <th class="py-3 text-secondary text-uppercase small">Status & Notes</th>
-                        <th class="py-3 text-secondary text-uppercase small">Submitted</th>
+                        <th class="py-3 text-secondary text-uppercase small">Resolution Status</th>
+                        <th class="py-3 text-secondary text-uppercase small">Timestamp</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -56,10 +55,10 @@
                             <small class="text-secondary">Flr {{ report.location.floor }} ({{ report.location.room_number }}) - {{ report.location.gender }}</small>
                         </td>
                         <td>
-                            <span class="badge rounded-pill px-2.5 py-1" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.15);">
+                            <span class="badge rounded-pill px-2.5 py-1" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);">
                                 {{ report.get_category_display }}
                             </span>
-                            <div class="small text-secondary mt-1 text-truncate" style="max-width: 200px;" title="{{ report.description }}">
+                            <div class="small text-secondary mt-1 text-truncate" style="max-width: 220px;" title="{{ report.description }}">
                                 {{ report.description }}
                             </div>
                         </td>
@@ -74,11 +73,11 @@
                                     <div class="modal-dialog modal-dialog-centered">
                                         <div class="modal-content glass-card-pro p-3 text-start">
                                             <div class="modal-header border-0 pb-1">
-                                                <h6 class="modal-title text-white fw-bold">Report #{{ report.id }} Photo Evidence</h6>
+                                                <h6 class="modal-title text-white fw-bold">Report #{{ report.id }} Evidence Photo</h6>
                                                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                             </div>
                                             <div class="modal-body text-center py-2">
-                                                <img src="{{ report.photo.url }}" alt="Evidence" class="img-fluid rounded-3 shadow" style="max-height: 400px;">
+                                                <img src="{{ report.photo.url }}" alt="Evidence" class="img-fluid rounded-3 shadow" style="max-height: 400px; border: 1px solid rgba(0, 240, 255, 0.3);">
                                                 <p class="small text-secondary mt-2 mb-0">{{ report.location }} • {{ report.get_category_display }}</p>
                                             </div>
                                         </div>
@@ -103,10 +102,10 @@
                                 <span class="badge-status badge-pending">{{ report.status }}</span>
                             {% endif %}
 
-                            <!-- Admin Resolution / Rejection Notes -->
+                            <!-- Resolution / Rejection Notes -->
                             {% if report.resolution_notes or report.rejection_reason %}
-                                <div class="mt-1.5 p-2 rounded small" style="background: rgba(255, 255, 255, 0.05); border-left: 3px solid #38bdf8; max-width: 250px;">
-                                    <strong class="text-info d-block" style="font-size: 0.72rem;">Admin Note:</strong>
+                                <div class="mt-1.5 p-2 rounded small" style="background: rgba(255, 255, 255, 0.05); border-left: 3px solid var(--neon-cyan); max-width: 250px;">
+                                    <strong class="text-info d-block" style="font-size: 0.72rem;">Maintenance Note:</strong>
                                     <span class="text-light" style="font-size: 0.8rem;">{{ report.resolution_notes|default:report.rejection_reason }}</span>
                                 </div>
                             {% endif %}
@@ -124,9 +123,9 @@
         <!-- Empty State -->
         <div class="text-center py-5">
             <div class="mb-3">
-                <i class="bi bi-inbox text-secondary" style="font-size: 3.5rem; opacity: 0.6;"></i>
+                <i class="bi bi-inbox text-secondary" style="font-size: 3.5rem; opacity: 0.5;"></i>
             </div>
-            <h5 class="fw-bold text-white mb-1">No reports submitted yet</h5>
+            <h5 class="fw-bold text-white mb-1">No reports recorded yet</h5>
             <p class="text-secondary small mb-4">You have not submitted any sanitation or restroom maintenance reports.</p>
             <a href="{% url 'submit_report' %}" class="btn btn-water-glow px-4 py-2.5 rounded-pill shadow">
                 <i class="bi bi-plus-circle me-1"></i> Submit Your First Incident

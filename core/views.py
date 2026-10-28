@@ -30,16 +30,48 @@ def is_admin(user):
     return bool(profile and profile.role == 'admin')
 
 
+def parse_ocr_text(image_file):
+    """Safely parse text from an uploaded image file using Cloud OCR."""
+    if not image_file:
+        return ""
+    try:
+        image_file.seek(0)
+        payload = {
+            'apikey': 'helloworld',  # Standard API key for OCR.space
+            'language': 'eng',
+            'isOverlayRequired': False,
+            'scale': True,
+            'detectOrientation': True
+        }
+        files = {'file': (image_file.name, image_file.read(), image_file.content_type)}
+        response = requests.post(
+            'https://api.ocr.space/parse/image',
+            files=files,
+            data=payload,
+            timeout=8
+        )
+        result = response.json()
+        image_file.seek(0)
+
+        if result.get('ParsedResults'):
+            return result['ParsedResults'][0].get('ParsedText', '').lower()
+    except Exception:
+        pass
+    finally:
+        image_file.seek(0)
+    return ""
+
+
 # -------------------------------------------------------------
 # 1. AUTHENTICATION & PORTAL ACCESS
 # -------------------------------------------------------------
 
 def login_view(request):
     """
-    Main Student / Teacher Login Portal.
+    Main Student / Faculty Login Portal.
     - When valid credentials entered: logs in and redirects to User Dashboard.
     - When an Admin logs in through Main Portal: automatically redirects to Admin Dashboard.
-    - If account pending verification: blocks access with an informative error message.
+    - If account pending verification: informs the user that review is underway.
     """
     if request.user.is_authenticated:
         if is_admin(request.user):
@@ -51,13 +83,13 @@ def login_view(request):
         username = request.POST.get('username', '').strip()
         password = request.POST.get('password', '')
 
-        # Check if user exists but is currently deactivated (pending verification)
+        # Check if user exists but is currently deactivated (pending review)
         user_query = User.objects.filter(username__iexact=username).first()
         if user_query and user_query.check_password(password) and not user_query.is_active:
             messages.warning(
                 request,
-                "Your student account is pending administrator verification. "
-                "Please wait for an administrator to review your registration."
+                "Your account registration is currently pending administrative verification. "
+                "You will be granted access once your student ID has been confirmed."
             )
             return render(request, 'core/login.html', {'form': form, 'entered_username': username})
 
@@ -79,7 +111,7 @@ def login_view(request):
                 messages.success(request, f"Welcome back, {user.get_full_name() or user.username}!")
                 return redirect('dashboard')
         else:
-            messages.error(request, "Invalid username or password. Please verify your credentials and try again.")
+            messages.error(request, "Invalid username or password. Please verify your credentials.")
             log_audit_event(
                 None,
                 "Failed Login Attempt",
@@ -96,8 +128,7 @@ def admin_login_view(request):
     """
     Dedicated Admin Portal (/admin-portal/login/).
     - When Admin enters valid credentials: logs in and redirects to Admin Dashboard.
-    - When a Student/Teacher attempts login: blocks access immediately with an error message
-      and logs the unauthorized attempt to Audit and Suspicious Activity logs.
+    - When a Student/Teacher attempts login: blocks access immediately.
     """
     if request.user.is_authenticated:
         if is_admin(request.user):
@@ -111,13 +142,11 @@ def admin_login_view(request):
 
         user = User.objects.filter(username__iexact=username).first()
         if user and user.check_password(password):
-            # Check if this user is an admin
             if not is_admin(user):
-                # BLOCK NON-ADMIN ACCESS
                 log_audit_event(
                     user,
                     "Unauthorized Admin Portal Login Attempt",
-                    f"Student/Faculty account '{username}' attempted to authenticate through the Dedicated Admin Portal.",
+                    f"Student/Faculty account '{username}' attempted to authenticate through Dedicated Admin Portal.",
                     request
                 )
                 SuspiciousActivityLog.objects.create(
@@ -127,17 +156,14 @@ def admin_login_view(request):
                 )
                 messages.error(
                     request,
-                    "Access Denied: This dedicated portal is strictly restricted to administrative personnel. "
-                    "Students and faculty must log in via the Student/Teacher Portal."
+                    "Access Denied: This portal is strictly restricted to authorized administrative personnel."
                 )
                 return render(request, 'core/admin_login.html', {'entered_username': username})
 
-            # Check if admin user is active
             if not user.is_active:
-                messages.error(request, "Your administrative account is currently deactivated. Please contact the IT director.")
+                messages.error(request, "Your administrative account is currently deactivated. Please contact campus IT.")
                 return render(request, 'core/admin_login.html', {'entered_username': username})
 
-            # Valid admin credentials
             login(request, user)
             log_audit_event(
                 user,
@@ -148,7 +174,7 @@ def admin_login_view(request):
             messages.success(request, f"Welcome to the Admin Control Center, {user.get_full_name() or user.username}!")
             return redirect('admin_dashboard')
         else:
-            messages.error(request, "Invalid administrative credentials.")
+            messages.error(request, "Invalid administrator credentials.")
             log_audit_event(
                 None,
                 "Failed Admin Portal Login",
@@ -176,10 +202,13 @@ def logout_view(request):
 def register_view(request):
     """
     Student Registration workflow:
-    - Captures Student ID, Full Name, Institutional Email (@ua.edu.ph), Password, and Student ID picture.
-    - Invokes Cloud OCR API to parse the uploaded ID image.
-    - If OCR matches Student ID and Name: auto-activates and verifies account.
-    - If OCR verification fails or details are unclear: account placed in pending status for manual admin approval.
+    - Captures Student ID, Full Name, Institutional Email (@ua.edu.ph), Password,
+      FRONT of ID (Photo/Name) and BACK of ID (Student ID number/Barcode).
+    - Strict Duplication Check: Once an ID identity has been registered, it cannot be reused.
+    - Cloud OCR Verification:
+      - Back of ID is parsed for the critical Student ID number.
+      - Front of ID is parsed for the Student Name.
+      - Auto-activates if confirmed, else queues for manual review without exposing raw mechanics.
     """
     if request.user.is_authenticated:
         return redirect('dashboard')
@@ -187,69 +216,64 @@ def register_view(request):
     if request.method == 'POST':
         form = StudentRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
-            uploaded_id = request.FILES.get('id_picture')
+            uploaded_front = request.FILES.get('id_picture')
+            uploaded_back = request.FILES.get('id_picture_back')
             input_student_id = form.cleaned_data['student_id'].strip()
             input_first_name = form.cleaned_data['first_name'].strip()
             input_last_name = form.cleaned_data['last_name'].strip()
             input_email = form.cleaned_data['email'].strip().lower()
 
+            # Strict Duplication Check Safeguard
+            clean_target = re.sub(r'[^a-zA-Z0-9]', '', input_student_id).lower()
+            for existing in UserProfile.objects.exclude(student_id__isnull=True).values_list('student_id', flat=True):
+                if existing and re.sub(r'[^a-zA-Z0-9]', '', existing).lower() == clean_target:
+                    messages.error(
+                        request,
+                        "Duplication Security Alert: An account with this Student ID has already been registered in the system. "
+                        "Each identity cannot be used to create another account."
+                    )
+                    return render(request, 'core/register.html', {'form': form})
+
             is_auto_verified = False
             is_active_status = False
-            ocr_log_detail = "OCR Skipped/No Result"
 
-            # Clean ID for fuzzy regex matching (remove hyphens, spaces)
-            clean_id_digits = re.sub(r'[^a-zA-Z0-9]', '', input_student_id).lower()
+            # Clean strings for matching
             last_name_clean = input_last_name.lower()
             first_name_clean = input_first_name.lower()
 
-            # Attempt Cloud OCR API Parsing
-            try:
-                uploaded_id.seek(0)
-                payload = {
-                    'apikey': 'helloworld',  # Standard testing key for OCR.space
-                    'language': 'eng',
-                    'isOverlayRequired': False,
-                    'scale': True,
-                    'detectOrientation': True
-                }
-                files = {'file': (uploaded_id.name, uploaded_id.read(), uploaded_id.content_type)}
-                response = requests.post(
-                    'https://api.ocr.space/parse/image',
-                    files=files,
-                    data=payload,
-                    timeout=8
-                )
-                result = response.json()
+            # 1. Parse Back of ID (where Student ID number is located)
+            back_text = parse_ocr_text(uploaded_back)
+            back_cleaned = re.sub(r'[^a-zA-Z0-9]', '', back_text)
 
-                if result.get('ParsedResults'):
-                    extracted_text = result['ParsedResults'][0].get('ParsedText', '').lower()
-                    extracted_cleaned = re.sub(r'[^a-zA-Z0-9]', '', extracted_text)
+            # 2. Parse Front of ID (where Name and Photo are located)
+            front_text = parse_ocr_text(uploaded_front)
+            front_cleaned = re.sub(r'[^a-zA-Z0-9]', '', front_text)
 
-                    # Check match for Student ID and full name elements
-                    id_matched = (clean_id_digits in extracted_cleaned) or (input_student_id.lower() in extracted_text)
-                    name_matched = (last_name_clean in extracted_text) or (first_name_clean in extracted_text)
+            combined_text = f"{back_text} {front_text}"
+            combined_cleaned = f"{back_cleaned} {front_cleaned}"
 
-                    if id_matched and name_matched:
-                        is_auto_verified = True
-                        is_active_status = True
-                        ocr_log_detail = f"OCR Success: ID '{input_student_id}' & Name '{input_last_name}' confirmed."
-                        msg = "Registration successful! Your Student ID was automatically verified by Cloud OCR. You may now log in."
-                    elif id_matched or name_matched:
-                        ocr_log_detail = f"OCR Partial Match: ID match={id_matched}, Name match={name_matched}. Sent for admin approval."
-                        msg = "Registration submitted! Partial ID details matched. Your account is pending final administrator approval."
-                    else:
-                        ocr_log_detail = "OCR Details Unclear: No direct ID/Name match in text. Sent for admin approval."
-                        msg = "Registration submitted! Your ID details could not be automatically confirmed. Your account is pending administrator approval."
-                else:
-                    ocr_log_detail = "OCR Returned no text results. Sent for admin approval."
-                    msg = "Registration submitted! Your account is pending manual administrator review and approval."
+            # Check for Student ID (primarily on back card)
+            id_matched = (clean_target in back_cleaned) or (input_student_id.lower() in back_text) or (clean_target in combined_cleaned)
+            # Check for Student Name (primarily on front card)
+            name_matched = (last_name_clean in front_text) or (first_name_clean in front_text) or (last_name_clean in combined_text)
 
-            except Exception as e:
-                ocr_log_detail = f"OCR Service unavailable or timed out: {str(e)[:100]}. Sent for admin review."
-                msg = "Registration submitted! Your ID verification is pending manual review by an administrator."
+            if id_matched and name_matched:
+                is_auto_verified = True
+                is_active_status = True
+                ocr_detail = f"ID '{input_student_id}' & Name '{input_last_name}' confirmed from front/back card."
+                user_msg = "Identity Verified! Your Student ID details have been verified. You may now log in."
+            elif id_matched or name_matched:
+                ocr_detail = f"Partial card match (ID={id_matched}, Name={name_matched}). Sent to admin approval."
+                user_msg = "Registration Received: Your student identity verification is pending administrative review."
+            else:
+                ocr_detail = "OCR scans unclear. Sent to manual admin review."
+                user_msg = "Registration Received: Your student verification request has been queued for review."
 
-            # Reset file pointer for Django image field storage
-            uploaded_id.seek(0)
+            # Reset file pointers before model saving
+            if uploaded_front:
+                uploaded_front.seek(0)
+            if uploaded_back:
+                uploaded_back.seek(0)
 
             # Create User record
             user = form.save(commit=False)
@@ -257,12 +281,13 @@ def register_view(request):
             user.is_active = is_active_status
             user.save()
 
-            # Create UserProfile record
+            # Create UserProfile record with Front and Back ID photos
             UserProfile.objects.create(
                 user=user,
                 role='student',
                 student_id=input_student_id,
-                id_picture=uploaded_id,
+                id_picture=uploaded_front,
+                id_picture_back=uploaded_back,
                 is_verified=is_auto_verified
             )
 
@@ -270,14 +295,14 @@ def register_view(request):
             log_audit_event(
                 user,
                 "Student Registration Submitted",
-                f"Student ID: {input_student_id} | Auto-Verified: {is_auto_verified} | Status: {ocr_log_detail}",
+                f"Student ID: {input_student_id} | Verified: {is_auto_verified} | Card Scans: {ocr_detail}",
                 request
             )
 
             if is_auto_verified:
-                messages.success(request, msg)
+                messages.success(request, user_msg)
             else:
-                messages.info(request, msg)
+                messages.info(request, user_msg)
 
             return redirect('login')
     else:
@@ -298,7 +323,6 @@ def submit_report(request):
     - User inputs detailed description.
     - User attaches required photo evidence (enctype="multipart/form-data").
     - User toggles Urgent flag for high-priority incidents.
-    - Executes Anti-Spam (Hourly rate limit) and Duplicate Report checks.
     """
     if request.method == 'POST':
         form = RestroomReportForm(request.POST, request.FILES)
@@ -321,8 +345,7 @@ def submit_report(request):
                 if duplicate_report:
                     messages.info(
                         request,
-                        f"Active Incident #{duplicate_report.id} was submitted on "
-                        f"{duplicate_report.created_at.strftime('%b %d, %Y at %I:%M %p')}. "
+                        f"Active Incident #{duplicate_report.id} was already reported for this facility. "
                         f"Current status: '{duplicate_report.status}'."
                     )
                 return render(request, 'core/submit_report.html', {'form': form})
@@ -343,7 +366,7 @@ def submit_report(request):
             )
             return redirect('dashboard')
         else:
-            messages.error(request, "Please correct the errors in the form below. Ensure all required fields including photo evidence are provided.")
+            messages.error(request, "Please review the form. Ensure all required fields including photo evidence are provided.")
     else:
         form = RestroomReportForm()
 
@@ -379,9 +402,9 @@ def admin_dashboard(request):
     """
     Admin Dashboard:
     - View system status metrics (Total Reports, Pending, Under Review, In Progress, Resolved).
-    - View and manage pending student account verification requests (Approve / Reject).
+    - View and manage pending student account verification requests (Approve / Reject) with Front and Back ID photos.
     - View and update report statuses with resolution or rejection notes.
-    - View suspicious activity logs flagged by security filters.
+    - View suspicious activity logs.
     """
     if not is_admin(request.user):
         log_audit_event(

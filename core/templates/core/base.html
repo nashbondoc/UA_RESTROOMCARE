@@ -4,26 +4,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}UA RESTROOMCARE — Campus Sanitation & Security Portal{% endblock %}</title>
+    <title>{% block title %}UA RestroomCare — Campus Hygiene Management{% endblock %}</title>
     <!-- Bootstrap 5.3 & Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --ua-navy: #070d19;
-            --ua-card: rgba(17, 28, 49, 0.78);
-            --ua-card-hover: rgba(23, 37, 65, 0.88);
-            --ua-border: rgba(56, 189, 248, 0.18);
-            --ua-border-glow: rgba(56, 189, 248, 0.45);
-            --water-blue: #0284c7;
-            --water-cyan: #06b6d4;
-            --water-ice: #38bdf8;
-            --ua-gold: #f59e0b;
-            --ua-emerald: #10b981;
-            --ua-rose: #f43f5e;
+            --cyber-bg: #050914;
+            --cyber-dark: #080f20;
+            --cyber-card: rgba(9, 17, 34, 0.82);
+            --cyber-card-hover: rgba(13, 24, 48, 0.92);
+            --cyber-border: rgba(0, 240, 255, 0.18);
+            --cyber-border-glow: rgba(0, 240, 255, 0.45);
+            --neon-cyan: #00f0ff;
+            --neon-blue: #0284c7;
+            --neon-ice: #38bdf8;
+            --cyber-gold: #f59e0b;
+            --cyber-emerald: #10b981;
+            --cyber-rose: #f43f5e;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
         }
@@ -36,7 +37,7 @@
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--ua-navy);
+            background-color: var(--cyber-bg);
             color: var(--text-main);
             min-height: 100vh;
             overflow-x: hidden;
@@ -45,8 +46,24 @@
             flex-direction: column;
         }
 
-        /* Ambient Wave Canvas & Glow Orbs */
-        #water-canvas {
+        /* Subtle Cyber Grid Background */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: 
+                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -3;
+            pointer-events: none;
+        }
+
+        /* Fluid Canvas & Ambient Glow Orbs */
+        #cyber-canvas {
             position: fixed;
             top: 0;
             left: 0;
@@ -59,82 +76,96 @@
         .ambient-orb {
             position: fixed;
             border-radius: 50%;
-            filter: blur(130px);
+            filter: blur(140px);
             z-index: -1;
             pointer-events: none;
-            opacity: 0.38;
-            animation: orbFloat 16s ease-in-out infinite alternate;
+            opacity: 0.35;
+            animation: orbFloat 18s ease-in-out infinite alternate;
         }
 
         .orb-top-left {
-            width: 550px;
-            height: 550px;
+            width: 500px;
+            height: 500px;
             background: radial-gradient(circle, #0284c7 0%, rgba(2, 132, 199, 0) 70%);
-            top: -180px;
+            top: -160px;
             left: -120px;
         }
 
         .orb-bottom-right {
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, #06b6d4 0%, rgba(6, 182, 212, 0) 70%);
+            width: 520px;
+            height: 520px;
+            background: radial-gradient(circle, #00f0ff 0%, rgba(0, 240, 255, 0) 70%);
             bottom: -180px;
             right: -120px;
-            animation-delay: -8s;
+            animation-delay: -9s;
         }
 
         @keyframes orbFloat {
             0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(45px, 35px) scale(1.12); }
+            100% { transform: translate(50px, 35px) scale(1.1); }
         }
 
-        /* Glassmorphic Navbar */
-        .navbar-care {
-            background: rgba(7, 13, 25, 0.88) !important;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--ua-border);
-            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
+        /* Cyber Navbar */
+        .navbar-cyber {
+            background: rgba(5, 10, 22, 0.88) !important;
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--cyber-border);
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.7);
             z-index: 1050;
+        }
+
+        .brand-logo-img {
+            width: 44px;
+            height: 44px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.45));
+            transition: all 0.35s ease;
+        }
+
+        .navbar-brand:hover .brand-logo-img {
+            transform: scale(1.08);
+            filter: drop-shadow(0 0 18px rgba(0, 240, 255, 0.75));
         }
 
         .brand-title {
             font-family: 'Space Grotesk', sans-serif;
             font-weight: 800;
             font-size: clamp(1.05rem, 2.5vw, 1.35rem);
-            letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #ffffff 25%, #38bdf8 100%);
+            letter-spacing: -0.3px;
+            background: linear-gradient(135deg, #ffffff 30%, #38bdf8 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .brand-subtitle {
-            font-size: 0.68rem;
-            letter-spacing: 1px;
-            color: #38bdf8;
+            font-size: 0.64rem;
+            letter-spacing: 1.2px;
+            color: var(--neon-cyan);
             font-weight: 700;
             text-transform: uppercase;
         }
 
-        /* Universal Glass Card */
+        /* Universal Cyber Glass Card */
         .glass-card-pro {
-            background: var(--ua-card) !important;
+            background: var(--cyber-card) !important;
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--ua-border);
-            border-radius: 20px;
-            box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            border: 1px solid var(--cyber-border);
+            border-radius: 18px;
+            box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.12);
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
         }
 
         .glass-card-pro:hover {
-            border-color: var(--ua-border-glow);
+            border-color: var(--cyber-border-glow);
         }
 
-        /* Inputs & Form Controls */
+        /* Cyber Form Controls */
         .form-control-water, .form-select.form-control-water {
-            background: rgba(10, 19, 36, 0.85) !important;
-            border: 1px solid rgba(56, 189, 248, 0.22) !important;
+            background: rgba(7, 14, 28, 0.88) !important;
+            border: 1px solid rgba(0, 240, 255, 0.22) !important;
             color: #f8fafc !important;
             border-radius: 12px;
             padding: 0.8rem 1.05rem;
@@ -147,28 +178,28 @@
         }
 
         .form-control-water:focus, .form-select.form-control-water:focus {
-            border-color: var(--water-cyan) !important;
-            box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.25) !important;
-            background: rgba(12, 22, 42, 0.96) !important;
+            border-color: var(--neon-cyan) !important;
+            box-shadow: 0 0 0 4px rgba(0, 240, 255, 0.22) !important;
+            background: rgba(8, 17, 34, 0.96) !important;
             outline: none;
         }
 
         .form-select.form-control-water option {
-            background: #0b1528;
+            background: #081022;
             color: #f8fafc;
         }
 
         /* Buttons */
         .btn-water-glow {
-            background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
+            background: linear-gradient(135deg, #0284c7 0%, #00f0ff 100%);
             border: none;
-            color: #ffffff !important;
-            font-weight: 700;
+            color: #050914 !important;
+            font-weight: 800;
             border-radius: 12px;
             padding: 0.8rem 1.4rem;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.4px;
             transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 10px 22px -5px rgba(6, 182, 212, 0.5);
+            box-shadow: 0 8px 24px -4px rgba(0, 240, 255, 0.55);
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -177,12 +208,12 @@
 
         .btn-water-glow:hover {
             transform: translateY(-2px);
-            box-shadow: 0 16px 30px -5px rgba(6, 182, 212, 0.75);
-            color: #ffffff !important;
+            box-shadow: 0 14px 30px -4px rgba(0, 240, 255, 0.85);
+            color: #030712 !important;
         }
 
         .btn-water-secondary {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.06);
             border: 1px solid rgba(255, 255, 255, 0.16);
             color: #e2e8f0 !important;
             border-radius: 12px;
@@ -196,19 +227,10 @@
         }
 
         .btn-water-secondary:hover {
-            background: rgba(255, 255, 255, 0.14);
+            background: rgba(255, 255, 255, 0.12);
             border-color: rgba(255, 255, 255, 0.3);
             color: #ffffff !important;
             transform: translateY(-1px);
-        }
-
-        /* Navigation Badges & User Pill */
-        .user-nav-pill {
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid var(--ua-border);
-            padding: 6px 14px;
-            border-radius: 30px;
-            font-size: 0.82rem;
         }
 
         /* Status Badges */
@@ -223,7 +245,7 @@
             gap: 0.35rem;
         }
         .badge-pending { background: rgba(245, 158, 11, 0.18); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
-        .badge-review { background: rgba(6, 182, 212, 0.18); color: #67e8f9; border: 1px solid rgba(6, 182, 212, 0.4); }
+        .badge-review { background: rgba(0, 240, 255, 0.18); color: #67e8f9; border: 1px solid rgba(0, 240, 255, 0.4); }
         .badge-progress { background: rgba(99, 102, 241, 0.18); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.4); }
         .badge-resolved { background: rgba(16, 185, 129, 0.18); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.4); }
         .badge-rejected { background: rgba(244, 63, 94, 0.18); color: #fda4af; border: 1px solid rgba(244, 63, 94, 0.4); }
@@ -237,11 +259,24 @@
             100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); }
         }
 
+        /* Cyber upload zone */
+        .cyber-upload-card {
+            background: rgba(6, 12, 24, 0.7);
+            border: 1px dashed rgba(0, 240, 255, 0.32);
+            border-radius: 14px;
+            padding: 1.25rem;
+            transition: all 0.25s ease;
+        }
+        .cyber-upload-card:hover {
+            border-color: var(--neon-cyan);
+            background: rgba(7, 15, 30, 0.85);
+        }
+
         /* Custom alerts */
         .alert-care {
-            background: rgba(17, 28, 49, 0.95);
+            background: rgba(10, 18, 36, 0.95);
             backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(0, 240, 255, 0.25);
             border-radius: 14px;
             color: #ffffff;
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
@@ -250,52 +285,28 @@
         footer {
             margin-top: auto;
             border-top: 1px solid rgba(255, 255, 255, 0.08);
-            background: rgba(5, 10, 20, 0.85);
-            backdrop-filter: blur(10px);
+            background: rgba(4, 8, 18, 0.88);
+            backdrop-filter: blur(12px);
         }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
 <body>
 
-    <!-- Water Canvas Animation -->
-    <canvas id="water-canvas"></canvas>
+    <!-- Cyber Canvas Simulation -->
+    <canvas id="cyber-canvas"></canvas>
     <div class="ambient-orb orb-top-left"></div>
     <div class="ambient-orb orb-bottom-right"></div>
 
     <!-- Main Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-care sticky-top py-2.5">
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-cyber sticky-top py-2.5">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center gap-2.5" href="{% if user.is_authenticated %}{% if user.is_staff or user.is_superuser or user.profile.role == 'admin' %}{% url 'admin_dashboard' %}{% else %}{% url 'dashboard' %}{% endif %}{% else %}{% url 'login' %}{% endif %}">
-                <!-- Biometric Shield SVG -->
-                <svg width="42" height="42" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
-                  <defs>
-                    <linearGradient id="navMetalShield" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stop-color="#38bdf8" />
-                      <stop offset="35%" stop-color="#0284c7" />
-                      <stop offset="70%" stop-color="#0369a1" />
-                      <stop offset="100%" stop-color="#0c4a6e" />
-                    </linearGradient>
-                    <linearGradient id="navGoldGleam" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stop-color="#fef08a" />
-                      <stop offset="40%" stop-color="#f59e0b" />
-                      <stop offset="100%" stop-color="#78350f" />
-                    </linearGradient>
-                  </defs>
-                  <path d="M 250 50 C 340 85, 410 80, 420 120 C 420 280, 360 380, 250 440 C 140 380, 80 280, 80 120 C 90 80, 160 85, 250 50 Z" 
-                        fill="url(#navMetalShield)" stroke="#7dd3fc" stroke-width="6" />
-                  <path d="M 250 110 C 305 132, 350 130, 356 155 C 356 250, 315 320, 250 365 C 185 320, 144 250, 144 155 C 150 130, 195 132, 250 110 Z" 
-                        fill="none" stroke="url(#navGoldGleam)" stroke-width="12" />
-                  <g>
-                    <circle cx="250" cy="225" r="50" fill="none" stroke="#38bdf8" stroke-width="10" />
-                    <path d="M 250 200 A 18 18 0 0 1 264 228 L 270 262 C 270 266, 266 270, 260 270 L 240 270 C 234 270, 230 266, 230 262 L 236 228 A 18 18 0 0 1 250 200 Z" 
-                          fill="url(#navGoldGleam)" />
-                    <circle cx="250" cy="218" r="9" fill="#38bdf8" />
-                  </g>
-                </svg>
+                <!-- UA Shield Official Logo -->
+                <img src="{% static 'img/ua_logo.png' %}" alt="UA RestroomCare Shield Logo" class="brand-logo-img">
                 <div class="d-flex flex-column">
                     <span class="brand-title">UA RESTROOMCARE</span>
-                    <span class="brand-subtitle">Campus Hygiene & Security</span>
+                    <span class="brand-subtitle">Campus Hygiene & Facility Solutions</span>
                 </div>
             </a>
 
@@ -331,9 +342,9 @@
                         {% endif %}
 
                         <li class="nav-item ms-lg-2">
-                            <div class="user-nav-pill d-flex align-items-center gap-2">
+                            <div class="d-flex align-items-center gap-2 px-3 py-1.5 rounded-pill" style="background: rgba(10, 18, 36, 0.85); border: 1px solid var(--cyber-border);">
                                 <i class="bi bi-person-circle text-info"></i>
-                                <span class="fw-bold text-white">{{ user.username }}</span>
+                                <span class="fw-bold text-white small">{{ user.username }}</span>
                                 {% if user.profile %}
                                     <span class="badge bg-info text-dark rounded-pill fw-bold" style="font-size: 0.65rem;">
                                         {{ user.profile.get_role_display }}
@@ -353,12 +364,7 @@
                     {% else %}
                         <li class="nav-item">
                             <a href="{% url 'login' %}" class="nav-link text-white fw-semibold px-3">
-                                <i class="bi bi-box-arrow-in-right text-info me-1"></i> Student Login
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{% url 'admin_login' %}" class="nav-link text-warning fw-semibold px-3">
-                                <i class="bi bi-shield-lock-fill text-warning me-1"></i> Admin Portal
+                                <i class="bi bi-box-arrow-in-right text-info me-1"></i> Sign In
                             </a>
                         </li>
                         <li class="nav-item ms-lg-2">
@@ -377,7 +383,7 @@
         <!-- Notification Messages -->
         {% if messages %}
             {% for message in messages %}
-                <div class="alert alert-care alert-dismissible fade show p-3.5 mb-4 d-flex align-items-center justify-content-between" role="alert">
+                <div class="alert alert-care alert-dismissible fade show p-3 mb-4 d-flex align-items-center justify-content-between" role="alert">
                     <div class="d-flex align-items-center gap-2.5">
                         {% if message.tags == 'error' or message.tags == 'danger' %}
                             <i class="bi bi-exclamation-octagon-fill text-danger fs-5"></i>
@@ -398,27 +404,26 @@
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
+    <!-- Footer: Clean, Sleek, Discreet -->
     <footer class="py-3.5 mt-5">
         <div class="container text-center">
             <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2 small text-secondary">
-                <div>
-                    &copy; 2026 <strong>UA RESTROOMCARE</strong> — University of the Assumption Security & Sanitation Management System.
+                <div class="d-flex align-items-center gap-2">
+                    <img src="{% static 'img/ua_logo.png' %}" alt="Logo" style="width: 20px; height: 20px; object-fit: contain; opacity: 0.8;">
+                    <span>&copy; 2026 <strong>UA RESTROOMCARE</strong> — University of the Assumption Campus Facilities.</span>
                 </div>
                 <div class="d-flex gap-3">
-                    <a href="{% url 'login' %}" class="text-secondary text-decoration-none hover-white">Student Portal</a>
+                    <a href="{% url 'login' %}" class="text-secondary text-decoration-none">Portal Access</a>
                     <span>•</span>
-                    <a href="{% url 'admin_login' %}" class="text-warning text-decoration-none hover-white">Dedicated Admin Portal</a>
-                    <span>•</span>
-                    <a href="{% url 'password_reset' %}" class="text-secondary text-decoration-none hover-white">Account Recovery</a>
+                    <a href="{% url 'password_reset' %}" class="text-secondary text-decoration-none">Account Recovery</a>
                 </div>
             </div>
         </div>
     </footer>
 
-    <!-- Water Wave Fluid Simulation -->
+    <!-- Fluid Wave & Cyber Particle Animation -->
     <script>
-        const canvas = document.getElementById('water-canvas');
+        const canvas = document.getElementById('cyber-canvas');
         if (canvas) {
             const ctx = canvas.getContext('2d');
             let width, height, step = 0;
@@ -430,14 +435,14 @@
             window.addEventListener('resize', initCanvas);
             initCanvas();
 
-            function drawWaves() {
+            function drawCyberWaves() {
                 ctx.clearRect(0, 0, width, height);
                 step += 0.012;
 
                 ctx.beginPath();
-                ctx.fillStyle = 'rgba(2, 132, 199, 0.06)';
-                for (let x = 0; x <= width; x += 25) {
-                    let y = Math.sin(x * 0.004 + step) * 22 + height * 0.86;
+                ctx.fillStyle = 'rgba(2, 132, 199, 0.05)';
+                for (let x = 0; x <= width; x += 30) {
+                    let y = Math.sin(x * 0.003 + step) * 20 + height * 0.88;
                     if (x === 0) ctx.moveTo(x, y);
                     else ctx.lineTo(x, y);
                 }
@@ -447,9 +452,9 @@
                 ctx.fill();
 
                 ctx.beginPath();
-                ctx.fillStyle = 'rgba(6, 182, 212, 0.05)';
-                for (let x = 0; x <= width; x += 25) {
-                    let y = Math.cos(x * 0.005 - step * 1.1) * 26 + height * 0.89;
+                ctx.fillStyle = 'rgba(0, 240, 255, 0.04)';
+                for (let x = 0; x <= width; x += 30) {
+                    let y = Math.cos(x * 0.004 - step * 1.1) * 24 + height * 0.91;
                     if (x === 0) ctx.moveTo(x, y);
                     else ctx.lineTo(x, y);
                 }
@@ -458,9 +463,9 @@
                 ctx.closePath();
                 ctx.fill();
 
-                requestAnimationFrame(drawWaves);
+                requestAnimationFrame(drawCyberWaves);
             }
-            drawWaves();
+            drawCyberWaves();
         }
     </script>
 
