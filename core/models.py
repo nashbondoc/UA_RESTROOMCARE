@@ -13,7 +13,7 @@ class UserProfile(models.Model):
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='student')
     department = models.CharField(max_length=100, blank=True, null=True)
     
-    # Bagong fields para sa Student ID Verification
+    # Student ID Verification Fields
     student_id = models.CharField(max_length=50, blank=True, null=True, unique=True)
     id_picture = models.ImageField(upload_to='student_ids/', blank=True, null=True)
     is_verified = models.BooleanField(default=False)
@@ -29,11 +29,17 @@ class RestroomLocation(models.Model):
     gender = models.CharField(max_length=20, choices=[('Male', 'Male'), ('Female', 'Female'), ('All-Gender', 'All-Gender')])
 
     def __str__(self):
-        return f"{self.building} Flr {self.floor} ({self.room_number}) - {self.gender}"
+        return f"{self.building} - Floor {self.floor} ({self.room_number}) [{self.gender}]"
 
 
 class RestroomReport(models.Model):
     CATEGORY_CHOICES = (
+        ('Plumbing', 'Plumbing'),
+        ('Cleanliness', 'Cleanliness'),
+        ('Supplies', 'Supplies'),
+        ('Damaged Fixtures', 'Damaged Fixtures'),
+        ('Other', 'Other'),
+        # Backward compatibility choices for existing test records
         ('cleanliness', 'Cleanliness Issue'),
         ('water_soap', 'Lack of Water / Soap'),
         ('odor', 'Unpleasant Odor'),
@@ -48,20 +54,21 @@ class RestroomReport(models.Model):
     STATUS_CHOICES = (
         ('Pending', 'Pending'),
         ('Under Review', 'Under Review'),
-        ('Verified', 'Verified'),
         ('In Progress', 'In Progress'),
         ('Resolved', 'Resolved'),
         ('Rejected', 'Rejected'),
+        ('Verified', 'Verified'),
     )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reports')
     location = models.ForeignKey(RestroomLocation, on_delete=models.CASCADE, related_name='reports')
-    category = models.CharField(max_length=30, choices=CATEGORY_CHOICES)
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
     description = models.TextField()
     photo = models.ImageField(upload_to='report_photos/', blank=True, null=True)
     is_urgent = models.BooleanField(default=False)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
     rejection_reason = models.TextField(blank=True, null=True)
+    resolution_notes = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -77,14 +84,17 @@ class AuditLog(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"[{self.timestamp.strftime('%Y-%m-%d %H:%M:%S')}] {self.actor}: {self.action}"
+        actor_name = self.actor.username if self.actor else "System"
+        return f"[{self.timestamp.strftime('%Y-%m-%d %H:%M:%S')}] {actor_name}: {self.action}"
 
 
 class SuspiciousActivityLog(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     reason = models.CharField(max_length=255)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
     flagged_at = models.DateTimeField(auto_now_add=True)
     reviewed = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Flagged User: {self.user.username} - {self.reason}"
+        username = self.user.username if self.user else "Unauthenticated"
+        return f"Flagged User: {username} - {self.reason}"

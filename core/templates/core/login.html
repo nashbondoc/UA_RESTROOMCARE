@@ -1,112 +1,96 @@
 {% extends 'core/base.html' %}
+{% block title %}Student & Faculty Login — UA RESTROOMCARE{% endblock %}
+
 {% block content %}
-<style>
-    @keyframes pulse3DGlow {
-        0% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(6, 182, 212, 0.4)); }
-        50% { transform: scale(1.08); filter: drop-shadow(0 0 25px rgba(6, 182, 212, 0.85)); }
-        100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(6, 182, 212, 0.4)); }
-    }
-
-    .login-shield-icon {
-        animation: pulse3DGlow 4s ease-in-out infinite;
-        width: 90px;
-        height: 90px;
-    }
-
-    .form-control-water {
-        background: rgba(15, 23, 42, 0.75) !important;
-        border: 1px solid rgba(255, 255, 255, 0.18) !important;
-        color: #f8fafc !important;
-        border-radius: 14px;
-        padding: 0.85rem 1.1rem;
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .form-control-water:focus {
-        border-color: #06b6d4 !important;
-        box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.3) !important;
-        background: rgba(15, 23, 42, 0.95) !important;
-    }
-
-    .btn-water-glow {
-        background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
-        border: none;
-        color: #fff;
-        font-weight: 800;
-        border-radius: 14px;
-        padding: 0.9rem;
-        letter-spacing: 0.5px;
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        box-shadow: 0 12px 25px -5px rgba(6, 182, 212, 0.6);
-    }
-
-    .btn-water-glow:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 18px 35px -5px rgba(6, 182, 212, 0.85);
-        color: #fff;
-    }
-</style>
-
-<div class="row justify-content-center my-3 my-md-5 px-2">
+<div class="row justify-content-center my-2 my-md-4">
     <div class="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
-        <div class="glass-card-pro p-4 p-md-5 text-center position-relative overflow-hidden">
-            <!-- Biometric Emblem -->
-            <div class="mb-4 d-flex justify-content-center">
-                <svg class="login-shield-icon" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
-                  <defs>
-                    <linearGradient id="loginMetalShield" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stop-color="#38bdf8" />
-                      <stop offset="30%" stop-color="#0284c7" />
-                      <stop offset="70%" stop-color="#0369a1" />
-                      <stop offset="100%" stop-color="#0c4a6e" />
-                    </linearGradient>
-                    <linearGradient id="loginGoldGleam" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stop-color="#fef08a" />
-                      <stop offset="35%" stop-color="#f59e0b" />
-                      <stop offset="75%" stop-color="#b45309" />
-                      <stop offset="100%" stop-color="#78350f" />
-                    </linearGradient>
-                    <linearGradient id="loginCoreGlass" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stop-color="#0f172a" />
-                      <stop offset="100%" stop-color="#020617" />
-                    </linearGradient>
-                  </defs>
-
-                  <path d="M 250 50 C 340 85, 410 80, 420 120 C 420 280, 360 380, 250 440 C 140 380, 80 280, 80 120 C 90 80, 160 85, 250 50 Z" fill="url(#loginMetalShield)" stroke="#7dd3fc" stroke-width="6" />
-                  <path d="M 250 72 C 325 102, 385 98, 394 132 C 394 268, 342 355, 250 410 C 158 355, 106 268, 106 132 C 115 98, 175 102, 250 72 Z" fill="url(#loginCoreGlass)" stroke="#0284c7" stroke-width="3" />
-                  <path d="M 250 110 C 305 132, 350 130, 356 155 C 356 250, 315 320, 250 365 C 185 320, 144 250, 144 155 C 150 130, 195 132, 250 110 Z" fill="none" stroke="url(#loginGoldGleam)" stroke-width="12" />
-                  <g>
-                    <circle cx="250" cy="225" r="50" fill="none" stroke="#38bdf8" stroke-width="10" />
-                    <path d="M 250 200 A 18 18 0 0 1 264 228 L 270 262 C 270 266, 266 270, 260 270 L 240 270 C 234 270, 230 266, 230 262 L 236 228 A 18 18 0 0 1 250 200 Z" fill="url(#loginGoldGleam)" />
-                    <circle cx="250" cy="218" r="9" fill="#38bdf8" />
-                  </g>
-                </svg>
+        <div class="glass-card-pro p-4 p-md-5 position-relative overflow-hidden text-center">
+            
+            <!-- Biometric Crest -->
+            <div class="mb-3 d-flex justify-content-center">
+                <div class="p-3 rounded-circle" style="background: radial-gradient(circle, rgba(56, 189, 248, 0.18) 0%, rgba(2, 132, 199, 0.05) 70%); border: 1px solid rgba(56, 189, 248, 0.3);">
+                    <i class="bi bi-person-badge-fill text-info" style="font-size: 2.8rem;"></i>
+                </div>
             </div>
 
-            <h3 class="fw-bold text-white mb-1">Portal Authentication</h3>
-            <p class="text-secondary small mb-4">UA Restroom Security Network</p>
+            <h3 class="fw-bold text-white mb-1">Student & Faculty Portal</h3>
+            <p class="text-secondary small mb-4">Log in to report restroom incidents & track repairs</p>
 
-            <form method="post" class="text-start">
+            <form method="post" action="{% url 'login' %}" class="text-start">
                 {% csrf_token %}
+
                 <div class="mb-3">
-                    <label class="form-label small fw-semibold text-light">Username</label>
+                    <label class="form-label small fw-semibold text-light">Username or Student ID</label>
                     <div class="input-group">
-                        <span class="input-group-text bg-transparent border-end-0 text-secondary" style="border-color: rgba(255,255,255,0.18);"><i class="bi bi-person"></i></span>
-                        <input type="text" name="username" class="form-control form-control-water border-start-0" placeholder="Enter account username" required>
+                        <span class="input-group-text bg-transparent text-secondary border-end-0" style="border-color: rgba(56, 189, 248, 0.22);">
+                            <i class="bi bi-person"></i>
+                        </span>
+                        <input type="text" name="username" class="form-control form-control-water border-start-0 ps-1" placeholder="Enter username" value="{{ entered_username|default:'' }}" required autofocus autocomplete="username">
                     </div>
                 </div>
-                <div class="mb-4">
-                    <label class="form-label small fw-semibold text-light">Password</label>
+
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="form-label small fw-semibold text-light mb-0">Password</label>
+                        <a href="{% url 'password_reset' %}" class="text-info small text-decoration-none">Forgot Password?</a>
+                    </div>
                     <div class="input-group">
-                        <span class="input-group-text bg-transparent border-end-0 text-secondary" style="border-color: rgba(255,255,255,0.18);"><i class="bi bi-lock"></i></span>
-                        <input type="password" name="password" class="form-control form-control-water border-start-0" placeholder="Enter account password" required>
+                        <span class="input-group-text bg-transparent text-secondary border-end-0" style="border-color: rgba(56, 189, 248, 0.22);">
+                            <i class="bi bi-lock"></i>
+                        </span>
+                        <input type="password" name="password" id="password_input" class="form-control form-control-water border-start-0 ps-1" placeholder="Enter password" required autocomplete="current-password">
+                        <button class="btn btn-outline-secondary border-start-0" type="button" onclick="togglePasswordVisibility()" style="border-color: rgba(56, 189, 248, 0.22); color: #94a3b8;">
+                            <i class="bi bi-eye" id="password_toggle_icon"></i>
+                        </button>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-water-glow w-100">
-                    <i class="bi bi-shield-check me-2"></i> Authenticate Account
-                </button>
+
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-water-glow py-2.5">
+                        <i class="bi bi-box-arrow-in-right"></i> Sign In to Portal
+                    </button>
+                </div>
             </form>
+
+            <div class="mt-4 pt-3 border-top border-secondary border-opacity-25 text-center">
+                <p class="small text-secondary mb-2">New student? Need account verification?</p>
+                <a href="{% url 'register' %}" class="btn btn-water-secondary w-100 py-2 small fw-bold">
+                    <i class="bi bi-person-plus text-info me-1"></i> Register Student Account
+                </a>
+            </div>
+
+            <!-- Dedicated Admin Portal Access Callout -->
+            <div class="mt-4 p-2.5 rounded-3" style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.25);">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="text-start">
+                        <span class="badge bg-warning text-dark fw-bold me-1" style="font-size: 0.65rem;">STAFF ONLY</span>
+                        <small class="text-warning fw-semibold">Campus Admin / Maintenance</small>
+                    </div>
+                    <a href="{% url 'admin_login' %}" class="btn btn-warning btn-sm text-dark fw-bold px-2.5 py-1" style="font-size: 0.75rem;">
+                        Admin Portal <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function togglePasswordVisibility() {
+        const input = document.getElementById('password_input');
+        const icon = document.getElementById('password_toggle_icon');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('bi-eye');
+            icon.classList.add('bi-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('bi-eye-slash');
+            icon.classList.add('bi-eye');
+        }
+    }
+</script>
 {% endblock %}

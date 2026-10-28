@@ -1,139 +1,139 @@
 {% extends 'core/base.html' %}
+{% block title %}Admin Control Center — UA RESTROOMCARE{% endblock %}
+
 {% block content %}
-<style>
-    .stat-tile-care {
-        background: rgba(15, 23, 42, 0.6);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 18px;
-        padding: 1.1rem;
-        transition: all 0.3s ease;
-        backdrop-filter: blur(10px);
-    }
-    .stat-tile-care:hover {
-        transform: translateY(-4px);
-        border-color: rgba(255, 255, 255, 0.25);
-    }
-    .table-responsive-care {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-    .table-care {
-        --bs-table-bg: transparent;
-        --bs-table-color: #cbd5e1;
-        width: 100%;
-        min-width: 650px;
-    }
-    .table-care th {
-        color: #94a3b8;
-        font-weight: 700;
-        text-transform: uppercase;
-        font-size: 0.72rem;
-        letter-spacing: 0.8px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-        padding-bottom: 0.85rem;
-    }
-    .table-care td {
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        padding: 0.95rem 0.75rem;
-    }
-</style>
-
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-4">
-    <div>
-        <h2 class="fw-bold text-white mb-1"><i class="bi bi-speedometer2 text-info me-2"></i>Admin Restroom Control Center</h2>
-        <p class="text-secondary small m-0">Live campus restroom facility status & security monitoring</p>
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div class="d-flex align-items-center gap-3">
+        <div class="p-3 rounded-circle" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4);">
+            <i class="bi bi-speedometer2 text-warning fs-3"></i>
+        </div>
+        <div>
+            <h2 class="fw-bold text-white mb-0">Admin Restroom Control Center</h2>
+            <p class="text-secondary small mb-0">Campus Facilities Management, OCR Identity Verification & Security Oversight</p>
+        </div>
     </div>
-    <a href="{% url 'audit_logs' %}" class="btn btn-outline-warning btn-sm rounded-pill px-4 align-self-start align-self-md-auto fw-semibold">
-        <i class="bi bi-shield-check me-1"></i> Security Logs
-    </a>
+    <div class="d-flex gap-2">
+        <a href="{% url 'audit_logs' %}" class="btn btn-warning btn-sm rounded-pill px-3.5 py-2 fw-bold text-dark shadow-sm">
+            <i class="bi bi-shield-check me-1"></i> System Audit Trail
+        </a>
+    </div>
 </div>
 
-<!-- Responsive 2 to 6 Column Stat Grid -->
+<!-- System Status Metrics Grid (Total Reports, Pending, Under Review, In Progress, Resolved, Suspicious) -->
 <div class="row g-2 g-md-3 mb-4">
-    <div class="col-4 col-md-2">
-        <div class="stat-tile-care text-center">
-            <h3 class="fw-bold text-white mb-0">{{ stats.total }}</h3>
-            <span class="text-secondary fw-bold text-uppercase" style="font-size: 0.65rem;">Total Reports</span>
+    <div class="col-6 col-md-4 col-lg-2">
+        <div class="glass-card-pro p-3 text-center">
+            <div class="text-secondary small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px;">Total Reports</div>
+            <h3 class="fw-bold text-white mb-0 mt-1">{{ stats.total }}</h3>
+            <span class="badge bg-secondary rounded-pill mt-1" style="font-size: 0.65rem;">All Incidents</span>
         </div>
     </div>
-    <div class="col-4 col-md-2">
-        <div class="stat-tile-care text-center" style="border-color: rgba(245, 158, 11, 0.35);">
-            <h3 class="fw-bold text-warning mb-0">{{ stats.pending }}</h3>
-            <span class="text-warning fw-bold text-uppercase" style="font-size: 0.65rem;">Pending</span>
+    <div class="col-6 col-md-4 col-lg-2">
+        <div class="glass-card-pro p-3 text-center" style="border-color: rgba(245, 158, 11, 0.35);">
+            <div class="text-warning small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px;">Pending</div>
+            <h3 class="fw-bold text-warning mb-0 mt-1">{{ stats.pending }}</h3>
+            <span class="badge bg-warning text-dark rounded-pill mt-1" style="font-size: 0.65rem;">Awaiting Review</span>
         </div>
     </div>
-    <div class="col-4 col-md-2">
-        <div class="stat-tile-care text-center" style="border-color: rgba(6, 182, 212, 0.35);">
-            <h3 class="fw-bold text-info mb-0">{{ stats.under_review }}</h3>
-            <span class="text-info fw-bold text-uppercase" style="font-size: 0.65rem;">Under Review</span>
+    <div class="col-6 col-md-4 col-lg-2">
+        <div class="glass-card-pro p-3 text-center" style="border-color: rgba(6, 182, 212, 0.35);">
+            <div class="text-info small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px;">Under Review</div>
+            <h3 class="fw-bold text-info mb-0 mt-1">{{ stats.under_review }}</h3>
+            <span class="badge bg-info text-dark rounded-pill mt-1" style="font-size: 0.65rem;">Being Evaluated</span>
         </div>
     </div>
-    <div class="col-4 col-md-2">
-        <div class="stat-tile-care text-center" style="border-color: rgba(99, 102, 241, 0.35);">
-            <h3 class="fw-bold text-primary mb-0">{{ stats.in_progress }}</h3>
-            <span class="text-primary fw-bold text-uppercase" style="font-size: 0.65rem;">In Progress</span>
+    <div class="col-6 col-md-4 col-lg-2">
+        <div class="glass-card-pro p-3 text-center" style="border-color: rgba(99, 102, 241, 0.35);">
+            <div class="text-primary small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px; color: #a5b4fc !important;">In Progress</div>
+            <h3 class="fw-bold text-white mb-0 mt-1">{{ stats.in_progress }}</h3>
+            <span class="badge rounded-pill mt-1" style="background: rgba(99, 102, 241, 0.3); color: #c7d2fe; font-size: 0.65rem;">Work Dispatched</span>
         </div>
     </div>
-    <div class="col-4 col-md-2">
-        <div class="stat-tile-care text-center" style="border-color: rgba(34, 197, 94, 0.35);">
-            <h3 class="fw-bold text-success mb-0">{{ stats.resolved }}</h3>
-            <span class="text-success fw-bold text-uppercase" style="font-size: 0.65rem;">Resolved</span>
+    <div class="col-6 col-md-4 col-lg-2">
+        <div class="glass-card-pro p-3 text-center" style="border-color: rgba(16, 185, 129, 0.35);">
+            <div class="text-success small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px; color: #6ee7b7 !important;">Resolved</div>
+            <h3 class="fw-bold text-success mb-0 mt-1">{{ stats.resolved }}</h3>
+            <span class="badge bg-success rounded-pill mt-1" style="font-size: 0.65rem;">Repairs Done</span>
         </div>
     </div>
-    <div class="col-4 col-md-2">
-        <div class="stat-tile-care text-center" style="border-color: rgba(239, 68, 68, 0.35);">
-            <h3 class="fw-bold text-danger mb-0">{{ stats.suspicious }}</h3>
-            <span class="text-danger fw-bold text-uppercase" style="font-size: 0.65rem;">Suspicious</span>
+    <div class="col-6 col-md-4 col-lg-2">
+        <div class="glass-card-pro p-3 text-center" style="border-color: rgba(244, 63, 94, 0.35);">
+            <div class="text-danger small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px; color: #fda4af !important;">Suspicious Logs</div>
+            <h3 class="fw-bold text-danger mb-0 mt-1">{{ stats.suspicious }}</h3>
+            <span class="badge bg-danger rounded-pill mt-1" style="font-size: 0.65rem;">Flagged Alerts</span>
         </div>
     </div>
 </div>
 
-<!-- Pending Student Registrations Container -->
+<!-- SECTION 1: PENDING STUDENT REGISTRATIONS & VERIFICATION -->
 <div class="glass-card-pro p-3 p-md-4 mb-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="fw-bold text-white mb-0">
-            <i class="bi bi-person-check-fill text-warning me-2"></i>Pending Student Registrations
-        </h5>
-        <span class="badge bg-warning text-dark fw-bold rounded-pill px-3">
-            {{ stats.pending_registrations }} Pending
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-person-bounding-box text-warning fs-5"></i>
+            <h5 class="fw-bold text-white mb-0">Pending Student Account Verifications</h5>
+        </div>
+        <span class="badge bg-warning text-dark fw-bold rounded-pill px-3 py-1.5">
+            {{ stats.pending_registrations }} Requiring Approval
         </span>
     </div>
 
-    <div class="table-responsive-care">
-        <table class="table table-care align-middle mb-0">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 text-light" style="--bs-table-bg: transparent; --bs-table-color: #f8fafc;">
             <thead>
-                <tr>
-                    <th>Student Name</th>
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th>Student ID</th>
-                    <th>ID Card Photo</th>
-                    <th>Action</th>
+                <tr style="border-bottom: 2px solid rgba(245, 158, 11, 0.3);">
+                    <th class="py-2.5 text-secondary text-uppercase small">Student Full Name</th>
+                    <th class="py-2.5 text-secondary text-uppercase small">Username</th>
+                    <th class="py-2.5 text-secondary text-uppercase small">Institutional Email</th>
+                    <th class="py-2.5 text-secondary text-uppercase small">Student ID #</th>
+                    <th class="py-2.5 text-secondary text-uppercase small">Uploaded ID Card</th>
+                    <th class="py-2.5 text-secondary text-uppercase small text-center">Verification Action</th>
                 </tr>
             </thead>
             <tbody>
                 {% for profile in pending_students %}
-                <tr>
-                    <td><strong class="text-white">{{ profile.user.get_full_name|default:profile.user.username }}</strong></td>
-                    <td class="text-info">@{{ profile.user.username }}</td>
-                    <td class="text-light">{{ profile.user.email }}</td>
-                    <td><span class="badge bg-secondary px-2 py-1">{{ profile.student_id }}</span></td>
+                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
                     <td>
-                        {% if profile.id_picture %}
-                            <a href="{{ profile.id_picture.url }}" target="_blank" class="btn btn-outline-info btn-sm rounded-pill px-3">
-                                <i class="bi bi-image me-1"></i> View ID Photo
-                            </a>
-                        {% else %}
-                            <span class="text-muted small">No ID Uploaded</span>
-                        {% endif %}
+                        <strong class="text-white">{{ profile.user.get_full_name|default:profile.user.username }}</strong>
+                    </td>
+                    <td class="text-info">@{{ profile.user.username }}</td>
+                    <td class="text-light">
+                        <code>{{ profile.user.email }}</code>
                     </td>
                     <td>
-                        <div class="d-flex gap-2">
-                            <a href="{% url 'verify_student' profile.id 'approve' %}" class="btn btn-success btn-sm fw-bold px-3 text-white">
-                                ✓ Approve
+                        <span class="badge bg-secondary px-2.5 py-1 fw-bold">{{ profile.student_id|default:"N/A" }}</span>
+                    </td>
+                    <td>
+                        {% if profile.id_picture %}
+                            <button type="button" class="btn btn-sm btn-outline-info rounded-pill px-3 py-1" data-bs-toggle="modal" data-bs-target="#studentIdModal{{ profile.id }}">
+                                <i class="bi bi-image me-1"></i> Inspect ID Photo
+                            </button>
+
+                            <!-- ID Modal -->
+                            <div class="modal fade" id="studentIdModal{{ profile.id }}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content glass-card-pro p-3 text-start">
+                                        <div class="modal-header border-0 pb-1">
+                                            <h6 class="modal-title text-white fw-bold">Student ID: {{ profile.student_id }}</h6>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body text-center py-2">
+                                            <img src="{{ profile.id_picture.url }}" alt="Student ID" class="img-fluid rounded-3 shadow" style="max-height: 400px;">
+                                            <p class="small text-secondary mt-2 mb-0">Student: {{ profile.user.get_full_name }} • {{ profile.user.email }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <span class="text-secondary small">No ID file</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        <div class="d-inline-flex gap-2">
+                            <a href="{% url 'verify_student' profile.id 'approve' %}" class="btn btn-success btn-sm rounded-pill px-3 fw-bold shadow-sm">
+                                <i class="bi bi-check-lg"></i> Approve
                             </a>
-                            <a href="{% url 'verify_student' profile.id 'reject' %}" class="btn btn-outline-danger btn-sm fw-bold px-3" onclick="return confirm('Are you sure you want to reject and remove this student registration?');">
-                                ✕ Reject
+                            <a href="{% url 'verify_student' profile.id 'reject' %}" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold" onclick="return confirm('Are you sure you want to REJECT and permanently delete the registration record for {{ profile.user.username }}?');">
+                                <i class="bi bi-trash3"></i> Reject
                             </a>
                         </div>
                     </td>
@@ -141,7 +141,7 @@
                 {% empty %}
                 <tr>
                     <td colspan="6" class="text-center py-4 text-secondary">
-                        <i class="bi bi-check-circle me-1 text-success"></i> No student registrations pending review.
+                        <i class="bi bi-check2-circle text-success fs-5 me-1"></i> No student registrations are currently awaiting manual approval.
                     </td>
                 </tr>
                 {% endfor %}
@@ -150,54 +150,176 @@
     </div>
 </div>
 
-<!-- Main Incident Table Container -->
-<div class="glass-card-pro p-3 p-md-4">
-    <h5 class="fw-bold text-white mb-3"><i class="bi bi-droplet-half text-info me-2"></i>Campus Incident Queue</h5>
-    <div class="table-responsive-care">
-        <table class="table table-care align-middle mb-0">
+<!-- SECTION 2: CAMPUS INCIDENT QUEUE & STATUS UPDATES -->
+<div class="glass-card-pro p-3 p-md-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-droplet-half text-info fs-5"></i>
+            <h5 class="fw-bold text-white mb-0">Campus Incident Queue & Maintenance Dispatch</h5>
+        </div>
+        <span class="badge bg-info text-dark fw-bold rounded-pill px-3 py-1.5">
+            {{ stats.total }} Total Reports
+        </span>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 text-light" style="--bs-table-bg: transparent; --bs-table-color: #f8fafc;">
             <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Reporter</th>
-                    <th>Restroom Location</th>
-                    <th>Issue Category</th>
-                    <th>Status</th>
-                    <th>Action</th>
+                <tr style="border-bottom: 2px solid rgba(56, 189, 248, 0.3);">
+                    <th class="py-2.5 text-secondary text-uppercase small">ID #</th>
+                    <th class="py-2.5 text-secondary text-uppercase small">Reporter</th>
+                    <th class="py-2.5 text-secondary text-uppercase small">Restroom Location</th>
+                    <th class="py-2.5 text-secondary text-uppercase small">Category & Evidence</th>
+                    <th class="py-2.5 text-secondary text-uppercase small">Current Status</th>
+                    <th class="py-2.5 text-secondary text-uppercase small">Update Status & Resolution Notes</th>
                 </tr>
             </thead>
             <tbody>
                 {% for report in reports %}
-                <tr>
-                    <td class="fw-bold text-info">#{{ report.id }}</td>
-                    <td><i class="bi bi-person-fill me-1 text-secondary"></i><strong class="text-white">{{ report.user.username }}</strong></td>
-                    <td class="text-light">{{ report.location }}</td>
-                    <td class="text-light">{{ report.get_category_display }}</td>
-                    <td>
-                        <span class="badge rounded-pill px-3 py-1.5 fw-semibold" style="background: rgba(6, 182, 212, 0.2); color: #67e8f9; border: 1px solid rgba(6, 182, 212, 0.4);">
-                            {{ report.status }}
-                        </span>
+                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+                    <td class="fw-bold text-info">
+                        #{{ report.id }}
                         {% if report.is_urgent %}
-                            <span class="badge bg-danger rounded-pill ms-1">URGENT</span>
+                            <div class="mt-1">
+                                <span class="badge bg-danger rounded-pill pulse-urgent" style="font-size: 0.65rem;">URGENT</span>
+                            </div>
                         {% endif %}
                     </td>
                     <td>
-                        <form method="post" action="{% url 'update_status' report.id %}" class="d-flex gap-2">
+                        <div class="fw-semibold text-white">{{ report.user.username }}</div>
+                        <small class="text-secondary">{{ report.created_at|date:"M d, h:i A" }}</small>
+                    </td>
+                    <td>
+                        <div class="fw-semibold text-light">{{ report.location.building }}</div>
+                        <small class="text-secondary">Flr {{ report.location.floor }} ({{ report.location.room_number }}) - {{ report.location.gender }}</small>
+                    </td>
+                    <td>
+                        <span class="badge rounded-pill px-2.5 py-1" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.15);">
+                            {{ report.get_category_display }}
+                        </span>
+                        {% if report.photo %}
+                            <button type="button" class="btn btn-sm btn-link text-info p-0 ms-1" data-bs-toggle="modal" data-bs-target="#adminPhotoModal{{ report.id }}">
+                                <i class="bi bi-paperclip"></i> Photo
+                            </button>
+
+                            <!-- Photo Modal -->
+                            <div class="modal fade" id="adminPhotoModal{{ report.id }}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content glass-card-pro p-3 text-start">
+                                        <div class="modal-header border-0 pb-1">
+                                            <h6 class="modal-title text-white fw-bold">Incident #{{ report.id }} Photo Proof</h6>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body text-center py-2">
+                                            <img src="{{ report.photo.url }}" alt="Evidence" class="img-fluid rounded-3 shadow" style="max-height: 400px;">
+                                            <p class="small text-secondary mt-2 mb-0"><strong>Description:</strong> {{ report.description }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="small text-secondary mt-1 text-truncate" style="max-width: 180px;" title="{{ report.description }}">
+                            {{ report.description }}
+                        </div>
+                    </td>
+                    <td>
+                        {% if report.status == 'Pending' %}
+                            <span class="badge-status badge-pending"><i class="bi bi-clock-history"></i> Pending</span>
+                        {% elif report.status == 'Under Review' %}
+                            <span class="badge-status badge-review"><i class="bi bi-search"></i> Under Review</span>
+                        {% elif report.status == 'In Progress' %}
+                            <span class="badge-status badge-progress"><i class="bi bi-gear-fill"></i> In Progress</span>
+                        {% elif report.status == 'Resolved' %}
+                            <span class="badge-status badge-resolved"><i class="bi bi-check-circle-fill"></i> Resolved</span>
+                        {% elif report.status == 'Rejected' %}
+                            <span class="badge-status badge-rejected"><i class="bi bi-x-circle-fill"></i> Rejected</span>
+                        {% else %}
+                            <span class="badge-status badge-pending">{{ report.status }}</span>
+                        {% endif %}
+
+                        {% if report.resolution_notes or report.rejection_reason %}
+                            <div class="small text-secondary mt-1 text-truncate" style="max-width: 170px;" title="{{ report.resolution_notes|default:report.rejection_reason }}">
+                                <i class="bi bi-chat-left-text text-info"></i> {{ report.resolution_notes|default:report.rejection_reason }}
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <!-- Status Update Form with Resolution / Rejection Notes -->
+                        <form method="post" action="{% url 'update_status' report.id %}">
                             {% csrf_token %}
-                            <select name="status" class="form-select form-select-sm text-white" style="background: rgba(15,23,42,0.85); border-color: rgba(255,255,255,0.18); font-size: 0.8rem; border-radius: 8px;">
-                                <option value="Pending" {% if report.status == 'Pending' %}selected{% endif %}>Pending</option>
-                                <option value="Under Review" {% if report.status == 'Under Review' %}selected{% endif %}>Under Review</option>
-                                <option value="Verified" {% if report.status == 'Verified' %}selected{% endif %}>Verified</option>
-                                <option value="In Progress" {% if report.status == 'In Progress' %}selected{% endif %}>In Progress</option>
-                                <option value="Resolved" {% if report.status == 'Resolved' %}selected{% endif %}>Resolved</option>
-                                <option value="Rejected" {% if report.status == 'Rejected' %}selected{% endif %}>Rejected</option>
-                            </select>
-                            <button type="submit" class="btn btn-info btn-sm fw-bold px-3 text-dark" style="font-size: 0.8rem;">Save</button>
+                            <div class="input-group input-group-sm mb-1.5" style="max-width: 320px;">
+                                <select name="status" class="form-select form-control-water py-1" style="font-size: 0.82rem;">
+                                    <option value="Pending" {% if report.status == 'Pending' %}selected{% endif %}>Pending</option>
+                                    <option value="Under Review" {% if report.status == 'Under Review' %}selected{% endif %}>Under Review</option>
+                                    <option value="In Progress" {% if report.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                                    <option value="Resolved" {% if report.status == 'Resolved' %}selected{% endif %}>Resolved</option>
+                                    <option value="Rejected" {% if report.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                                </select>
+                                <button type="submit" class="btn btn-info btn-sm fw-bold px-3 text-dark">
+                                    Update
+                                </button>
+                            </div>
+                            <input type="text" name="resolution_notes" class="form-control form-control-water py-1" style="font-size: 0.78rem; max-width: 320px;" placeholder="Attach resolution or rejection notes..." value="{{ report.resolution_notes|default:report.rejection_reason|default:'' }}">
                         </form>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="6" class="text-center py-5 text-secondary">No reports recorded in the system.</td>
+                    <td colspan="6" class="text-center py-5 text-secondary">
+                        No maintenance reports have been recorded yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- SECTION 3: SUSPICIOUS ACTIVITY LOG (RATE LIMIT / SPAM / UNAUTHORIZED ATTEMPTS) -->
+<div class="glass-card-pro p-3 p-md-4">
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-shield-slash-fill text-danger fs-5"></i>
+            <h5 class="fw-bold text-white mb-0">Suspicious Activity & Anti-Spam Security Log</h5>
+        </div>
+        <span class="badge bg-danger rounded-pill px-3 py-1.5">
+            {{ stats.suspicious }} Unreviewed Flags
+        </span>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 text-light" style="--bs-table-bg: transparent; --bs-table-color: #f8fafc;">
+            <thead>
+                <tr style="border-bottom: 2px solid rgba(244, 63, 94, 0.3);">
+                    <th class="py-2.5 text-secondary text-uppercase small">Flagged At</th>
+                    <th class="py-2.5 text-secondary text-uppercase small">Target User</th>
+                    <th class="py-2.5 text-secondary text-uppercase small">Security Reason</th>
+                    <th class="py-2.5 text-secondary text-uppercase small">IP Address</th>
+                    <th class="py-2.5 text-secondary text-uppercase small text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in suspicious_logs %}
+                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+                    <td class="small text-secondary">{{ log.flagged_at|date:"M d, Y H:i:s" }}</td>
+                    <td>
+                        <strong class="text-white">{{ log.user.username|default:"Unauthenticated" }}</strong>
+                    </td>
+                    <td>
+                        <span class="text-warning small fw-semibold">{{ log.reason }}</span>
+                    </td>
+                    <td class="small text-secondary font-monospace">{{ log.ip_address|default:"N/A" }}</td>
+                    <td class="text-center">
+                        <a href="{% url 'mark_suspicious_reviewed' log.id %}" class="btn btn-outline-light btn-sm rounded-pill px-3 py-1 small">
+                            <i class="bi bi-check2"></i> Mark Reviewed
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-4 text-secondary">
+                        <i class="bi bi-shield-check text-success fs-5 me-1"></i> No unreviewed suspicious activities or spam attempts detected.
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

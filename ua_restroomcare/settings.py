@@ -118,6 +118,13 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+# Media files (Student IDs and Report Evidence Photos)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Password Reset Email Settings (Console backend outputs email tokens securely)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'UA RestroomCare Security <no-reply@ua.edu.ph>'
 
 # Default primary key field type
 

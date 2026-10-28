@@ -1,30 +1,97 @@
 {% extends 'core/base.html' %}
+{% block title %}Audit Trail & Security Logs — UA RESTROOMCARE{% endblock %}
+
 {% block content %}
-<div class="d-flex align-items-center mb-4 text-light">
-    <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-light btn-sm rounded-circle me-3"><i class="bi bi-arrow-left"></i></a>
-    <h3 class="fw-bold m-0">System Audit Trail</h3>
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div class="d-flex align-items-center gap-3">
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-water-secondary btn-sm rounded-circle p-2" title="Back to Control Center">
+            <i class="bi bi-arrow-left fs-5"></i>
+        </a>
+        <div>
+            <h3 class="fw-bold text-white mb-0">System Audit Trail & Compliance Log</h3>
+            <p class="text-secondary small mb-0">Tracking user authentication, incident reporting, identity verification, and status updates</p>
+        </div>
+    </div>
+    
+    <!-- Search / Filter Form -->
+    <form method="get" class="d-flex gap-2" style="max-width: 320px;">
+        <input type="text" name="q" class="form-control form-control-water py-1.5" placeholder="Filter by action, actor, details..." value="{{ search_query|default:'' }}">
+        <button type="submit" class="btn btn-water-glow btn-sm px-3">
+            <i class="bi bi-search"></i>
+        </button>
+        {% if search_query %}
+            <a href="{% url 'audit_logs' %}" class="btn btn-outline-secondary btn-sm py-1.5 px-2">Clear</a>
+        {% endif %}
+    </form>
 </div>
 
-<div class="card-custom p-4">
+<div class="glass-card-pro p-3 p-md-4">
     <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="table-light">
-                <tr>
-                    <th>Timestamp</th>
-                    <th>Actor</th>
-                    <th>Action</th>
-                    <th>Details</th>
-                    <th>IP Address</th>
+        <table class="table table-hover align-middle mb-0 text-light" style="--bs-table-bg: transparent; --bs-table-color: #f8fafc;">
+            <thead>
+                <tr style="border-bottom: 2px solid rgba(245, 158, 11, 0.3);">
+                    <th class="py-2.5 text-secondary text-uppercase small">Timestamp</th>
+                    <th class="py-2.5 text-secondary text-uppercase small">Actor</th>
+                    <th class="py-2.5 text-secondary text-uppercase small">Action Category</th>
+                    <th class="py-2.5 text-secondary text-uppercase small">Event Details</th>
+                    <th class="py-2.5 text-secondary text-uppercase small">IP Address</th>
                 </tr>
             </thead>
             <tbody>
                 {% for log in logs %}
+                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+                    <td class="small text-secondary" style="white-space: nowrap;">
+                        {{ log.timestamp|date:"Y-m-d H:i:s" }}
+                    </td>
+                    <td>
+                        {% if log.actor %}
+                            <div class="fw-semibold text-white">
+                                <i class="bi bi-person-fill text-info me-1"></i>{{ log.actor.username }}
+                            </div>
+                            <small class="text-secondary">{{ log.actor.email }}</small>
+                        {% else %}
+                            <span class="badge bg-secondary">System / Anonymous</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if "Login" in log.action %}
+                            <span class="badge rounded-pill px-2.5 py-1 text-info" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35);">
+                                <i class="bi bi-box-arrow-in-right"></i> {{ log.action }}
+                            </span>
+                        {% elif "Logout" in log.action %}
+                            <span class="badge rounded-pill px-2.5 py-1 text-secondary" style="background: rgba(148, 163, 184, 0.15); border: 1px solid rgba(148, 163, 184, 0.35);">
+                                <i class="bi bi-box-arrow-right"></i> {{ log.action }}
+                            </span>
+                        {% elif "Approved" in log.action %}
+                            <span class="badge rounded-pill px-2.5 py-1 text-success" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35);">
+                                <i class="bi bi-check2-circle"></i> {{ log.action }}
+                            </span>
+                        {% elif "Rejected" in log.action or "Blocked" in log.action or "Violation" in log.action %}
+                            <span class="badge rounded-pill px-2.5 py-1 text-danger" style="background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.35);">
+                                <i class="bi bi-shield-x"></i> {{ log.action }}
+                            </span>
+                        {% elif "Status" in log.action %}
+                            <span class="badge rounded-pill px-2.5 py-1 text-warning" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.35);">
+                                <i class="bi bi-pencil-square"></i> {{ log.action }}
+                            </span>
+                        {% else %}
+                            <span class="badge rounded-pill px-2.5 py-1 text-light" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);">
+                                {{ log.action }}
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td class="small text-light">
+                        {{ log.details|default:"No additional details provided." }}
+                    </td>
+                    <td class="small text-secondary font-monospace" style="white-space: nowrap;">
+                        {{ log.ip_address|default:"127.0.0.1" }}
+                    </td>
+                </tr>
+                {% empty %}
                 <tr>
-                    <td class="small text-muted">{{ log.timestamp|date:"Y-m-d H:i:s" }}</td>
-                    <td><strong>{{ log.actor.username|default:"System" }}</strong></td>
-                    <td><span class="badge bg-secondary">{{ log.action }}</span></td>
-                    <td class="small">{{ log.details }}</td>
-                    <td class="small text-monospace">{{ log.ip_address|default:"N/A" }}</td>
+                    <td colspan="5" class="text-center py-5 text-secondary">
+                        No audit records match the selected filter.
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

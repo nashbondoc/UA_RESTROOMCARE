@@ -1,51 +1,145 @@
 {% extends 'core/base.html' %}
-{% block content %}
-<div class="row justify-content-center my-3 my-md-4 px-2">
-    <div class="col-12 col-md-8 col-lg-6">
-        <div class="glass-card-pro p-4 p-md-5">
-            <h4 class="fw-bold text-white mb-1">
-                <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>Submit Incident Report
-            </h4>
-            <p class="text-secondary small mb-4">Report restroom maintenance, cleanliness, or safety concerns across campus.</p>
+{% block title %}Submit Restroom Incident Report — UA RESTROOMCARE{% endblock %}
 
-            <!-- KINAKAILANGAN ANG enctype="multipart/form-data" PARA SA IMAGE UPLOADS -->
+{% block content %}
+<div class="row justify-content-center my-2 my-md-4">
+    <div class="col-12 col-md-10 col-lg-8">
+        <div class="glass-card-pro p-4 p-md-5">
+
+            <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="p-3 rounded-circle" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.35);">
+                        <i class="bi bi-exclamation-triangle-fill text-warning fs-2"></i>
+                    </div>
+                    <div>
+                        <h3 class="fw-bold text-white mb-0">Submit Incident Report</h3>
+                        <p class="text-secondary small mb-0">Report sanitation, maintenance, or safety concerns across campus</p>
+                    </div>
+                </div>
+                <a href="{% url 'dashboard' %}" class="btn btn-water-secondary btn-sm rounded-pill px-3 py-1.5">
+                    <i class="bi bi-arrow-left"></i> My Reports
+                </a>
+            </div>
+
+            <!-- Anti-Spam & Rate Limit Info Card -->
+            <div class="p-3 mb-4 rounded-3 small" style="background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(56, 189, 248, 0.25);">
+                <div class="d-flex align-items-start gap-2">
+                    <i class="bi bi-shield-check text-info fs-5 mt-0.5"></i>
+                    <div>
+                        <strong class="text-info">Anti-Spam & Duplicate Incident Protection:</strong>
+                        <p class="mb-0 text-light opacity-90 mt-1">
+                            To ensure swift maintenance dispatch, the system automatically checks for duplicate active reports at the same facility and applies an hourly rate limit (maximum 3 reports/hour per account).
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {% if form.errors %}
+                <div class="alert alert-danger p-3 small mb-4 rounded-3 text-white" style="background: rgba(244, 63, 94, 0.25); border: 1px solid rgba(244, 63, 94, 0.5);">
+                    <div class="fw-bold mb-1"><i class="bi bi-exclamation-octagon-fill me-1"></i> Submission Issues:</div>
+                    <ul class="mb-0 ps-3">
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                
-                <div class="mb-3">
-                    <label class="form-label small fw-semibold text-light">Restroom Location</label>
-                    <input type="text" name="location" class="form-control form-control-water" placeholder="e.g. Main Building 2nd Floor Men's Restroom" required>
-                </div>
 
+                <!-- Location Select -->
                 <div class="mb-3">
-                    <label class="form-label small fw-semibold text-light">Issue Category</label>
-                    <select name="category" class="form-select form-control-water">
-                        <option value="PLUMBING">Plumbing / Water Leak</option>
-                        <option value="CLEANLINESS">Cleanliness / Hygiene</option>
-                        <option value="SUPPLIES">Missing Supplies (Paper/Soap)</option>
-                        <option value="DAMAGED_FIXTURE">Damaged Fixtures</option>
-                        <option value="OTHER">Other Issue</option>
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label small fw-semibold text-light">Details / Description</label>
-                    <textarea name="description" rows="4" class="form-control form-control-water" placeholder="Provide specific details about the issue..." required></textarea>
-                </div>
-
-                <!-- PHOTO PROOF FIELD (REQUIRED FOR EVIDENCE) -->
-                <div class="mb-4">
                     <label class="form-label small fw-semibold text-light">
-                        <i class="bi bi-camera-fill me-1 text-info"></i>Attach Photo Evidence (Required)
+                        <i class="bi bi-geo-alt-fill text-info me-1"></i>Restroom Location <span class="text-danger">*</span>
                     </label>
-                    <input type="file" name="photo" accept="image/*" class="form-control form-control-water" required>
+                    {{ form.location }}
+                    <small class="text-secondary d-block mt-1">Select the campus building, floor, room number, and gender designation.</small>
                 </div>
 
-                <button type="submit" class="btn btn-water-glow w-100">
-                    <i class="bi bi-send-fill me-1"></i> Submit Report
-                </button>
+                <!-- Issue Category Select -->
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-light">
+                        <i class="bi bi-tag-fill text-info me-1"></i>Issue Category <span class="text-danger">*</span>
+                    </label>
+                    {{ form.category }}
+                    <small class="text-secondary d-block mt-1">Categories: <strong>Plumbing</strong> (leaks, clog), <strong>Cleanliness</strong> (trash, biohazard), <strong>Supplies</strong> (soap, tissue), <strong>Damaged Fixtures</strong> (door locks, lights, mirrors), or <strong>Other</strong>.</small>
+                </div>
+
+                <!-- Detailed Description -->
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-light">
+                        <i class="bi bi-card-text text-info me-1"></i>Detailed Description <span class="text-danger">*</span>
+                    </label>
+                    {{ form.description }}
+                </div>
+
+                <!-- Required Photo Evidence with Live Preview -->
+                <div class="mb-4 p-3 rounded-3" style="background: rgba(15, 23, 42, 0.6); border: 1px dashed rgba(56, 189, 248, 0.35);">
+                    <label class="form-label small fw-bold text-white d-flex align-items-center gap-1.5">
+                        <i class="bi bi-camera-fill text-info"></i> Attach Photo Evidence (Required) <span class="text-danger">*</span>
+                    </label>
+                    {{ form.photo }}
+                    <small class="text-secondary d-block mt-1">Photos verify the reported issue for physical maintenance staff dispatch (enctype="multipart/form-data").</small>
+                    
+                    <div id="photo_preview_box" class="mt-3 text-center d-none">
+                        <div class="small text-info mb-1 fw-semibold"><i class="bi bi-eye"></i> Attached Evidence Preview:</div>
+                        <img id="photo_preview_img" src="#" alt="Report Photo Preview" class="img-fluid rounded-3 shadow" style="max-height: 240px; border: 2px solid #06b6d4;">
+                    </div>
+                </div>
+
+                <!-- Urgent Flag Toggle -->
+                <div class="mb-4 p-3 rounded-3" style="background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.35);">
+                    <div class="form-check form-switch d-flex align-items-center gap-2">
+                        {{ form.is_urgent }}
+                        <label class="form-check-label fw-bold text-white mb-0" for="id_is_urgent" style="cursor: pointer;">
+                            <span class="badge bg-danger text-white rounded-pill px-2.5 py-1 me-1 pulse-urgent">URGENT</span>
+                            Mark as High-Priority Maintenance Incident
+                        </label>
+                    </div>
+                    <small class="text-secondary d-block mt-1 ps-4 ms-2">
+                        Check this box only for critical incidents such as major flooding, electrical hazards, broken locks trapping someone, or urgent hygiene hazards.
+                    </small>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-water-glow py-3 fw-bold">
+                        <i class="bi bi-send-fill me-1"></i> Submit Report to Maintenance
+                    </button>
+                </div>
             </form>
+
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    const photoInput = document.getElementById('report_photo_input');
+    const photoPreviewBox = document.getElementById('photo_preview_box');
+    const photoPreviewImg = document.getElementById('photo_preview_img');
+
+    if (photoInput) {
+        photoInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    photoPreviewImg.src = e.target.result;
+                    photoPreviewBox.classList.remove('d-none');
+                }
+                reader.readAsDataURL(file);
+            } else {
+                photoPreviewBox.classList.add('d-none');
+            }
+        });
+    }
+</script>
 {% endblock %}
