@@ -13,32 +13,27 @@
 
     <style>
         :root {
-            /* Neutral Unisex Dark Palette (Slate / Zinc / Charcoal) */
-            --bg-base: #0b0f17;
-            --bg-surface: #111827;
-            --bg-surface-elevated: #162032;
-            --bg-card: rgba(18, 26, 41, 0.78);
-            --bg-card-hover: rgba(22, 32, 50, 0.90);
+            /* Modern Clean Light-Teal Unisex Palette */
+            --bg-light: #f0fdfa;
+            --bg-surface: #ffffff;
+            --bg-glass-card: rgba(255, 255, 255, 0.88);
+            --border-glass: rgba(13, 148, 136, 0.18);
+            --border-glass-hover: rgba(13, 148, 136, 0.35);
 
-            /* Neutral Border and Subtle Highlights */
-            --border-subtle: rgba(148, 163, 184, 0.16);
-            --border-hover: rgba(148, 163, 184, 0.35);
-            --border-accent: rgba(56, 189, 248, 0.35);
+            /* Primary Colors */
+            --teal-primary: #0d9488;
+            --teal-dark: #0f766e;
+            --teal-light: #ccfbf1;
+            --blue-primary: #0284c7;
+            --blue-hover: #0369a1;
+            --yellow-accent: #f59e0b;
+            --yellow-dark: #d97706;
 
-            /* Balanced Unisex Accents: Cool Slate Blue, Subtle Teal, Soft Steel */
-            --accent-primary: #2563eb;
-            --accent-primary-hover: #1d4ed8;
-            --accent-sky: #0284c7;
-            --accent-teal: #0f766e;
-            --accent-amber: #d97706;
-            --accent-rose: #e11d48;
-            --accent-emerald: #059669;
-
-            /* Text Hierarchy */
-            --text-heading: #f8fafc;
-            --text-body: #e2e8f0;
-            --text-muted: #94a3b8;
-            --text-subtle: #64748b;
+            /* Text Colors */
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --text-subtle: #94a3b8;
         }
 
         * {
@@ -49,8 +44,8 @@
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: radial-gradient(circle at 50% 15%, #151f30 0%, #0c131f 55%, #070a10 100%);
-            background-color: var(--bg-base);
+            background: radial-gradient(circle at 50% 20%, #e6fffa 0%, #f0fdfa 55%, #e2f7f4 100%);
+            background-color: var(--bg-light);
             color: var(--text-body);
             min-height: 100vh;
             overflow-x: hidden;
@@ -59,70 +54,65 @@
             flex-direction: column;
         }
 
-        /* Subtle Ambient Backing Grid */
-        body::before {
-            content: "";
+        /* Fluid Water Waves Simulation Canvas Background */
+        #water-canvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-            background-size: 48px 48px;
-            z-index: -3;
+            z-index: -2;
             pointer-events: none;
         }
 
-        /* Ambient Glow Blobs */
+        /* Soft Ambient Teal & Blue Glow Orbs */
         .ambient-orb {
             position: fixed;
             border-radius: 50%;
-            filter: blur(150px);
-            z-index: -2;
+            filter: blur(140px);
+            z-index: -1;
             pointer-events: none;
-            opacity: 0.22;
-            animation: orbFloat 20s ease-in-out infinite alternate;
+            opacity: 0.45;
+            animation: orbFloat 18s ease-in-out infinite alternate;
         }
 
         .orb-1 {
-            width: 520px;
-            height: 520px;
-            background: radial-gradient(circle, #1e3a8a 0%, rgba(30, 58, 138, 0) 70%);
-            top: -160px;
-            left: -100px;
+            width: 550px;
+            height: 550px;
+            background: radial-gradient(circle, #99f6e4 0%, rgba(153, 246, 228, 0) 70%);
+            top: -150px;
+            left: -120px;
         }
 
         .orb-2 {
-            width: 540px;
-            height: 540px;
-            background: radial-gradient(circle, #0e7490 0%, rgba(14, 116, 144, 0) 70%);
-            bottom: -180px;
-            right: -100px;
-            animation-delay: -10s;
+            width: 580px;
+            height: 580px;
+            background: radial-gradient(circle, #bae6fd 0%, rgba(186, 230, 253, 0) 70%);
+            bottom: -160px;
+            right: -120px;
+            animation-delay: -9s;
         }
 
         @keyframes orbFloat {
             0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(40px, 30px) scale(1.08); }
+            100% { transform: translate(45px, 30px) scale(1.1); }
         }
 
-        /* Sleek Neutral Navbar */
+        /* Light-Mode Glassmorphism Top Navigation Bar */
         .navbar-custom {
-            background: rgba(11, 15, 23, 0.85) !important;
+            background: rgba(255, 255, 255, 0.85) !important;
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border-subtle);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-bottom: 1px solid var(--border-glass);
+            box-shadow: 0 4px 20px rgba(13, 148, 136, 0.08);
             z-index: 1050;
         }
 
         .brand-logo-img {
-            width: 42px;
-            height: 42px;
+            width: 44px;
+            height: 44px;
             object-fit: contain;
-            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6));
+            filter: drop-shadow(0 2px 8px rgba(13, 148, 136, 0.25));
             transition: transform 0.25s ease;
         }
 
@@ -133,25 +123,26 @@
         .brand-title {
             font-family: 'Space Grotesk', sans-serif;
             font-weight: 800;
-            font-size: clamp(1.05rem, 2.4vw, 1.35rem);
+            font-size: clamp(1.1rem, 2.4vw, 1.35rem);
             letter-spacing: -0.3px;
-            color: #ffffff;
+            background: linear-gradient(135deg, #0f766e 0%, #0284c7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .brand-subtitle {
-            font-size: 0.70rem;
-            letter-spacing: 0.8px;
-            color: var(--text-muted);
+            font-size: 0.72rem;
+            letter-spacing: 0.6px;
+            color: #0f766e;
             font-weight: 600;
-            text-transform: uppercase;
         }
 
         /* Nav Action Buttons */
         .nav-btn-link {
-            color: var(--text-body) !important;
+            color: var(--text-heading) !important;
             font-weight: 600;
-            font-size: 0.9rem;
-            padding: 0.5rem 0.95rem;
+            font-size: 0.92rem;
+            padding: 0.5rem 1rem;
             border-radius: 8px;
             display: inline-flex;
             align-items: center;
@@ -160,17 +151,17 @@
             transition: all 0.2s ease;
         }
         .nav-btn-link:hover {
-            color: #ffffff !important;
-            background: rgba(255, 255, 255, 0.05);
+            color: var(--teal-dark) !important;
+            background: rgba(13, 148, 136, 0.08);
         }
 
         .nav-btn-admin {
-            color: #f1f5f9 !important;
-            border: 1px solid rgba(148, 163, 184, 0.25);
-            background: rgba(15, 23, 42, 0.6);
-            font-weight: 600;
-            font-size: 0.86rem;
-            padding: 0.45rem 1rem;
+            color: #b45309 !important;
+            border: 1px solid rgba(217, 119, 6, 0.35);
+            background: rgba(254, 243, 199, 0.65);
+            font-weight: 700;
+            font-size: 0.88rem;
+            padding: 0.5rem 1.1rem;
             border-radius: 8px;
             display: inline-flex;
             align-items: center;
@@ -179,67 +170,70 @@
             transition: all 0.2s ease;
         }
         .nav-btn-admin:hover {
-            background: rgba(30, 41, 59, 0.85);
-            border-color: rgba(148, 163, 184, 0.45);
-            color: #ffffff !important;
+            background: rgba(253, 230, 138, 0.95);
+            border-color: #d97706;
+            color: #78350f !important;
+            transform: translateY(-1px);
         }
 
         .nav-btn-register {
-            background: #2563eb;
+            background: var(--blue-primary);
             color: #ffffff !important;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 0.88rem;
-            padding: 0.5rem 1.25rem;
+            padding: 0.55rem 1.3rem;
             border-radius: 8px;
             display: inline-flex;
             align-items: center;
             gap: 0.45rem;
             text-decoration: none;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
         }
         .nav-btn-register:hover {
-            background: #1d4ed8;
-            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+            background: var(--blue-hover);
+            box-shadow: 0 6px 18px rgba(2, 132, 199, 0.5);
             transform: translateY(-1px);
             color: #ffffff !important;
         }
 
-        /* Neutral Dark Glass Cards */
+        /* Crisp White Glassmorphism Central Card */
         .glass-card-pro {
-            background: var(--bg-card) !important;
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--border-subtle);
-            border-radius: 18px;
-            box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            background: var(--bg-glass-card) !important;
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            box-shadow: 0 20px 45px -10px rgba(13, 148, 136, 0.12), 0 10px 25px -5px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.8);
             transition: all 0.25s ease;
             position: relative;
         }
 
         .glass-card-pro:hover {
-            border-color: var(--border-hover);
+            border-color: var(--border-glass-hover);
+            box-shadow: 0 25px 50px -10px rgba(13, 148, 136, 0.18);
         }
 
-        /* Avatar Container on Portal Cards */
-        .avatar-circle-neutral {
-            width: 72px;
-            height: 72px;
+        /* User Avatar Circle on Card */
+        .avatar-circle-teal {
+            width: 76px;
+            height: 76px;
             border-radius: 50%;
-            border: 2px solid rgba(148, 163, 184, 0.35);
+            border: 2.5px solid #0d9488;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            color: #94a3b8;
-            font-size: 2.2rem;
-            background: rgba(30, 41, 59, 0.5);
+            color: #0d9488;
+            font-size: 2.4rem;
+            background: rgba(13, 148, 136, 0.08);
+            box-shadow: 0 4px 18px rgba(13, 148, 136, 0.18);
             margin-bottom: 1.15rem;
         }
 
-        /* Standardized Neutral Form Controls */
+        /* Clean Light Input Fields */
         .form-control-water, .form-select.form-control-water {
-            background: #0f172a !important;
-            border: 1px solid rgba(148, 163, 184, 0.22) !important;
+            background: #ffffff !important;
+            border: 1px solid rgba(13, 148, 136, 0.28) !important;
             color: var(--text-heading) !important;
             border-radius: 10px;
             padding: 0.75rem 1rem;
@@ -248,49 +242,44 @@
         }
 
         .form-control-water::placeholder {
-            color: #64748b !important;
+            color: #94a3b8 !important;
         }
 
         .form-control-water:focus, .form-select.form-control-water:focus {
-            border-color: #3b82f6 !important;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
-            background: #111c33 !important;
+            border-color: #0284c7 !important;
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2) !important;
+            background: #ffffff !important;
             outline: none;
         }
 
-        .form-select.form-control-water option {
-            background: #0f172a;
-            color: #f8fafc;
-        }
-
-        /* Button Varieties */
-        .btn-portal-primary {
-            background: #2563eb !important;
+        /* Buttons */
+        .btn-blue-signin {
+            background: var(--blue-primary) !important;
             border: none;
             color: #ffffff !important;
-            font-weight: 600;
+            font-weight: 700;
             border-radius: 10px;
-            padding: 0.8rem 1.4rem;
+            padding: 0.85rem 1.4rem;
             letter-spacing: 0.2px;
             transition: all 0.2s ease;
-            box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+            box-shadow: 0 6px 18px rgba(2, 132, 199, 0.35);
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
         }
-        .btn-portal-primary:hover {
-            background: #1d4ed8 !important;
-            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.5);
+        .btn-blue-signin:hover {
+            background: var(--blue-hover) !important;
+            box-shadow: 0 8px 24px rgba(2, 132, 199, 0.5);
             transform: translateY(-1px);
             color: #ffffff !important;
         }
 
-        .btn-portal-secondary {
-            background: rgba(30, 41, 59, 0.6) !important;
-            border: 1px solid var(--border-subtle);
-            color: var(--text-body) !important;
-            font-weight: 600;
+        .btn-teal-secondary {
+            background: #ffffff !important;
+            border: 1px solid rgba(13, 148, 136, 0.35);
+            color: #0f766e !important;
+            font-weight: 700;
             border-radius: 10px;
             padding: 0.75rem 1.25rem;
             transition: all 0.2s ease;
@@ -300,38 +289,53 @@
             gap: 0.5rem;
             text-decoration: none;
         }
-        .btn-portal-secondary:hover {
-            background: rgba(51, 65, 85, 0.7) !important;
-            border-color: var(--border-hover);
-            color: #ffffff !important;
+        .btn-teal-secondary:hover {
+            background: rgba(13, 148, 136, 0.08) !important;
+            border-color: #0d9488;
+            color: #115e59 !important;
             transform: translateY(-1px);
         }
 
-        .btn-portal-admin {
-            background: #334155 !important;
-            border: 1px solid rgba(148, 163, 184, 0.35);
-            color: #f8fafc !important;
-            font-weight: 600;
+        /* Yellow Admin Portal Callout Box */
+        .admin-callout-box {
+            background: #fffbeb;
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            border-radius: 14px;
+            padding: 0.9rem 1.15rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            box-shadow: 0 2px 10px rgba(245, 158, 11, 0.08);
+        }
+
+        .btn-admin-yellow {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+            border: none;
+            color: #1a1003 !important;
+            font-weight: 800;
+            font-size: 0.84rem;
+            padding: 0.6rem 1.25rem;
             border-radius: 10px;
-            padding: 0.8rem 1.4rem;
+            box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
             transition: all 0.2s ease;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+            gap: 0.35rem;
+            text-decoration: none;
+            white-space: nowrap;
         }
-        .btn-portal-admin:hover {
-            background: #475569 !important;
-            border-color: rgba(148, 163, 184, 0.6);
-            color: #ffffff !important;
+        .btn-admin-yellow:hover {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important;
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6);
             transform: translateY(-1px);
+            color: #000000 !important;
         }
 
         /* Status Badges */
         .badge-status {
             font-size: 0.75rem;
-            font-weight: 600;
+            font-weight: 700;
             padding: 0.4rem 0.8rem;
             border-radius: 6px;
             letter-spacing: 0.2px;
@@ -339,72 +343,74 @@
             align-items: center;
             gap: 0.35rem;
         }
-        .badge-pending { background: rgba(217, 119, 6, 0.15); color: #fbbf24; border: 1px solid rgba(217, 119, 6, 0.35); }
-        .badge-review { background: rgba(2, 132, 199, 0.15); color: #38bdf8; border: 1px solid rgba(2, 132, 199, 0.35); }
-        .badge-progress { background: rgba(99, 102, 241, 0.15); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.35); }
-        .badge-resolved { background: rgba(5, 150, 105, 0.15); color: #34d399; border: 1px solid rgba(5, 150, 105, 0.35); }
-        .badge-rejected { background: rgba(225, 29, 72, 0.15); color: #fb7185; border: 1px solid rgba(225, 29, 72, 0.35); }
+        .badge-pending { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+        .badge-review { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+        .badge-progress { background: #e0e7ff; color: #4338ca; border: 1px solid #c7d2fe; }
+        .badge-resolved { background: #d1fae5; color: #047857; border: 1px solid #a7f3d0; }
+        .badge-rejected { background: #ffe4e6; color: #be123c; border: 1px solid #fecdd3; }
 
         .pulse-urgent {
             animation: urgentPulse 1.8s infinite;
         }
         @keyframes urgentPulse {
-            0% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.6); }
+            0% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.5); }
             70% { box-shadow: 0 0 0 8px rgba(225, 29, 72, 0); }
             100% { box-shadow: 0 0 0 0 rgba(225, 29, 72, 0); }
         }
 
-        /* Upload Card Container */
+        /* Upload Drop Card */
         .cyber-upload-card {
-            background: rgba(15, 23, 42, 0.7);
-            border: 1px dashed rgba(148, 163, 184, 0.25);
+            background: #f8fafc;
+            border: 1px dashed rgba(13, 148, 136, 0.35);
             border-radius: 12px;
             padding: 1.15rem;
             transition: all 0.2s ease;
         }
         .cyber-upload-card:hover {
-            border-color: rgba(148, 163, 184, 0.5);
-            background: rgba(15, 23, 42, 0.9);
+            border-color: #0d9488;
+            background: #f0fdfa;
         }
 
         /* Custom Alert */
         .alert-care {
-            background: rgba(15, 23, 42, 0.95);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(15px);
-            border: 1px solid rgba(148, 163, 184, 0.25);
+            border: 1px solid var(--border-glass);
             border-radius: 12px;
-            color: #ffffff;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            color: var(--text-heading);
+            box-shadow: 0 8px 25px rgba(13, 148, 136, 0.1);
         }
 
         footer {
             margin-top: auto;
-            border-top: 1px solid var(--border-subtle);
-            background: rgba(7, 10, 16, 0.92);
-            backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border-glass);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(14px);
         }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
 <body>
 
-    <!-- Ambient Glow Orbs -->
+    <!-- Fluid Water Ripples Canvas Background -->
+    <canvas id="water-canvas"></canvas>
     <div class="ambient-orb orb-1"></div>
     <div class="ambient-orb orb-2"></div>
 
     <!-- Top Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top py-2.5">
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top py-2.5">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center gap-2.5" href="{% if user.is_authenticated %}{% if user.is_staff or user.is_superuser or user.profile.role == 'admin' %}{% url 'admin_dashboard' %}{% else %}{% url 'dashboard' %}{% endif %}{% else %}{% url 'login' %}{% endif %}">
+                <!-- Blue & Teal Shield Logo -->
                 <img src="{% static 'img/ua_logo.png' %}" alt="UA Logo" class="brand-logo-img">
                 <div class="d-flex align-items-center gap-2">
                     <span class="brand-title">UA RESTROOMCARE</span>
-                    <span class="brand-subtitle d-none d-md-inline">• Campus Care & Facilities</span>
+                    <span class="brand-subtitle d-none d-md-inline">• Campus Hygiene & Security</span>
                 </div>
             </a>
 
-            <button class="navbar-toggler border-0 shadow-none text-light" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-                <i class="bi bi-list fs-2"></i>
+            <button class="navbar-toggler border-0 shadow-none text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+                <i class="bi bi-list fs-2 text-dark"></i>
             </button>
 
             <div class="collapse navbar-collapse" id="navMenu">
@@ -412,34 +418,34 @@
                     {% if user.is_authenticated %}
                         {% if user.is_superuser or user.is_staff or user.profile.role == 'admin' %}
                             <li class="nav-item">
-                                <a class="nav-btn-link text-white" href="{% url 'admin_dashboard' %}">
-                                    <i class="bi bi-speedometer2 text-info"></i> Control Center
+                                <a class="nav-btn-link" href="{% url 'admin_dashboard' %}">
+                                    <i class="bi bi-speedometer2 text-primary"></i> Control Center
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-btn-link text-white" href="{% url 'audit_logs' %}">
+                                <a class="nav-btn-link" href="{% url 'audit_logs' %}">
                                     <i class="bi bi-shield-check text-warning"></i> Audit Logs
                                 </a>
                             </li>
                         {% else %}
                             <li class="nav-item">
-                                <a class="nav-btn-link text-white" href="{% url 'dashboard' %}">
-                                    <i class="bi bi-clipboard-data text-info"></i> My Reports
+                                <a class="nav-btn-link" href="{% url 'dashboard' %}">
+                                    <i class="bi bi-clipboard-data text-primary"></i> My Reports
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="btn btn-portal-primary btn-sm px-3.5 py-1.5 me-lg-2" href="{% url 'submit_report' %}">
+                                <a class="btn btn-blue-signin btn-sm px-3.5 py-1.5 me-lg-2" href="{% url 'submit_report' %}">
                                     <i class="bi bi-plus-circle-fill"></i> Submit Incident
                                 </a>
                             </li>
                         {% endif %}
 
                         <li class="nav-item ms-lg-2">
-                            <div class="d-flex align-items-center gap-2 px-3 py-1.5 rounded-pill" style="background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-subtle);">
-                                <i class="bi bi-person-circle text-info"></i>
-                                <span class="fw-bold text-white small">{{ user.username }}</span>
+                            <div class="d-flex align-items-center gap-2 px-3 py-1.5 rounded-pill bg-white shadow-sm border" style="border-color: var(--border-glass) !important;">
+                                <i class="bi bi-person-circle text-primary"></i>
+                                <span class="fw-bold text-dark small">{{ user.username }}</span>
                                 {% if user.profile %}
-                                    <span class="badge bg-secondary text-light rounded-pill fw-semibold" style="font-size: 0.65rem;">
+                                    <span class="badge bg-primary text-white rounded-pill fw-semibold" style="font-size: 0.65rem;">
                                         {{ user.profile.get_role_display }}
                                     </span>
                                 {% elif user.is_superuser or user.is_staff %}
@@ -450,20 +456,20 @@
                             </div>
                         </li>
                         <li class="nav-item ms-lg-1">
-                            <a href="{% url 'logout' %}" class="btn btn-outline-secondary btn-sm px-3 py-1.5 fw-semibold" style="border-color: rgba(255,255,255,0.18);">
+                            <a href="{% url 'logout' %}" class="btn btn-outline-secondary btn-sm px-3 py-1.5 fw-semibold">
                                 <i class="bi bi-box-arrow-right"></i> Logout
                             </a>
                         </li>
                     {% else %}
-                        <!-- Unauthenticated Navigation -->
+                        <!-- Unauthenticated Navigation Buttons matching request -->
                         <li class="nav-item">
                             <a href="{% url 'login' %}" class="nav-btn-link">
-                                <i class="bi bi-person"></i> Student & Faculty Login
+                                <i class="bi bi-box-arrow-in-right text-primary"></i> Student Login
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{% url 'admin_login' %}" class="nav-btn-admin">
-                                <i class="bi bi-shield-lock"></i> Dedicated Admin Portal
+                                <i class="bi bi-shield-lock-fill"></i> Admin Portal
                             </a>
                         </li>
                         <li class="nav-item ms-lg-2">
@@ -490,11 +496,11 @@
                         {% elif message.tags == 'success' %}
                             <i class="bi bi-check-circle-fill text-success fs-5"></i>
                         {% else %}
-                            <i class="bi bi-info-circle-fill text-info fs-5"></i>
+                            <i class="bi bi-info-circle-fill text-primary fs-5"></i>
                         {% endif %}
-                        <span class="fw-medium">{{ message }}</span>
+                        <span class="fw-semibold text-dark">{{ message }}</span>
                     </div>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             {% endfor %}
         {% endif %}
@@ -505,21 +511,71 @@
     <!-- Footer -->
     <footer class="py-3.5 mt-5">
         <div class="container text-center">
-            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2 small text-secondary">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2 small text-muted">
                 <div class="d-flex align-items-center gap-2">
-                    <img src="{% static 'img/ua_logo.png' %}" alt="Logo" style="width: 20px; height: 20px; object-fit: contain; opacity: 0.75;">
+                    <img src="{% static 'img/ua_logo.png' %}" alt="Logo" style="width: 22px; height: 22px; object-fit: contain;">
                     <span>&copy; 2026 <strong>UA RESTROOMCARE</strong> — University of the Assumption Security & Sanitation Management System.</span>
                 </div>
                 <div class="d-flex gap-3">
-                    <a href="{% url 'login' %}" class="text-secondary text-decoration-none hover-white">Student/Faculty Portal</a>
+                    <a href="{% url 'login' %}" class="text-decoration-none text-muted">Student Portal</a>
                     <span>•</span>
-                    <a href="{% url 'admin_login' %}" class="text-secondary text-decoration-none hover-white">Dedicated Admin Portal</a>
+                    <a href="{% url 'admin_login' %}" class="text-decoration-none" style="color: #d97706; font-weight: 600;">Dedicated Admin Portal</a>
                     <span>•</span>
-                    <a href="{% url 'password_reset' %}" class="text-secondary text-decoration-none hover-white">Account Recovery</a>
+                    <a href="{% url 'password_reset' %}" class="text-decoration-none text-muted">Account Recovery</a>
                 </div>
             </div>
         </div>
     </footer>
+
+    <!-- Gentle Fluid Water Wave Canvas Animation -->
+    <script>
+        const canvas = document.getElementById('water-canvas');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            let width, height, step = 0;
+
+            function initCanvas() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', initCanvas);
+            initCanvas();
+
+            function drawWaterWaves() {
+                ctx.clearRect(0, 0, width, height);
+                step += 0.012;
+
+                // Subtle light-teal fluid wave 1
+                ctx.beginPath();
+                ctx.fillStyle = 'rgba(13, 148, 136, 0.04)';
+                for (let x = 0; x <= width; x += 25) {
+                    let y = Math.sin(x * 0.003 + step) * 20 + height * 0.86;
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.lineTo(width, height);
+                ctx.lineTo(0, height);
+                ctx.closePath();
+                ctx.fill();
+
+                // Soft sky-blue wave 2
+                ctx.beginPath();
+                ctx.fillStyle = 'rgba(2, 132, 199, 0.035)';
+                for (let x = 0; x <= width; x += 25) {
+                    let y = Math.cos(x * 0.004 - step * 1.1) * 24 + height * 0.89;
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.lineTo(width, height);
+                ctx.lineTo(0, height);
+                ctx.closePath();
+                ctx.fill();
+
+                requestAnimationFrame(drawWaterWaves);
+            }
+            drawWaterWaves();
+        }
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     {% block extra_scripts %}{% endblock %}

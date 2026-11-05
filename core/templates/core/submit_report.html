@@ -9,21 +9,21 @@
 
             <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="avatar-circle-neutral mb-0" style="width: 50px; height: 50px; font-size: 1.6rem;">
+                    <div class="avatar-circle-teal mb-0" style="width: 52px; height: 52px; font-size: 1.6rem;">
                         <i class="bi bi-clipboard-plus"></i>
                     </div>
                     <div>
-                        <h3 class="fw-bold text-white mb-0">Submit Incident Report</h3>
-                        <p class="text-secondary small mb-0">Report sanitation, maintenance, or facility concerns across campus</p>
+                        <h3 class="fw-bold mb-0" style="color: #0f172a;">Submit Incident Report</h3>
+                        <p class="text-muted small mb-0">Report sanitation, maintenance, or facility concerns across campus</p>
                     </div>
                 </div>
-                <a href="{% url 'dashboard' %}" class="btn btn-portal-secondary btn-sm px-3 py-1.5">
+                <a href="{% url 'dashboard' %}" class="btn btn-teal-secondary btn-sm px-3 py-1.5">
                     <i class="bi bi-arrow-left"></i> My Reports
                 </a>
             </div>
 
             {% if form.errors %}
-                <div class="alert alert-danger p-3 small mb-4 rounded-3 text-white" style="background: rgba(225, 29, 72, 0.2); border: 1px solid rgba(225, 29, 72, 0.45);">
+                <div class="alert alert-danger p-3 small mb-4 rounded-3" style="background: #fff1f2; border: 1px solid #fecdd3; color: #9f1239;">
                     <div class="fw-bold mb-1"><i class="bi bi-exclamation-octagon-fill me-1"></i> Submission Notice:</div>
                     <ul class="mb-0 ps-3">
                         {% for field in form %}
@@ -43,60 +43,60 @@
 
                 <!-- Restroom Location Select -->
                 <div class="mb-3">
-                    <label class="form-label small fw-semibold text-light">
-                        <i class="bi bi-geo-alt text-secondary me-1"></i>Restroom Location <span class="text-danger">*</span>
+                    <label class="form-label small fw-semibold text-dark">
+                        <i class="bi bi-geo-alt text-primary me-1"></i>Restroom Location <span class="text-danger">*</span>
                     </label>
                     {{ form.location }}
-                    <small class="text-secondary d-block mt-1">Select the campus building, floor, room number, and gender designation.</small>
+                    <small class="text-muted d-block mt-1">Select the campus building, floor, room number, and gender designation.</small>
                 </div>
 
                 <!-- Issue Category Select -->
                 <div class="mb-3">
-                    <label class="form-label small fw-semibold text-light">
-                        <i class="bi bi-tag text-secondary me-1"></i>Issue Category <span class="text-danger">*</span>
+                    <label class="form-label small fw-semibold text-dark">
+                        <i class="bi bi-tag text-primary me-1"></i>Issue Category <span class="text-danger">*</span>
                     </label>
                     {{ form.category }}
                 </div>
 
                 <!-- Detailed Description -->
                 <div class="mb-3">
-                    <label class="form-label small fw-semibold text-light">
-                        <i class="bi bi-card-text text-secondary me-1"></i>Detailed Description <span class="text-danger">*</span>
+                    <label class="form-label small fw-semibold text-dark">
+                        <i class="bi bi-card-text text-primary me-1"></i>Detailed Description <span class="text-danger">*</span>
                     </label>
                     {{ form.description }}
                 </div>
 
                 <!-- Required Photo Evidence -->
                 <div class="mb-4 cyber-upload-card">
-                    <label class="form-label small fw-bold text-white d-flex align-items-center gap-1.5">
-                        <i class="bi bi-camera text-secondary"></i> Attach Photo Evidence (Required) <span class="text-danger">*</span>
+                    <label class="form-label small fw-bold text-dark d-flex align-items-center gap-1.5">
+                        <i class="bi bi-camera text-primary"></i> Attach Photo Evidence (Required) <span class="text-danger">*</span>
                     </label>
                     {{ form.photo }}
-                    <small class="text-secondary d-block mt-1">Upload clear photo evidence of the facility concern.</small>
+                    <small class="text-muted d-block mt-1">Upload clear photo evidence of the facility concern.</small>
                     
                     <div id="photo_preview_box" class="mt-3 text-center d-none">
-                        <div class="small text-secondary mb-1 fw-semibold"><i class="bi bi-eye"></i> Evidence Preview:</div>
-                        <img id="photo_preview_img" src="#" alt="Report Photo Preview" class="img-fluid rounded-3 shadow" style="max-height: 220px; border: 1px solid rgba(148, 163, 184, 0.4);">
+                        <div class="small text-muted mb-1 fw-semibold"><i class="bi bi-eye"></i> Evidence Preview:</div>
+                        <img id="photo_preview_img" src="#" alt="Report Photo Preview" class="img-fluid rounded-3 shadow-sm" style="max-height: 220px; border: 1px solid rgba(13, 148, 136, 0.4);">
                     </div>
                 </div>
 
                 <!-- Urgent Priority Toggle -->
-                <div class="mb-4 p-3 rounded-3" style="background: rgba(225, 29, 72, 0.08); border: 1px solid rgba(225, 29, 72, 0.25);">
+                <div class="mb-4 p-3 rounded-3" style="background: #fff1f2; border: 1px solid #fecdd3;">
                     <div class="form-check form-switch d-flex align-items-center gap-2">
                         {{ form.is_urgent }}
-                        <label class="form-check-label fw-bold text-white mb-0" for="id_is_urgent" style="cursor: pointer;">
+                        <label class="form-check-label fw-bold mb-0 text-dark" for="id_is_urgent" style="cursor: pointer;">
                             <span class="badge bg-danger text-white px-2 py-0.5 me-1 pulse-urgent" style="font-size: 0.65rem;">URGENT</span>
                             Mark as High-Priority Incident
                         </label>
                     </div>
-                    <small class="text-secondary d-block mt-1 ps-4 ms-2">
+                    <small class="text-muted d-block mt-1 ps-4 ms-2">
                         Flag this incident for immediate emergency maintenance dispatch (e.g. major overflow, broken lock, safety hazard).
                     </small>
                 </div>
 
                 <!-- Submit Button -->
                 <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-portal-primary py-3 fw-bold">
+                    <button type="submit" class="btn btn-blue-signin py-3 fw-bold">
                         <i class="bi bi-send-fill me-1"></i> Submit Maintenance Report
                     </button>
                 </div>

@@ -1,32 +1,33 @@
 {% extends 'core/base.html' %}
 {% load static %}
-{% block title %}Student & Faculty Login — UA RESTROOMCARE{% endblock %}
+{% block title %}Student & Faculty Portal — UA RESTROOMCARE{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center my-3 my-md-5">
     <div class="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
+        <!-- Crisp White Glassmorphism Central Card -->
         <div class="glass-card-pro p-4 p-md-5 text-center">
 
-            <!-- Neutral Avatar Badge -->
+            <!-- Circular User Avatar with Soft Teal Accent -->
             <div class="d-flex justify-content-center">
-                <div class="avatar-circle-neutral">
+                <div class="avatar-circle-teal">
                     <i class="bi bi-person"></i>
                 </div>
             </div>
 
             <!-- Portal Header -->
-            <h3 class="fw-bold text-white mb-1" style="letter-spacing: -0.3px;">Student & Faculty Portal</h3>
-            <p class="small mb-4" style="color: #94a3b8;">Sign in to report restroom concerns & monitor repair status</p>
+            <h3 class="fw-bold mb-1" style="color: #0f172a; letter-spacing: -0.3px;">Student & Faculty Portal</h3>
+            <p class="small mb-4" style="color: #64748b;">Sign in to report restroom concerns & monitor repair status</p>
 
             <form method="post" action="{% url 'login' %}" class="text-start">
                 {% csrf_token %}
 
                 <!-- Username or Student ID -->
                 <div class="mb-3">
-                    <label class="form-label small fw-semibold text-light mb-1.5">Username or Student ID</label>
+                    <label class="form-label small fw-semibold text-dark mb-1.5">Username or Student ID</label>
                     <div class="input-group">
-                        <span class="input-group-text bg-transparent text-secondary border-end-0" style="border-color: rgba(148, 163, 184, 0.25);">
-                            <i class="bi bi-person text-secondary"></i>
+                        <span class="input-group-text bg-white border-end-0" style="border-color: rgba(13, 148, 136, 0.28);">
+                            <i class="bi bi-person text-muted"></i>
                         </span>
                         <input type="text" name="username" class="form-control form-control-water border-start-0 ps-1" placeholder="Enter username or student ID" value="{{ entered_username|default:'' }}" required autofocus autocomplete="username">
                     </div>
@@ -35,42 +36,45 @@
                 <!-- Password & Forgot Password -->
                 <div class="mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-1.5">
-                        <label class="form-label small fw-semibold text-light mb-0">Password</label>
-                        <a href="{% url 'password_reset' %}" class="small text-decoration-none" style="color: #38bdf8; font-weight: 500;">Forgot Password?</a>
+                        <label class="form-label small fw-semibold text-dark mb-0">Password</label>
+                        <a href="{% url 'password_reset' %}" class="small text-decoration-none" style="color: #0284c7; font-weight: 600;">Forgot Password?</a>
                     </div>
                     <div class="input-group">
-                        <span class="input-group-text bg-transparent text-secondary border-end-0" style="border-color: rgba(148, 163, 184, 0.25);">
-                            <i class="bi bi-lock text-secondary"></i>
+                        <span class="input-group-text bg-white border-end-0" style="border-color: rgba(13, 148, 136, 0.28);">
+                            <i class="bi bi-lock text-muted"></i>
                         </span>
                         <input type="password" name="password" id="password_input" class="form-control form-control-water border-start-0 ps-1" placeholder="Enter account password" required autocomplete="current-password">
-                        <button class="btn btn-outline-secondary border-start-0" type="button" onclick="togglePasswordVisibility()" style="border-color: rgba(148, 163, 184, 0.25); color: #94a3b8;">
+                        <button class="btn btn-outline-secondary border-start-0 bg-white" type="button" onclick="togglePasswordVisibility()" style="border-color: rgba(13, 148, 136, 0.28); color: #64748b;">
                             <i class="bi bi-eye" id="password_toggle_icon"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- Sign In Button -->
-                <button type="submit" class="btn btn-portal-primary w-100 py-2.5 mb-3">
+                <!-- Bold Blue "Sign In to Portal" Button -->
+                <button type="submit" class="btn btn-blue-signin w-100 py-2.5 mb-4">
                     <i class="bi bi-box-arrow-in-right"></i> Sign In to Portal
                 </button>
             </form>
 
-            <!-- Register Student Account -->
-            <div class="pt-2 border-top border-secondary border-opacity-25 text-center">
-                <p class="small text-secondary mb-2">New student? Need account verification?</p>
-                <a href="{% url 'register' %}" class="btn btn-portal-secondary w-100 py-2 small fw-semibold">
-                    <i class="bi bi-person-plus text-info me-1"></i> Register Student Account
-                </a>
-            </div>
+            <!-- Register Student Account Option -->
+            <p class="small mb-2 text-muted">New student? Need account verification?</p>
+            <a href="{% url 'register' %}" class="btn btn-teal-secondary w-100 py-2.5 mb-4">
+                <i class="bi bi-person-plus me-1 text-primary"></i> Register Student Account
+            </a>
 
-            <!-- Clear Separate Access Notice for Admin -->
-            <div class="mt-4 pt-3 border-top border-secondary border-opacity-25 text-center">
-                <span class="small text-secondary">Campus Administrator or Maintenance Staff?</span>
-                <div class="mt-1">
-                    <a href="{% url 'admin_login' %}" class="small fw-semibold text-decoration-none" style="color: #94a3b8;">
-                        <i class="bi bi-shield-lock me-1"></i> Go to Dedicated Admin Portal &rarr;
-                    </a>
+            <!-- Distinct Yellow "Admin Portal" Button clearly visible at the bottom section -->
+            <div class="admin-callout-box">
+                <div class="d-flex flex-column text-start">
+                    <span class="badge rounded-pill fw-bold align-self-start mb-1" style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a; font-size: 0.65rem;">
+                        STAFF ONLY
+                    </span>
+                    <span class="small fw-semibold text-dark" style="font-size: 0.8rem;">
+                        Campus Admin / Maintenance
+                    </span>
                 </div>
+                <a href="{% url 'admin_login' %}" class="btn btn-admin-yellow">
+                    Admin Portal <i class="bi bi-arrow-right"></i>
+                </a>
             </div>
 
         </div>
