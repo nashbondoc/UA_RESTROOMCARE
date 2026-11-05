@@ -5,15 +5,17 @@
 {% block content %}
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
     <div class="d-flex align-items-center gap-3">
-        <img src="{% static 'img/ua_logo.png' %}" alt="UA Logo" style="width: 52px; height: 52px; object-fit: contain; filter: drop-shadow(0 0 14px rgba(245, 158, 11, 0.6));">
+        <div class="avatar-circle-neutral mb-0" style="width: 52px; height: 52px; font-size: 1.6rem; border-color: rgba(148, 163, 184, 0.4); background: rgba(30, 41, 59, 0.6); color: #cbd5e1;">
+            <i class="bi bi-speedometer2"></i>
+        </div>
         <div>
             <h2 class="fw-bold text-white mb-0">Restroom Operations Command</h2>
             <p class="text-secondary small mb-0">Campus Facilities Management, Dual-ID Verification & Security Oversight</p>
         </div>
     </div>
     <div class="d-flex gap-2">
-        <a href="{% url 'audit_logs' %}" class="btn btn-warning btn-sm rounded-pill px-3.5 py-2 fw-bold text-dark shadow-sm">
-            <i class="bi bi-shield-check me-1"></i> System Audit Trail
+        <a href="{% url 'audit_logs' %}" class="btn btn-portal-secondary btn-sm px-3.5 py-2 fw-semibold">
+            <i class="bi bi-shield-check me-1 text-info"></i> System Audit Trail
         </a>
     </div>
 </div>
@@ -24,42 +26,42 @@
         <div class="glass-card-pro p-3 text-center">
             <div class="text-secondary small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px;">Total Reports</div>
             <h3 class="fw-bold text-white mb-0 mt-1">{{ stats.total }}</h3>
-            <span class="badge bg-secondary rounded-pill mt-1" style="font-size: 0.65rem;">All Incidents</span>
+            <span class="badge bg-secondary text-light mt-1" style="font-size: 0.65rem;">All Incidents</span>
         </div>
     </div>
     <div class="col-6 col-md-4 col-lg-2">
-        <div class="glass-card-pro p-3 text-center" style="border-color: rgba(245, 158, 11, 0.35);">
+        <div class="glass-card-pro p-3 text-center" style="border-color: rgba(217, 119, 6, 0.35);">
             <div class="text-warning small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px;">Pending</div>
             <h3 class="fw-bold text-warning mb-0 mt-1">{{ stats.pending }}</h3>
-            <span class="badge bg-warning text-dark rounded-pill mt-1" style="font-size: 0.65rem;">Awaiting Review</span>
+            <span class="badge bg-warning text-dark mt-1" style="font-size: 0.65rem;">Awaiting Review</span>
         </div>
     </div>
     <div class="col-6 col-md-4 col-lg-2">
-        <div class="glass-card-pro p-3 text-center" style="border-color: rgba(0, 240, 255, 0.35);">
+        <div class="glass-card-pro p-3 text-center" style="border-color: rgba(2, 132, 199, 0.35);">
             <div class="text-info small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px;">Under Review</div>
             <h3 class="fw-bold text-info mb-0 mt-1">{{ stats.under_review }}</h3>
-            <span class="badge bg-info text-dark rounded-pill mt-1" style="font-size: 0.65rem;">Evaluating</span>
+            <span class="badge bg-info text-dark mt-1" style="font-size: 0.65rem;">Evaluating</span>
         </div>
     </div>
     <div class="col-6 col-md-4 col-lg-2">
         <div class="glass-card-pro p-3 text-center" style="border-color: rgba(99, 102, 241, 0.35);">
             <div class="text-primary small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px; color: #a5b4fc !important;">In Progress</div>
             <h3 class="fw-bold text-white mb-0 mt-1">{{ stats.in_progress }}</h3>
-            <span class="badge rounded-pill mt-1" style="background: rgba(99, 102, 241, 0.3); color: #c7d2fe; font-size: 0.65rem;">Dispatched</span>
+            <span class="badge rounded mt-1" style="background: rgba(99, 102, 241, 0.25); color: #c7d2fe; font-size: 0.65rem;">Dispatched</span>
         </div>
     </div>
     <div class="col-6 col-md-4 col-lg-2">
-        <div class="glass-card-pro p-3 text-center" style="border-color: rgba(16, 185, 129, 0.35);">
-            <div class="text-success small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px; color: #6ee7b7 !important;">Resolved</div>
+        <div class="glass-card-pro p-3 text-center" style="border-color: rgba(5, 150, 105, 0.35);">
+            <div class="text-success small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px; color: #34d399 !important;">Resolved</div>
             <h3 class="fw-bold text-success mb-0 mt-1">{{ stats.resolved }}</h3>
-            <span class="badge bg-success rounded-pill mt-1" style="font-size: 0.65rem;">Complete</span>
+            <span class="badge bg-success mt-1" style="font-size: 0.65rem;">Complete</span>
         </div>
     </div>
     <div class="col-6 col-md-4 col-lg-2">
-        <div class="glass-card-pro p-3 text-center" style="border-color: rgba(244, 63, 94, 0.35);">
-            <div class="text-danger small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px; color: #fda4af !important;">Security Flags</div>
+        <div class="glass-card-pro p-3 text-center" style="border-color: rgba(225, 29, 72, 0.35);">
+            <div class="text-danger small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px; color: #fb7185 !important;">Security Flags</div>
             <h3 class="fw-bold text-danger mb-0 mt-1">{{ stats.suspicious }}</h3>
-            <span class="badge bg-danger rounded-pill mt-1" style="font-size: 0.65rem;">Alerts</span>
+            <span class="badge bg-danger mt-1" style="font-size: 0.65rem;">Alerts</span>
         </div>
     </div>
 </div>
@@ -68,10 +70,10 @@
 <div class="glass-card-pro p-3 p-md-4 mb-4">
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
         <div class="d-flex align-items-center gap-2">
-            <i class="bi bi-person-vcard-fill text-warning fs-5"></i>
+            <i class="bi bi-person-vcard text-secondary fs-5"></i>
             <h5 class="fw-bold text-white mb-0">Pending Student Identity Verifications (Dual-Card Scans)</h5>
         </div>
-        <span class="badge bg-warning text-dark fw-bold rounded-pill px-3 py-1.5">
+        <span class="badge bg-secondary text-light px-3 py-1.5" style="font-size: 0.75rem;">
             {{ stats.pending_registrations }} Requiring Approval
         </span>
     </div>
@@ -79,7 +81,7 @@
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0 text-light" style="--bs-table-bg: transparent; --bs-table-color: #f8fafc;">
             <thead>
-                <tr style="border-bottom: 2px solid rgba(245, 158, 11, 0.3);">
+                <tr style="border-bottom: 2px solid var(--border-subtle);">
                     <th class="py-2.5 text-secondary text-uppercase small">Student Full Name</th>
                     <th class="py-2.5 text-secondary text-uppercase small">Username</th>
                     <th class="py-2.5 text-secondary text-uppercase small">Institutional Email</th>
@@ -90,19 +92,19 @@
             </thead>
             <tbody>
                 {% for profile in pending_students %}
-                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.06);">
                     <td>
                         <strong class="text-white">{{ profile.user.get_full_name|default:profile.user.username }}</strong>
                     </td>
                     <td class="text-info">@{{ profile.user.username }}</td>
                     <td class="text-light">
-                        <code>{{ profile.user.email }}</code>
+                        <code style="color: #cbd5e1;">{{ profile.user.email }}</code>
                     </td>
                     <td>
-                        <span class="badge bg-secondary px-2.5 py-1 fw-bold">{{ profile.student_id|default:"N/A" }}</span>
+                        <span class="badge bg-secondary px-2.5 py-1">{{ profile.student_id|default:"N/A" }}</span>
                     </td>
                     <td>
-                        <button type="button" class="btn btn-sm btn-outline-info rounded-pill px-3 py-1" data-bs-toggle="modal" data-bs-target="#studentDualIdModal{{ profile.id }}">
+                        <button type="button" class="btn btn-sm btn-outline-secondary px-3 py-1" style="color: #cbd5e1; border-color: rgba(148, 163, 184, 0.35);" data-bs-toggle="modal" data-bs-target="#studentDualIdModal{{ profile.id }}">
                             <i class="bi bi-images me-1"></i> Inspect Front & Back
                         </button>
 
@@ -120,11 +122,11 @@
                                         <div class="row g-3">
                                             <!-- Front ID -->
                                             <div class="col-12 col-md-6 text-center">
-                                                <div class="p-2 rounded-3 mb-2" style="background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.25);">
-                                                    <span class="small text-info fw-bold"><i class="bi bi-person-bounding-box me-1"></i> Front Face (Photo & Name)</span>
+                                                <div class="p-2 rounded mb-2" style="background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-subtle);">
+                                                    <span class="small text-light fw-bold"><i class="bi bi-person-bounding-box me-1"></i> Front Face (Photo & Name)</span>
                                                 </div>
                                                 {% if profile.id_picture %}
-                                                    <img src="{{ profile.id_picture.url }}" alt="Front ID" class="img-fluid rounded-3 shadow" style="max-height: 280px; border: 1px solid rgba(0, 240, 255, 0.3);">
+                                                    <img src="{{ profile.id_picture.url }}" alt="Front ID" class="img-fluid rounded shadow" style="max-height: 280px; border: 1px solid rgba(148, 163, 184, 0.3);">
                                                 {% else %}
                                                     <div class="p-4 text-secondary small">No front image uploaded</div>
                                                 {% endif %}
@@ -132,11 +134,11 @@
 
                                             <!-- Back ID -->
                                             <div class="col-12 col-md-6 text-center">
-                                                <div class="p-2 rounded-3 mb-2" style="background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.25);">
-                                                    <span class="small text-info fw-bold"><i class="bi bi-upc-scan me-1"></i> Back Face (Student ID & Barcode)</span>
+                                                <div class="p-2 rounded mb-2" style="background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-subtle);">
+                                                    <span class="small text-light fw-bold"><i class="bi bi-upc-scan me-1"></i> Back Face (Student ID & Barcode)</span>
                                                 </div>
                                                 {% if profile.id_picture_back %}
-                                                    <img src="{{ profile.id_picture_back.url }}" alt="Back ID" class="img-fluid rounded-3 shadow" style="max-height: 280px; border: 1px solid rgba(0, 240, 255, 0.3);">
+                                                    <img src="{{ profile.id_picture_back.url }}" alt="Back ID" class="img-fluid rounded shadow" style="max-height: 280px; border: 1px solid rgba(148, 163, 184, 0.3);">
                                                 {% else %}
                                                     <div class="p-4 text-secondary small">No back image uploaded</div>
                                                 {% endif %}
@@ -146,10 +148,10 @@
                                     <div class="modal-footer border-0 pt-2 d-flex justify-content-between">
                                         <small class="text-secondary">Email: {{ profile.user.email }}</small>
                                         <div class="d-flex gap-2">
-                                            <a href="{% url 'verify_student' profile.id 'approve' %}" class="btn btn-success btn-sm rounded-pill px-3 fw-bold">
+                                            <a href="{% url 'verify_student' profile.id 'approve' %}" class="btn btn-success btn-sm px-3 fw-bold">
                                                 <i class="bi bi-check-lg"></i> Approve Identity
                                             </a>
-                                            <a href="{% url 'verify_student' profile.id 'reject' %}" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold" onclick="return confirm('Reject and delete registration?');">
+                                            <a href="{% url 'verify_student' profile.id 'reject' %}" class="btn btn-outline-danger btn-sm px-3 fw-bold" onclick="return confirm('Reject and delete registration?');">
                                                 <i class="bi bi-trash3"></i> Reject
                                             </a>
                                         </div>
@@ -160,10 +162,10 @@
                     </td>
                     <td class="text-center">
                         <div class="d-inline-flex gap-2">
-                            <a href="{% url 'verify_student' profile.id 'approve' %}" class="btn btn-success btn-sm rounded-pill px-3 fw-bold shadow-sm">
+                            <a href="{% url 'verify_student' profile.id 'approve' %}" class="btn btn-success btn-sm px-3 fw-semibold">
                                 <i class="bi bi-check-lg"></i> Approve
                             </a>
-                            <a href="{% url 'verify_student' profile.id 'reject' %}" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold" onclick="return confirm('Are you sure you want to REJECT and permanently delete the registration record for {{ profile.user.username }}?');">
+                            <a href="{% url 'verify_student' profile.id 'reject' %}" class="btn btn-outline-danger btn-sm px-3 fw-semibold" onclick="return confirm('Are you sure you want to REJECT and permanently delete the registration record for {{ profile.user.username }}?');">
                                 <i class="bi bi-trash3"></i> Reject
                             </a>
                         </div>
@@ -185,10 +187,10 @@
 <div class="glass-card-pro p-3 p-md-4 mb-4">
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
         <div class="d-flex align-items-center gap-2">
-            <i class="bi bi-droplet-half text-info fs-5"></i>
+            <i class="bi bi-clipboard-data text-secondary fs-5"></i>
             <h5 class="fw-bold text-white mb-0">Campus Incident Queue & Maintenance Dispatch</h5>
         </div>
-        <span class="badge bg-info text-dark fw-bold rounded-pill px-3 py-1.5">
+        <span class="badge bg-secondary text-light px-3 py-1.5" style="font-size: 0.75rem;">
             {{ stats.total }} Total Reports
         </span>
     </div>
@@ -196,7 +198,7 @@
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0 text-light" style="--bs-table-bg: transparent; --bs-table-color: #f8fafc;">
             <thead>
-                <tr style="border-bottom: 2px solid rgba(0, 240, 255, 0.3);">
+                <tr style="border-bottom: 2px solid var(--border-subtle);">
                     <th class="py-2.5 text-secondary text-uppercase small">ID #</th>
                     <th class="py-2.5 text-secondary text-uppercase small">Reporter</th>
                     <th class="py-2.5 text-secondary text-uppercase small">Facility Location</th>
@@ -207,12 +209,12 @@
             </thead>
             <tbody>
                 {% for report in reports %}
-                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
-                    <td class="fw-bold text-info">
+                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.06);">
+                    <td class="fw-bold" style="color: #60a5fa;">
                         #{{ report.id }}
                         {% if report.is_urgent %}
                             <div class="mt-1">
-                                <span class="badge bg-danger rounded-pill pulse-urgent" style="font-size: 0.65rem;">URGENT</span>
+                                <span class="badge bg-danger rounded pulse-urgent" style="font-size: 0.65rem;">URGENT</span>
                             </div>
                         {% endif %}
                     </td>
@@ -225,7 +227,7 @@
                         <small class="text-secondary">Flr {{ report.location.floor }} ({{ report.location.room_number }}) - {{ report.location.gender }}</small>
                     </td>
                     <td>
-                        <span class="badge rounded-pill px-2.5 py-1" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);">
+                        <span class="badge px-2.5 py-1" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.14); color: #e2e8f0;">
                             {{ report.get_category_display }}
                         </span>
                         {% if report.photo %}
@@ -242,7 +244,7 @@
                                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                         </div>
                                         <div class="modal-body text-center py-2">
-                                            <img src="{{ report.photo.url }}" alt="Evidence" class="img-fluid rounded-3 shadow" style="max-height: 400px; border: 1px solid rgba(0, 240, 255, 0.3);">
+                                            <img src="{{ report.photo.url }}" alt="Evidence" class="img-fluid rounded shadow" style="max-height: 400px; border: 1px solid rgba(148, 163, 184, 0.3);">
                                             <p class="small text-secondary mt-2 mb-0"><strong>Description:</strong> {{ report.description }}</p>
                                         </div>
                                     </div>
@@ -285,7 +287,7 @@
                                     <option value="Resolved" {% if report.status == 'Resolved' %}selected{% endif %}>Resolved</option>
                                     <option value="Rejected" {% if report.status == 'Rejected' %}selected{% endif %}>Rejected</option>
                                 </select>
-                                <button type="submit" class="btn btn-info btn-sm fw-bold px-3 text-dark">
+                                <button type="submit" class="btn btn-secondary btn-sm fw-bold px-3">
                                     Update
                                 </button>
                             </div>
@@ -309,10 +311,10 @@
 <div class="glass-card-pro p-3 p-md-4">
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
         <div class="d-flex align-items-center gap-2">
-            <i class="bi bi-shield-slash-fill text-danger fs-5"></i>
+            <i class="bi bi-shield-slash text-danger fs-5"></i>
             <h5 class="fw-bold text-white mb-0">Suspicious Activity & Security Log</h5>
         </div>
-        <span class="badge bg-danger rounded-pill px-3 py-1.5">
+        <span class="badge bg-danger text-light px-3 py-1.5" style="font-size: 0.75rem;">
             {{ stats.suspicious }} Unreviewed Flags
         </span>
     </div>
@@ -320,7 +322,7 @@
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0 text-light" style="--bs-table-bg: transparent; --bs-table-color: #f8fafc;">
             <thead>
-                <tr style="border-bottom: 2px solid rgba(244, 63, 94, 0.3);">
+                <tr style="border-bottom: 2px solid rgba(225, 29, 72, 0.35);">
                     <th class="py-2.5 text-secondary text-uppercase small">Flagged At</th>
                     <th class="py-2.5 text-secondary text-uppercase small">Target User</th>
                     <th class="py-2.5 text-secondary text-uppercase small">Security Reason</th>
@@ -330,7 +332,7 @@
             </thead>
             <tbody>
                 {% for log in suspicious_logs %}
-                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.06);">
                     <td class="small text-secondary">{{ log.flagged_at|date:"M d, Y H:i:s" }}</td>
                     <td>
                         <strong class="text-white">{{ log.user.username|default:"Unauthenticated" }}</strong>
@@ -340,7 +342,7 @@
                     </td>
                     <td class="small text-secondary font-monospace">{{ log.ip_address|default:"N/A" }}</td>
                     <td class="text-center">
-                        <a href="{% url 'mark_suspicious_reviewed' log.id %}" class="btn btn-outline-light btn-sm rounded-pill px-3 py-1 small">
+                        <a href="{% url 'mark_suspicious_reviewed' log.id %}" class="btn btn-outline-secondary btn-sm px-3 py-1 small" style="border-color: rgba(148, 163, 184, 0.35); color: #cbd5e1;">
                             <i class="bi bi-check2"></i> Mark Reviewed
                         </a>
                     </td>
