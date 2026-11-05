@@ -13,8 +13,8 @@
                         <i class="bi bi-clipboard-plus"></i>
                     </div>
                     <div>
-                        <h3 class="fw-bold mb-0" style="color: #0f172a;">Submit Incident Report</h3>
-                        <p class="text-muted small mb-0">Report sanitation, maintenance, or facility concerns across campus</p>
+                        <h3 class="fw-bold mb-0 text-white">Submit Incident Report</h3>
+                        <p class="small mb-0" style="color: #94a3b8;">Report sanitation, maintenance, or facility concerns across campus</p>
                     </div>
                 </div>
                 <a href="{% url 'dashboard' %}" class="btn btn-teal-secondary btn-sm px-3 py-1.5">
@@ -23,7 +23,7 @@
             </div>
 
             {% if form.errors %}
-                <div class="alert alert-danger p-3 small mb-4 rounded-3" style="background: #fff1f2; border: 1px solid #fecdd3; color: #9f1239;">
+                <div class="alert alert-danger p-3 small mb-4 rounded-3" style="background: rgba(225, 29, 72, 0.15); border: 1px solid rgba(225, 29, 72, 0.35); color: #fecdd3;">
                     <div class="fw-bold mb-1"><i class="bi bi-exclamation-octagon-fill me-1"></i> Submission Notice:</div>
                     <ul class="mb-0 ps-3">
                         {% for field in form %}
@@ -43,61 +43,58 @@
 
                 <!-- Restroom Location Select -->
                 <div class="mb-3">
-                    <label class="form-label small fw-semibold text-dark">
-                        <i class="bi bi-geo-alt text-primary me-1"></i>Restroom Location <span class="text-danger">*</span>
+                    <label class="form-label small fw-semibold text-light">
+                        <i class="bi bi-geo-alt text-info me-1"></i>Restroom Location <span class="text-danger">*</span>
                     </label>
                     {{ form.location }}
-                    <small class="text-muted d-block mt-1">Select the campus building, floor, room number, and gender designation.</small>
+                    <small class="d-block mt-1" style="color: #94a3b8;">Select the campus building, floor, room number, and gender designation.</small>
                 </div>
 
                 <!-- Issue Category Select -->
                 <div class="mb-3">
-                    <label class="form-label small fw-semibold text-dark">
-                        <i class="bi bi-tag text-primary me-1"></i>Issue Category <span class="text-danger">*</span>
+                    <label class="form-label small fw-semibold text-light">
+                        <i class="bi bi-tag text-info me-1"></i>Issue Category <span class="text-danger">*</span>
                     </label>
                     {{ form.category }}
                 </div>
 
                 <!-- Detailed Description -->
                 <div class="mb-3">
-                    <label class="form-label small fw-semibold text-dark">
-                        <i class="bi bi-card-text text-primary me-1"></i>Detailed Description <span class="text-danger">*</span>
+                    <label class="form-label small fw-semibold text-light">
+                        <i class="bi bi-card-text text-info me-1"></i>Detailed Description <span class="text-danger">*</span>
                     </label>
                     {{ form.description }}
                 </div>
 
                 <!-- Required Photo Evidence -->
                 <div class="mb-4 cyber-upload-card">
-                    <label class="form-label small fw-bold text-dark d-flex align-items-center gap-1.5">
-                        <i class="bi bi-camera text-primary"></i> Attach Photo Evidence (Required) <span class="text-danger">*</span>
+                    <label class="form-label small fw-bold text-light d-flex align-items-center gap-1.5">
+                        <i class="bi bi-camera text-info"></i> Attach Photo Evidence (Required) <span class="text-danger">*</span>
                     </label>
                     {{ form.photo }}
-                    <small class="text-muted d-block mt-1">Upload clear photo evidence of the facility concern.</small>
+                    <small class="d-block mt-1" style="color: #94a3b8;">Upload clear photo evidence of the facility concern.</small>
                     
                     <div id="photo_preview_box" class="mt-3 text-center d-none">
-                        <div class="small text-muted mb-1 fw-semibold"><i class="bi bi-eye"></i> Evidence Preview:</div>
-                        <img id="photo_preview_img" src="#" alt="Report Photo Preview" class="img-fluid rounded-3 shadow-sm" style="max-height: 220px; border: 1px solid rgba(13, 148, 136, 0.4);">
+                        <div class="small mb-1 fw-semibold" style="color: #94a3b8;"><i class="bi bi-eye"></i> Evidence Preview:</div>
+                        <img id="photo_preview_img" src="#" alt="Report Photo Preview" class="img-fluid rounded-3 shadow-sm" style="max-height: 220px; border: 1px solid rgba(45, 212, 191, 0.4);">
                     </div>
                 </div>
 
                 <!-- Urgent Priority Toggle -->
-                <div class="mb-4 p-3 rounded-3" style="background: #fff1f2; border: 1px solid #fecdd3;">
-                    <div class="form-check form-switch d-flex align-items-center gap-2">
+                <div class="mb-4 p-3 rounded-3" style="background: rgba(225, 29, 72, 0.08); border: 1px solid rgba(225, 29, 72, 0.25);">
+                    <div class="form-check form-switch mb-0">
                         {{ form.is_urgent }}
-                        <label class="form-check-label fw-bold mb-0 text-dark" for="id_is_urgent" style="cursor: pointer;">
-                            <span class="badge bg-danger text-white px-2 py-0.5 me-1 pulse-urgent" style="font-size: 0.65rem;">URGENT</span>
-                            Mark as High-Priority Incident
+                        <label class="form-check-label fw-bold text-light ms-2" for="{{ form.is_urgent.id_for_label }}">
+                            Mark as High Priority / Urgent Hazard
                         </label>
                     </div>
-                    <small class="text-muted d-block mt-1 ps-4 ms-2">
-                        Flag this incident for immediate emergency maintenance dispatch (e.g. major overflow, broken lock, safety hazard).
-                    </small>
+                    <small class="d-block mt-1 ms-4 ps-2" style="color: #94a3b8;">Check this only for severe health hazards, active overflowing water, electrical risks, or broken glass.</small>
                 </div>
 
-                <!-- Submit Button -->
+                <!-- Submit Action -->
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-blue-signin py-3 fw-bold">
-                        <i class="bi bi-send-fill me-1"></i> Submit Maintenance Report
+                        <i class="bi bi-send-check-fill"></i> Transmit Incident Report
                     </button>
                 </div>
             </form>
@@ -110,8 +107,8 @@
 {% block extra_scripts %}
 <script>
     const photoInput = document.getElementById('report_photo_input');
-    const photoPreviewBox = document.getElementById('photo_preview_box');
-    const photoPreviewImg = document.getElementById('photo_preview_img');
+    const photoBox = document.getElementById('photo_preview_box');
+    const photoImg = document.getElementById('photo_preview_img');
 
     if (photoInput) {
         photoInput.addEventListener('change', function() {
@@ -119,12 +116,12 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    photoPreviewImg.src = e.target.result;
-                    photoPreviewBox.classList.remove('d-none');
+                    photoImg.src = e.target.result;
+                    photoBox.classList.remove('d-none');
                 }
                 reader.readAsDataURL(file);
             } else {
-                photoPreviewBox.classList.add('d-none');
+                photoBox.classList.add('d-none');
             }
         });
     }

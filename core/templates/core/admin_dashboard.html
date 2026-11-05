@@ -5,17 +5,17 @@
 {% block content %}
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
     <div class="d-flex align-items-center gap-3">
-        <div class="avatar-circle-teal mb-0" style="width: 54px; height: 54px; font-size: 1.6rem; border-color: #f59e0b; background: rgba(245, 158, 11, 0.1); color: #d97706;">
+        <div class="avatar-circle-teal mb-0" style="width: 54px; height: 54px; font-size: 1.6rem; border-color: #f59e0b; background: rgba(245, 158, 11, 0.12); color: #fbbf24;">
             <i class="bi bi-speedometer2"></i>
         </div>
         <div>
-            <h2 class="fw-bold mb-0" style="color: #0f172a;">Restroom Operations Command</h2>
-            <p class="text-muted small mb-0">Campus Facilities Management, Dual-ID Verification & Security Oversight</p>
+            <h2 class="fw-bold mb-0 text-white">Restroom Operations Command</h2>
+            <p class="small mb-0" style="color: #94a3b8;">Campus Facilities Management, Dual-ID Verification & Security Oversight</p>
         </div>
     </div>
     <div class="d-flex gap-2">
         <a href="{% url 'audit_logs' %}" class="btn btn-teal-secondary btn-sm px-3.5 py-2 fw-semibold">
-            <i class="bi bi-shield-check me-1 text-primary"></i> System Audit Trail
+            <i class="bi bi-shield-check me-1"></i> System Audit Trail
         </a>
     </div>
 </div>
@@ -24,44 +24,44 @@
 <div class="row g-2 g-md-3 mb-4">
     <div class="col-6 col-md-4 col-lg-2">
         <div class="glass-card-pro p-3 text-center">
-            <div class="text-muted small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px;">Total Reports</div>
-            <h3 class="fw-bold mb-0 mt-1" style="color: #0f172a;">{{ stats.total }}</h3>
+            <div class="small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px; color: #94a3b8;">Total Reports</div>
+            <h3 class="fw-bold mb-0 mt-1 text-white">{{ stats.total }}</h3>
             <span class="badge bg-secondary text-white mt-1" style="font-size: 0.65rem;">All Incidents</span>
         </div>
     </div>
     <div class="col-6 col-md-4 col-lg-2">
         <div class="glass-card-pro p-3 text-center" style="border-color: rgba(245, 158, 11, 0.4);">
-            <div class="small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px; color: #b45309;">Pending</div>
-            <h3 class="fw-bold mb-0 mt-1" style="color: #d97706;">{{ stats.pending }}</h3>
-            <span class="badge mt-1" style="background: #fef3c7; color: #b45309; font-size: 0.65rem;">Awaiting Review</span>
+            <div class="small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px; color: #fbbf24;">Pending</div>
+            <h3 class="fw-bold mb-0 mt-1" style="color: #fbbf24;">{{ stats.pending }}</h3>
+            <span class="badge mt-1" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; font-size: 0.65rem;">Awaiting Review</span>
         </div>
     </div>
     <div class="col-6 col-md-4 col-lg-2">
         <div class="glass-card-pro p-3 text-center" style="border-color: rgba(2, 132, 199, 0.4);">
-            <div class="small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px; color: #0369a1;">Under Review</div>
-            <h3 class="fw-bold mb-0 mt-1" style="color: #0284c7;">{{ stats.under_review }}</h3>
-            <span class="badge mt-1" style="background: #e0f2fe; color: #0369a1; font-size: 0.65rem;">Evaluating</span>
+            <div class="small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px; color: #38bdf8;">Under Review</div>
+            <h3 class="fw-bold mb-0 mt-1" style="color: #38bdf8;">{{ stats.under_review }}</h3>
+            <span class="badge mt-1" style="background: rgba(2, 132, 199, 0.2); color: #38bdf8; font-size: 0.65rem;">Evaluating</span>
         </div>
     </div>
     <div class="col-6 col-md-4 col-lg-2">
         <div class="glass-card-pro p-3 text-center" style="border-color: rgba(99, 102, 241, 0.4);">
-            <div class="small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px; color: #4338ca;">In Progress</div>
-            <h3 class="fw-bold mb-0 mt-1" style="color: #4f46e5;">{{ stats.in_progress }}</h3>
-            <span class="badge mt-1" style="background: #e0e7ff; color: #4338ca; font-size: 0.65rem;">Dispatched</span>
+            <div class="small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px; color: #a5b4fc;">In Progress</div>
+            <h3 class="fw-bold mb-0 mt-1" style="color: #a5b4fc;">{{ stats.in_progress }}</h3>
+            <span class="badge mt-1" style="background: rgba(99, 102, 241, 0.2); color: #a5b4fc; font-size: 0.65rem;">Dispatched</span>
         </div>
     </div>
     <div class="col-6 col-md-4 col-lg-2">
         <div class="glass-card-pro p-3 text-center" style="border-color: rgba(5, 150, 105, 0.4);">
-            <div class="small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px; color: #047857;">Resolved</div>
-            <h3 class="fw-bold mb-0 mt-1" style="color: #059669;">{{ stats.resolved }}</h3>
-            <span class="badge mt-1" style="background: #d1fae5; color: #047857; font-size: 0.65rem;">Complete</span>
+            <div class="small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px; color: #34d399;">Resolved</div>
+            <h3 class="fw-bold mb-0 mt-1" style="color: #34d399;">{{ stats.resolved }}</h3>
+            <span class="badge mt-1" style="background: rgba(16, 185, 129, 0.2); color: #34d399; font-size: 0.65rem;">Complete</span>
         </div>
     </div>
     <div class="col-6 col-md-4 col-lg-2">
         <div class="glass-card-pro p-3 text-center" style="border-color: rgba(225, 29, 72, 0.4);">
-            <div class="small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px; color: #be123c;">Security Flags</div>
-            <h3 class="fw-bold mb-0 mt-1" style="color: #e11d48;">{{ stats.suspicious }}</h3>
-            <span class="badge mt-1" style="background: #ffe4e6; color: #be123c; font-size: 0.65rem;">Alerts</span>
+            <div class="small text-uppercase fw-bold" style="font-size: 0.68rem; letter-spacing: 0.5px; color: #fb7185;">Security Flags</div>
+            <h3 class="fw-bold mb-0 mt-1" style="color: #fb7185;">{{ stats.suspicious }}</h3>
+            <span class="badge mt-1" style="background: rgba(225, 29, 72, 0.2); color: #fb7185; font-size: 0.65rem;">Alerts</span>
         </div>
     </div>
 </div>
@@ -70,8 +70,8 @@
 <div class="glass-card-pro p-3 p-md-4 mb-4">
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
         <div class="d-flex align-items-center gap-2">
-            <i class="bi bi-person-vcard text-primary fs-5"></i>
-            <h5 class="fw-bold mb-0" style="color: #0f172a;">Pending Student Identity Verifications (Dual-Card Scans)</h5>
+            <i class="bi bi-person-vcard text-info fs-5"></i>
+            <h5 class="fw-bold mb-0 text-white">Pending Student Identity Verifications (Dual-Card Scans)</h5>
         </div>
         <span class="badge bg-warning text-dark px-3 py-1.5 fw-bold" style="font-size: 0.75rem;">
             {{ stats.pending_registrations }} Requiring Approval
@@ -79,74 +79,74 @@
     </div>
 
     <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0" style="--bs-table-bg: transparent; --bs-table-color: #334155;">
+        <table class="table table-hover align-middle mb-0" style="--bs-table-bg: transparent; --bs-table-color: #cbd5e1;">
             <thead>
-                <tr style="border-bottom: 2px solid rgba(13, 148, 136, 0.2);">
-                    <th class="py-2.5 text-muted text-uppercase small">Student Full Name</th>
-                    <th class="py-2.5 text-muted text-uppercase small">Username</th>
-                    <th class="py-2.5 text-muted text-uppercase small">Institutional Email</th>
-                    <th class="py-2.5 text-muted text-uppercase small">Student ID #</th>
-                    <th class="py-2.5 text-muted text-uppercase small">ID Card Evidence</th>
-                    <th class="py-2.5 text-muted text-uppercase small text-center">Action</th>
+                <tr style="border-bottom: 2px solid rgba(45, 212, 191, 0.25);">
+                    <th class="py-2.5 text-uppercase small" style="color: #94a3b8;">Student Full Name</th>
+                    <th class="py-2.5 text-uppercase small" style="color: #94a3b8;">Username</th>
+                    <th class="py-2.5 text-uppercase small" style="color: #94a3b8;">Institutional Email</th>
+                    <th class="py-2.5 text-uppercase small" style="color: #94a3b8;">Student ID #</th>
+                    <th class="py-2.5 text-uppercase small" style="color: #94a3b8;">ID Card Evidence</th>
+                    <th class="py-2.5 text-uppercase small text-center" style="color: #94a3b8;">Action</th>
                 </tr>
             </thead>
             <tbody>
                 {% for profile in pending_students %}
-                <tr style="border-bottom: 1px solid rgba(0, 0, 0, 0.05);">
+                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.07);">
                     <td>
-                        <strong class="text-dark">{{ profile.user.get_full_name|default:profile.user.username }}</strong>
+                        <strong class="text-light">{{ profile.user.get_full_name|default:profile.user.username }}</strong>
                     </td>
-                    <td class="text-primary">@{{ profile.user.username }}</td>
+                    <td class="text-info">@{{ profile.user.username }}</td>
                     <td>
-                        <code class="text-dark">{{ profile.user.email }}</code>
-                    </td>
-                    <td>
-                        <span class="badge bg-light text-dark border px-2.5 py-1">{{ profile.student_id|default:"N/A" }}</span>
+                        <code class="text-light">{{ profile.user.email }}</code>
                     </td>
                     <td>
-                        <button type="button" class="btn btn-sm btn-outline-primary px-3 py-1" data-bs-toggle="modal" data-bs-target="#studentDualIdModal{{ profile.id }}">
+                        <span class="badge px-2.5 py-1" style="background: rgba(11, 18, 33, 0.85); border: 1px solid rgba(148, 163, 184, 0.25); color: #f8fafc;">{{ profile.student_id|default:"N/A" }}</span>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-outline-info px-3 py-1" data-bs-toggle="modal" data-bs-target="#studentDualIdModal{{ profile.id }}">
                             <i class="bi bi-images me-1"></i> Inspect Front & Back
                         </button>
 
                         <!-- Dual ID Inspection Modal (Front & Back) -->
                         <div class="modal fade" id="studentDualIdModal{{ profile.id }}" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered modal-lg">
-                                <div class="modal-content glass-card-pro p-3 text-start bg-white">
+                                <div class="modal-content glass-card-pro p-3 text-start" style="background: rgba(15, 23, 42, 0.96) !important;">
                                     <div class="modal-header border-0 pb-1">
-                                        <h6 class="modal-title fw-bold text-dark">
+                                        <h6 class="modal-title fw-bold text-white">
                                             Identity Verification: {{ profile.user.get_full_name|default:profile.user.username }} (ID: {{ profile.student_id }})
                                         </h6>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                     </div>
                                     <div class="modal-body py-2">
                                         <div class="row g-3">
                                             <!-- Front ID -->
                                             <div class="col-12 col-md-6 text-center">
-                                                <div class="p-2 rounded mb-2" style="background: #f0fdfa; border: 1px solid rgba(13, 148, 136, 0.25);">
-                                                    <span class="small fw-bold text-dark"><i class="bi bi-person-bounding-box me-1 text-primary"></i> Front Face (Photo & Name)</span>
+                                                <div class="p-2 rounded mb-2" style="background: rgba(20, 184, 166, 0.1); border: 1px solid rgba(45, 212, 191, 0.25);">
+                                                    <span class="small fw-bold text-light"><i class="bi bi-person-bounding-box me-1 text-info"></i> Front Face (Photo & Name)</span>
                                                 </div>
                                                 {% if profile.id_picture %}
-                                                    <img src="{{ profile.id_picture.url }}" alt="Front ID" class="img-fluid rounded shadow-sm" style="max-height: 280px; border: 1px solid rgba(13, 148, 136, 0.3);">
+                                                    <img src="{{ profile.id_picture.url }}" alt="Front ID" class="img-fluid rounded shadow-sm" style="max-height: 280px; border: 1px solid rgba(45, 212, 191, 0.3);">
                                                 {% else %}
-                                                    <div class="p-4 text-muted small">No front image uploaded</div>
+                                                    <div class="p-4 small" style="color: #64748b;">No front image uploaded</div>
                                                 {% endif %}
                                             </div>
 
                                             <!-- Back ID -->
                                             <div class="col-12 col-md-6 text-center">
-                                                <div class="p-2 rounded mb-2" style="background: #f0fdfa; border: 1px solid rgba(13, 148, 136, 0.25);">
-                                                    <span class="small fw-bold text-dark"><i class="bi bi-upc-scan me-1 text-primary"></i> Back Face (Student ID & Barcode)</span>
+                                                <div class="p-2 rounded mb-2" style="background: rgba(20, 184, 166, 0.1); border: 1px solid rgba(45, 212, 191, 0.25);">
+                                                    <span class="small fw-bold text-light"><i class="bi bi-upc-scan me-1 text-info"></i> Back Face (Student ID & Barcode)</span>
                                                 </div>
                                                 {% if profile.id_picture_back %}
-                                                    <img src="{{ profile.id_picture_back.url }}" alt="Back ID" class="img-fluid rounded shadow-sm" style="max-height: 280px; border: 1px solid rgba(13, 148, 136, 0.3);">
+                                                    <img src="{{ profile.id_picture_back.url }}" alt="Back ID" class="img-fluid rounded shadow-sm" style="max-height: 280px; border: 1px solid rgba(45, 212, 191, 0.3);">
                                                 {% else %}
-                                                    <div class="p-4 text-muted small">No back image uploaded</div>
+                                                    <div class="p-4 small" style="color: #64748b;">No back image uploaded</div>
                                                 {% endif %}
                                             </div>
                                         </div>
                                     </div>
                                     <div class="modal-footer border-0 pt-2 d-flex justify-content-between">
-                                        <small class="text-muted">Email: {{ profile.user.email }}</small>
+                                        <small style="color: #94a3b8;">Email: {{ profile.user.email }}</small>
                                         <div class="d-flex gap-2">
                                             <a href="{% url 'verify_student' profile.id 'approve' %}" class="btn btn-success btn-sm px-3 fw-bold">
                                                 <i class="bi bi-check-lg"></i> Approve Identity
@@ -173,7 +173,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="6" class="text-center py-4 text-muted">
+                    <td colspan="6" class="text-center py-4" style="color: #94a3b8;">
                         <i class="bi bi-check2-circle text-success fs-5 me-1"></i> No student identity verifications currently awaiting review.
                     </td>
                 </tr>
@@ -187,8 +187,8 @@
 <div class="glass-card-pro p-3 p-md-4 mb-4">
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
         <div class="d-flex align-items-center gap-2">
-            <i class="bi bi-clipboard-data text-primary fs-5"></i>
-            <h5 class="fw-bold mb-0" style="color: #0f172a;">Campus Incident Queue & Maintenance Dispatch</h5>
+            <i class="bi bi-clipboard-data text-info fs-5"></i>
+            <h5 class="fw-bold mb-0 text-white">Campus Incident Queue & Maintenance Dispatch</h5>
         </div>
         <span class="badge bg-primary text-white px-3 py-1.5" style="font-size: 0.75rem;">
             {{ stats.total }} Total Reports
@@ -196,21 +196,21 @@
     </div>
 
     <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0" style="--bs-table-bg: transparent; --bs-table-color: #334155;">
+        <table class="table table-hover align-middle mb-0" style="--bs-table-bg: transparent; --bs-table-color: #cbd5e1;">
             <thead>
-                <tr style="border-bottom: 2px solid rgba(13, 148, 136, 0.2);">
-                    <th class="py-2.5 text-muted text-uppercase small">ID #</th>
-                    <th class="py-2.5 text-muted text-uppercase small">Reporter</th>
-                    <th class="py-2.5 text-muted text-uppercase small">Facility Location</th>
-                    <th class="py-2.5 text-muted text-uppercase small">Category & Evidence</th>
-                    <th class="py-2.5 text-muted text-uppercase small">Current Status</th>
-                    <th class="py-2.5 text-muted text-uppercase small">Update Status & Notes</th>
+                <tr style="border-bottom: 2px solid rgba(45, 212, 191, 0.25);">
+                    <th class="py-2.5 text-uppercase small" style="color: #94a3b8;">ID #</th>
+                    <th class="py-2.5 text-uppercase small" style="color: #94a3b8;">Reporter</th>
+                    <th class="py-2.5 text-uppercase small" style="color: #94a3b8;">Facility Location</th>
+                    <th class="py-2.5 text-uppercase small" style="color: #94a3b8;">Category & Evidence</th>
+                    <th class="py-2.5 text-uppercase small" style="color: #94a3b8;">Current Status</th>
+                    <th class="py-2.5 text-uppercase small" style="color: #94a3b8;">Update Status & Notes</th>
                 </tr>
             </thead>
             <tbody>
                 {% for report in reports %}
-                <tr style="border-bottom: 1px solid rgba(0, 0, 0, 0.05);">
-                    <td class="fw-bold" style="color: #0284c7;">
+                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.07);">
+                    <td class="fw-bold" style="color: #38bdf8;">
                         #{{ report.id }}
                         {% if report.is_urgent %}
                             <div class="mt-1">
@@ -219,39 +219,39 @@
                         {% endif %}
                     </td>
                     <td>
-                        <div class="fw-semibold text-dark">{{ report.user.username }}</div>
-                        <small class="text-muted">{{ report.created_at|date:"M d, h:i A" }}</small>
+                        <div class="fw-semibold text-light">{{ report.user.username }}</div>
+                        <small style="color: #94a3b8;">{{ report.created_at|date:"M d, h:i A" }}</small>
                     </td>
                     <td>
-                        <div class="fw-semibold text-dark">{{ report.location.building }}</div>
-                        <small class="text-muted">Flr {{ report.location.floor }} ({{ report.location.room_number }}) - {{ report.location.gender }}</small>
+                        <div class="fw-semibold text-light">{{ report.location.building }}</div>
+                        <small style="color: #94a3b8;">Flr {{ report.location.floor }} ({{ report.location.room_number }}) - {{ report.location.gender }}</small>
                     </td>
                     <td>
-                        <span class="badge px-2.5 py-1" style="background: #f1f5f9; border: 1px solid #cbd5e1; color: #1e293b;">
+                        <span class="badge px-2.5 py-1" style="background: rgba(11, 18, 33, 0.85); border: 1px solid rgba(148, 163, 184, 0.25); color: #cbd5e1;">
                             {{ report.get_category_display }}
                         </span>
                         {% if report.photo %}
-                            <button type="button" class="btn btn-sm btn-link text-primary p-0 ms-1" data-bs-toggle="modal" data-bs-target="#adminPhotoModal{{ report.id }}">
+                            <button type="button" class="btn btn-sm btn-link text-info p-0 ms-1" data-bs-toggle="modal" data-bs-target="#adminPhotoModal{{ report.id }}">
                                 <i class="bi bi-paperclip"></i> Photo
                             </button>
 
                             <!-- Photo Modal -->
                             <div class="modal fade" id="adminPhotoModal{{ report.id }}" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content glass-card-pro p-3 text-start bg-white">
+                                    <div class="modal-content glass-card-pro p-3 text-start" style="background: rgba(15, 23, 42, 0.96) !important;">
                                         <div class="modal-header border-0 pb-1">
-                                            <h6 class="modal-title fw-bold text-dark">Incident #{{ report.id }} Photo Proof</h6>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            <h6 class="modal-title fw-bold text-white">Incident #{{ report.id }} Photo Proof</h6>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                         </div>
                                         <div class="modal-body text-center py-2">
-                                            <img src="{{ report.photo.url }}" alt="Evidence" class="img-fluid rounded shadow-sm" style="max-height: 400px; border: 1px solid rgba(13, 148, 136, 0.3);">
-                                            <p class="small text-muted mt-2 mb-0"><strong>Description:</strong> {{ report.description }}</p>
+                                            <img src="{{ report.photo.url }}" alt="Evidence" class="img-fluid rounded shadow-sm" style="max-height: 400px; border: 1px solid rgba(45, 212, 191, 0.3);">
+                                            <p class="small mt-2 mb-0" style="color: #94a3b8;"><strong>Description:</strong> {{ report.description }}</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         {% endif %}
-                        <div class="small text-muted mt-1 text-truncate" style="max-width: 180px;" title="{{ report.description }}">
+                        <div class="small mt-1 text-truncate" style="max-width: 180px; color: #94a3b8;" title="{{ report.description }}">
                             {{ report.description }}
                         </div>
                     </td>
@@ -271,8 +271,8 @@
                         {% endif %}
 
                         {% if report.resolution_notes or report.rejection_reason %}
-                            <div class="small text-muted mt-1 text-truncate" style="max-width: 170px;" title="{{ report.resolution_notes|default:report.rejection_reason }}">
-                                <i class="bi bi-chat-left-text text-primary"></i> {{ report.resolution_notes|default:report.rejection_reason }}
+                            <div class="small mt-1 text-truncate" style="max-width: 170px; color: #cbd5e1;" title="{{ report.resolution_notes|default:report.rejection_reason }}">
+                                <i class="bi bi-chat-left-text text-info"></i> {{ report.resolution_notes|default:report.rejection_reason }}
                             </div>
                         {% endif %}
                     </td>
@@ -297,7 +297,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="6" class="text-center py-5 text-muted">
+                    <td colspan="6" class="text-center py-5" style="color: #94a3b8;">
                         No maintenance reports recorded.
                     </td>
                 </tr>
@@ -312,7 +312,7 @@
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
         <div class="d-flex align-items-center gap-2">
             <i class="bi bi-shield-slash text-danger fs-5"></i>
-            <h5 class="fw-bold mb-0" style="color: #0f172a;">Suspicious Activity & Security Log</h5>
+            <h5 class="fw-bold mb-0 text-white">Suspicious Activity & Security Log</h5>
         </div>
         <span class="badge bg-danger text-white px-3 py-1.5" style="font-size: 0.75rem;">
             {{ stats.suspicious }} Unreviewed Flags
@@ -320,36 +320,36 @@
     </div>
 
     <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0" style="--bs-table-bg: transparent; --bs-table-color: #334155;">
+        <table class="table table-hover align-middle mb-0" style="--bs-table-bg: transparent; --bs-table-color: #cbd5e1;">
             <thead>
                 <tr style="border-bottom: 2px solid rgba(225, 29, 72, 0.3);">
-                    <th class="py-2.5 text-muted text-uppercase small">Flagged At</th>
-                    <th class="py-2.5 text-muted text-uppercase small">Target User</th>
-                    <th class="py-2.5 text-muted text-uppercase small">Security Reason</th>
-                    <th class="py-2.5 text-muted text-uppercase small">IP Address</th>
-                    <th class="py-2.5 text-muted text-uppercase small text-center">Action</th>
+                    <th class="py-2.5 text-uppercase small" style="color: #94a3b8;">Flagged At</th>
+                    <th class="py-2.5 text-uppercase small" style="color: #94a3b8;">Target User</th>
+                    <th class="py-2.5 text-uppercase small" style="color: #94a3b8;">Security Reason</th>
+                    <th class="py-2.5 text-uppercase small" style="color: #94a3b8;">IP Address</th>
+                    <th class="py-2.5 text-uppercase small text-center" style="color: #94a3b8;">Action</th>
                 </tr>
             </thead>
             <tbody>
                 {% for log in suspicious_logs %}
-                <tr style="border-bottom: 1px solid rgba(0, 0, 0, 0.05);">
-                    <td class="small text-muted">{{ log.flagged_at|date:"M d, Y H:i:s" }}</td>
+                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.07);">
+                    <td class="small" style="color: #94a3b8;">{{ log.flagged_at|date:"M d, Y H:i:s" }}</td>
                     <td>
-                        <strong class="text-dark">{{ log.user.username|default:"Unauthenticated" }}</strong>
+                        <strong class="text-light">{{ log.user.username|default:"Unauthenticated" }}</strong>
                     </td>
                     <td>
                         <span class="small fw-semibold text-danger">{{ log.reason }}</span>
                     </td>
-                    <td class="small text-muted font-monospace">{{ log.ip_address|default:"N/A" }}</td>
+                    <td class="small font-monospace" style="color: #94a3b8;">{{ log.ip_address|default:"N/A" }}</td>
                     <td class="text-center">
-                        <a href="{% url 'mark_suspicious_reviewed' log.id %}" class="btn btn-outline-secondary btn-sm px-3 py-1 small">
+                        <a href="{% url 'mark_suspicious_reviewed' log.id %}" class="btn btn-outline-secondary btn-sm px-3 py-1 small text-light border-secondary">
                             <i class="bi bi-check2"></i> Mark Reviewed
                         </a>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5" class="text-center py-4 text-muted">
+                    <td colspan="5" class="text-center py-4" style="color: #94a3b8;">
                         <i class="bi bi-shield-check text-success fs-5 me-1"></i> No unreviewed suspicious activities detected.
                     </td>
                 </tr>
