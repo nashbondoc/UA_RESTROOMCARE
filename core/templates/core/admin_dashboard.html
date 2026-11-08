@@ -107,58 +107,6 @@
                         <button type="button" class="btn btn-sm btn-outline-info px-3 py-1" data-bs-toggle="modal" data-bs-target="#studentDualIdModal{{ profile.id }}">
                             <i class="bi bi-images me-1"></i> Inspect Front & Back
                         </button>
-
-                        <!-- Dual ID Inspection Modal (Front & Back) -->
-                        <div class="modal fade" id="studentDualIdModal{{ profile.id }}" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered modal-lg">
-                                <div class="modal-content glass-card-pro p-3 text-start" style="background: rgba(15, 23, 42, 0.96) !important;">
-                                    <div class="modal-header border-0 pb-1">
-                                        <h6 class="modal-title fw-bold text-white">
-                                            Identity Verification: {{ profile.user.get_full_name|default:profile.user.username }} (ID: {{ profile.student_id }})
-                                        </h6>
-                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body py-2">
-                                        <div class="row g-3">
-                                            <!-- Front ID -->
-                                            <div class="col-12 col-md-6 text-center">
-                                                <div class="p-2 rounded mb-2" style="background: rgba(20, 184, 166, 0.1); border: 1px solid rgba(45, 212, 191, 0.25);">
-                                                    <span class="small fw-bold text-light"><i class="bi bi-person-bounding-box me-1 text-info"></i> Front Face (Photo & Name)</span>
-                                                </div>
-                                                {% if profile.id_picture %}
-                                                    <img src="{{ profile.id_picture.url }}" alt="Front ID" class="img-fluid rounded shadow-sm" style="max-height: 280px; border: 1px solid rgba(45, 212, 191, 0.3);">
-                                                {% else %}
-                                                    <div class="p-4 small" style="color: #64748b;">No front image uploaded</div>
-                                                {% endif %}
-                                            </div>
-
-                                            <!-- Back ID -->
-                                            <div class="col-12 col-md-6 text-center">
-                                                <div class="p-2 rounded mb-2" style="background: rgba(20, 184, 166, 0.1); border: 1px solid rgba(45, 212, 191, 0.25);">
-                                                    <span class="small fw-bold text-light"><i class="bi bi-upc-scan me-1 text-info"></i> Back Face (Student ID & Barcode)</span>
-                                                </div>
-                                                {% if profile.id_picture_back %}
-                                                    <img src="{{ profile.id_picture_back.url }}" alt="Back ID" class="img-fluid rounded shadow-sm" style="max-height: 280px; border: 1px solid rgba(45, 212, 191, 0.3);">
-                                                {% else %}
-                                                    <div class="p-4 small" style="color: #64748b;">No back image uploaded</div>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer border-0 pt-2 d-flex justify-content-between">
-                                        <small style="color: #94a3b8;">Email: {{ profile.user.email }}</small>
-                                        <div class="d-flex gap-2">
-                                            <a href="{% url 'verify_student' profile.id 'approve' %}" class="btn btn-success btn-sm px-3 fw-bold">
-                                                <i class="bi bi-check-lg"></i> Approve Identity
-                                            </a>
-                                            <a href="{% url 'verify_student' profile.id 'reject' %}" class="btn btn-outline-danger btn-sm px-3 fw-bold" onclick="return confirm('Reject and delete registration?');">
-                                                <i class="bi bi-trash3"></i> Reject
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </td>
                     <td class="text-center">
                         <div class="d-inline-flex gap-2">
@@ -234,22 +182,6 @@
                             <button type="button" class="btn btn-sm btn-link text-info p-0 ms-1" data-bs-toggle="modal" data-bs-target="#adminPhotoModal{{ report.id }}">
                                 <i class="bi bi-paperclip"></i> Photo
                             </button>
-
-                            <!-- Photo Modal -->
-                            <div class="modal fade" id="adminPhotoModal{{ report.id }}" tabindex="-1" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content glass-card-pro p-3 text-start" style="background: rgba(15, 23, 42, 0.96) !important;">
-                                        <div class="modal-header border-0 pb-1">
-                                            <h6 class="modal-title fw-bold text-white">Incident #{{ report.id }} Photo Proof</h6>
-                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                        </div>
-                                        <div class="modal-body text-center py-2">
-                                            <img src="{{ report.photo.url }}" alt="Evidence" class="img-fluid rounded shadow-sm" style="max-height: 400px; border: 1px solid rgba(45, 212, 191, 0.3);">
-                                            <p class="small mt-2 mb-0" style="color: #94a3b8;"><strong>Description:</strong> {{ report.description }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         {% endif %}
                         <div class="small mt-1 text-truncate" style="max-width: 180px; color: #94a3b8;" title="{{ report.description }}">
                             {{ report.description }}
@@ -358,4 +290,105 @@
         </table>
     </div>
 </div>
+
+<!-- ============================================================== -->
+<!-- TOP-LEVEL MODALS: DUAL ID INSPECTION & INCIDENT PHOTO PROOF    -->
+<!-- (Rendered at root level so modals are not clipped by overflow)  -->
+<!-- ============================================================== -->
+
+<!-- 1. Dual ID Inspection Modals -->
+{% for profile in pending_students %}
+<div class="modal fade" id="studentDualIdModal{{ profile.id }}" tabindex="-1" aria-labelledby="studentDualIdModalLabel{{ profile.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content glass-card-pro p-3 text-start" style="background: rgba(15, 23, 42, 0.98) !important; border: 1px solid rgba(45, 212, 191, 0.35); box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);">
+            <div class="modal-header border-0 pb-2">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-person-vcard text-info fs-5"></i>
+                    <h6 class="modal-title fw-bold text-white mb-0" id="studentDualIdModalLabel{{ profile.id }}">
+                        Identity Verification: {{ profile.user.get_full_name|default:profile.user.username }} (ID: {{ profile.student_id }})
+                    </h6>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-2" style="max-height: 75vh; overflow-y: auto;">
+                <div class="row g-3">
+                    <!-- Front ID -->
+                    <div class="col-12 col-md-6 text-center">
+                        <div class="p-2 rounded mb-2" style="background: rgba(20, 184, 166, 0.1); border: 1px solid rgba(45, 212, 191, 0.25);">
+                            <span class="small fw-bold text-light"><i class="bi bi-person-bounding-box me-1 text-info"></i> Front Face (Photo & Name)</span>
+                        </div>
+                        {% if profile.id_picture %}
+                            <img src="{{ profile.id_picture.url }}" alt="Front ID" class="img-fluid rounded shadow-sm" style="max-height: 380px; object-fit: contain; border: 1px solid rgba(45, 212, 191, 0.3);">
+                        {% else %}
+                            <div class="p-4 small" style="color: #64748b;">No front image uploaded</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Back ID -->
+                    <div class="col-12 col-md-6 text-center">
+                        <div class="p-2 rounded mb-2" style="background: rgba(20, 184, 166, 0.1); border: 1px solid rgba(45, 212, 191, 0.25);">
+                            <span class="small fw-bold text-light"><i class="bi bi-upc-scan me-1 text-info"></i> Back Face (Student ID & Barcode)</span>
+                        </div>
+                        {% if profile.id_picture_back %}
+                            <img src="{{ profile.id_picture_back.url }}" alt="Back ID" class="img-fluid rounded shadow-sm" style="max-height: 380px; object-fit: contain; border: 1px solid rgba(45, 212, 191, 0.3);">
+                        {% else %}
+                            <div class="p-4 small" style="color: #64748b;">No back image uploaded</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-2 d-flex justify-content-between flex-wrap gap-2">
+                <small style="color: #94a3b8;">Email: {{ profile.user.email }}</small>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'verify_student' profile.id 'approve' %}" class="btn btn-success btn-sm px-3 fw-bold">
+                        <i class="bi bi-check-lg"></i> Approve Identity
+                    </a>
+                    <a href="{% url 'verify_student' profile.id 'reject' %}" class="btn btn-outline-danger btn-sm px-3 fw-bold" onclick="return confirm('Reject and delete registration?');">
+                        <i class="bi bi-trash3"></i> Reject
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- 2. Incident Photo Proof Modals -->
+{% for report in reports %}
+    {% if report.photo %}
+    <div class="modal fade" id="adminPhotoModal{{ report.id }}" tabindex="-1" aria-labelledby="adminPhotoModalLabel{{ report.id }}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+            <div class="modal-content glass-card-pro p-3 text-start" style="background: rgba(15, 23, 42, 0.98) !important; border: 1px solid rgba(45, 212, 191, 0.35); box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);">
+                <div class="modal-header border-0 pb-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-camera-fill text-info fs-5"></i>
+                        <h6 class="modal-title fw-bold text-white mb-0" id="adminPhotoModalLabel{{ report.id }}">
+                            Incident #{{ report.id }} Photo Proof &bull; {{ report.location.building }}
+                        </h6>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center py-3" style="max-height: 75vh; overflow-y: auto;">
+                    <img src="{{ report.photo.url }}" alt="Incident Evidence Proof" class="img-fluid rounded shadow" style="max-height: 520px; width: auto; object-fit: contain; border: 1px solid rgba(45, 212, 191, 0.3);">
+                    <div class="mt-3 text-start p-3 rounded" style="background: rgba(11, 18, 33, 0.85); border: 1px solid rgba(148, 163, 184, 0.2);">
+                        <div class="row g-2 small">
+                            <div class="col-12 col-sm-6 text-light"><strong>Reporter:</strong> {{ report.user.username }}</div>
+                            <div class="col-12 col-sm-6 text-light"><strong>Reported:</strong> {{ report.created_at|date:"M d, Y h:i A" }}</div>
+                            <div class="col-12 col-sm-6 text-light"><strong>Facility:</strong> {{ report.location.building }} (Flr {{ report.location.floor }}, Room {{ report.location.room_number }}) - {{ report.location.gender }}</div>
+                            <div class="col-12 col-sm-6 text-light"><strong>Category:</strong> {{ report.get_category_display }}</div>
+                            <div class="col-12 text-light mt-1"><strong>Description:</strong> {{ report.description }}</div>
+                            {% if report.resolution_notes or report.rejection_reason %}
+                                <div class="col-12 text-info mt-1"><strong>Notes:</strong> {{ report.resolution_notes|default:report.rejection_reason }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-2 d-flex justify-content-end">
+                    <button type="button" class="btn btn-secondary btn-sm px-3" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{% endfor %}
 {% endblock %}

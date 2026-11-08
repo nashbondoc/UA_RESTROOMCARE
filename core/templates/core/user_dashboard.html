@@ -69,22 +69,6 @@
                                 <button type="button" class="btn btn-sm btn-outline-info px-3 py-1" data-bs-toggle="modal" data-bs-target="#userPhotoModal{{ report.id }}">
                                     <i class="bi bi-image me-1"></i> View Photo
                                 </button>
-
-                                <!-- Photo Modal -->
-                                <div class="modal fade" id="userPhotoModal{{ report.id }}" tabindex="-1" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered">
-                                        <div class="modal-content glass-card-pro p-3 text-start" style="background: rgba(15, 23, 42, 0.95) !important;">
-                                            <div class="modal-header border-0 pb-1">
-                                                <h6 class="modal-title fw-bold text-white">Report #{{ report.id }} Evidence Photo</h6>
-                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                            </div>
-                                            <div class="modal-body text-center py-2">
-                                                <img src="{{ report.photo.url }}" alt="Evidence" class="img-fluid rounded shadow-sm" style="max-height: 400px; border: 1px solid rgba(45, 212, 191, 0.3);">
-                                                <p class="small mt-2 mb-0" style="color: #94a3b8;">{{ report.location }} • {{ report.get_category_display }}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             {% else %}
                                 <span class="small" style="color: #64748b;">No photo</span>
                             {% endif %}
@@ -135,4 +119,45 @@
         </div>
     {% endif %}
 </div>
+
+<!-- ============================================================== -->
+<!-- TOP-LEVEL REPORT EVIDENCE PHOTO MODALS                         -->
+<!-- ============================================================== -->
+{% for report in reports %}
+    {% if report.photo %}
+    <div class="modal fade" id="userPhotoModal{{ report.id }}" tabindex="-1" aria-labelledby="userPhotoModalLabel{{ report.id }}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+            <div class="modal-content glass-card-pro p-3 text-start" style="background: rgba(15, 23, 42, 0.98) !important; border: 1px solid rgba(45, 212, 191, 0.35); box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);">
+                <div class="modal-header border-0 pb-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-camera-fill text-info fs-5"></i>
+                        <h6 class="modal-title fw-bold text-white mb-0" id="userPhotoModalLabel{{ report.id }}">
+                            Report #{{ report.id }} Evidence Photo &bull; {{ report.location.building }}
+                        </h6>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center py-3" style="max-height: 75vh; overflow-y: auto;">
+                    <img src="{{ report.photo.url }}" alt="Evidence" class="img-fluid rounded shadow" style="max-height: 520px; width: auto; object-fit: contain; border: 1px solid rgba(45, 212, 191, 0.3);">
+                    <div class="mt-3 text-start p-3 rounded" style="background: rgba(11, 18, 33, 0.85); border: 1px solid rgba(148, 163, 184, 0.2);">
+                        <div class="row g-2 small">
+                            <div class="col-12 col-sm-6 text-light"><strong>Location:</strong> {{ report.location }}</div>
+                            <div class="col-12 col-sm-6 text-light"><strong>Category:</strong> {{ report.get_category_display }}</div>
+                            <div class="col-12 col-sm-6 text-light"><strong>Reported:</strong> {{ report.created_at|date:"M d, Y h:i A" }}</div>
+                            <div class="col-12 col-sm-6 text-light"><strong>Current Status:</strong> <span class="badge bg-secondary">{{ report.status }}</span></div>
+                            <div class="col-12 text-light mt-1"><strong>Description:</strong> {{ report.description }}</div>
+                            {% if report.resolution_notes or report.rejection_reason %}
+                                <div class="col-12 text-info mt-1"><strong>Maintenance Note:</strong> {{ report.resolution_notes|default:report.rejection_reason }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-2 d-flex justify-content-end">
+                    <button type="button" class="btn btn-secondary btn-sm px-3" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{% endfor %}
 {% endblock %}
