@@ -12,8 +12,8 @@
             <i class="bi bi-shield-check"></i>
         </div>
         <div>
-            <h3 class="fw-bold mb-0 text-white">System Audit Trail</h3>
-            <p class="small mb-0" style="color: #94a3b8;">Authentication, incident reporting, dual identity verification, and status logs</p>
+            <h3 class="fw-bold mb-0 text-dark">System Audit Trail</h3>
+            <p class="small mb-0 text-muted">Authentication, incident reporting, dual identity verification, and status logs</p>
         </div>
     </div>
     
@@ -24,76 +24,76 @@
             <i class="bi bi-search"></i>
         </button>
         {% if search_query %}
-            <a href="{% url 'audit_logs' %}" class="btn btn-outline-secondary btn-sm py-1.5 px-2 text-light border-secondary">Clear</a>
+            <a href="{% url 'audit_logs' %}" class="btn btn-outline-secondary btn-sm py-1.5 px-2">Clear</a>
         {% endif %}
     </form>
 </div>
 
 <div class="glass-card-pro p-3 p-md-4">
     <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0" style="--bs-table-bg: transparent; --bs-table-color: #cbd5e1;">
+        <table class="table table-hover align-middle mb-0">
             <thead>
-                <tr style="border-bottom: 2px solid rgba(45, 212, 191, 0.25);">
-                    <th class="py-2.5 text-uppercase small" style="color: #94a3b8;">Timestamp</th>
-                    <th class="py-2.5 text-uppercase small" style="color: #94a3b8;">Actor</th>
-                    <th class="py-2.5 text-uppercase small" style="color: #94a3b8;">Action Category</th>
-                    <th class="py-2.5 text-uppercase small" style="color: #94a3b8;">Event Details</th>
-                    <th class="py-2.5 text-uppercase small" style="color: #94a3b8;">IP Address</th>
+                <tr style="border-bottom: 2px solid var(--card-border);">
+                    <th class="py-2.5 text-uppercase small text-muted">Timestamp</th>
+                    <th class="py-2.5 text-uppercase small text-muted">Actor</th>
+                    <th class="py-2.5 text-uppercase small text-muted">Action Category</th>
+                    <th class="py-2.5 text-uppercase small text-muted">Event Details</th>
+                    <th class="py-2.5 text-uppercase small text-muted">IP Address</th>
                 </tr>
             </thead>
             <tbody>
                 {% for log in logs %}
-                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.07);">
-                    <td class="small" style="color: #94a3b8; white-space: nowrap;">
+                <tr style="border-bottom: 1px solid var(--card-border);">
+                    <td class="small text-muted" style="white-space: nowrap;">
                         {{ log.timestamp|date:"Y-m-d H:i:s" }}
                     </td>
                     <td>
                         {% if log.actor %}
-                            <div class="fw-semibold text-light">
-                                <i class="bi bi-person text-info me-1"></i>{{ log.actor.username }}
+                            <div class="fw-semibold text-dark">
+                                <i class="bi bi-person text-primary me-1"></i>{{ log.actor.username }}
                             </div>
-                            <small style="color: #94a3b8;">{{ log.actor.email }}</small>
+                            <small class="text-muted">{{ log.actor.email }}</small>
                         {% else %}
                             <span class="badge bg-secondary text-white">System / Anonymous</span>
                         {% endif %}
                     </td>
                     <td>
                         {% if "Login" in log.action %}
-                            <span class="badge px-2.5 py-1 text-info" style="background: rgba(2, 132, 199, 0.2); border: 1px solid rgba(2, 132, 199, 0.35);">
+                            <span class="badge px-2.5 py-1 text-primary bg-primary-subtle border border-primary-subtle">
                                 <i class="bi bi-box-arrow-in-right"></i> {{ log.action }}
                             </span>
                         {% elif "Logout" in log.action %}
-                            <span class="badge px-2.5 py-1" style="background: rgba(148, 163, 184, 0.15); border: 1px solid rgba(148, 163, 184, 0.3); color: #94a3b8;">
+                            <span class="badge px-2.5 py-1 text-secondary bg-light border">
                                 <i class="bi bi-box-arrow-right"></i> {{ log.action }}
                             </span>
                         {% elif "Approved" in log.action %}
-                            <span class="badge px-2.5 py-1 text-success" style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.35);">
+                            <span class="badge px-2.5 py-1 text-success bg-success-subtle border border-success-subtle">
                                 <i class="bi bi-check2-circle"></i> {{ log.action }}
                             </span>
                         {% elif "Rejected" in log.action or "Blocked" in log.action or "Violation" in log.action %}
-                            <span class="badge px-2.5 py-1 text-danger" style="background: rgba(225, 29, 72, 0.2); border: 1px solid rgba(225, 29, 72, 0.35);">
+                            <span class="badge px-2.5 py-1 text-danger bg-danger-subtle border border-danger-subtle">
                                 <i class="bi bi-shield-x"></i> {{ log.action }}
                             </span>
                         {% elif "Status" in log.action %}
-                            <span class="badge px-2.5 py-1 text-warning" style="background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.35);">
+                            <span class="badge px-2.5 py-1 text-warning bg-warning-subtle border border-warning-subtle">
                                 <i class="bi bi-pencil-square"></i> {{ log.action }}
                             </span>
                         {% else %}
-                            <span class="badge px-2.5 py-1 text-light" style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(148, 163, 184, 0.25);">
+                            <span class="badge px-2.5 py-1 text-dark bg-light border">
                                 {{ log.action }}
                             </span>
                         {% endif %}
                     </td>
-                    <td class="small text-light">
+                    <td class="small text-dark">
                         {{ log.details|default:"No additional details provided." }}
                     </td>
-                    <td class="small font-monospace" style="color: #94a3b8; white-space: nowrap;">
+                    <td class="small font-monospace text-muted" style="white-space: nowrap;">
                         {{ log.ip_address|default:"127.0.0.1" }}
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5" class="text-center py-5" style="color: #94a3b8;">
+                    <td colspan="5" class="text-center py-5 text-muted">
                         No audit records match the selected filter.
                     </td>
                 </tr>

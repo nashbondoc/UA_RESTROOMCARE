@@ -5,7 +5,7 @@
 {% block content %}
 <div class="row justify-content-center my-3 my-md-5">
     <div class="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
-        <!-- Modern Dark Glassmorphic Central Login Card -->
+        <!-- Solid White Institutional Central Login Card -->
         <div class="glass-card-pro p-4 p-md-5 text-center">
 
             <!-- Official University of the Assumption Seal -->
@@ -16,15 +16,15 @@
             </div>
 
             <!-- Portal Header -->
-            <h3 class="fw-bold mb-1 text-white" style="letter-spacing: -0.3px;">Student & Faculty Portal</h3>
-            <p class="small mb-4" style="color: #94a3b8;">Log in to report restroom incidents & track repairs</p>
+            <h3 class="fw-bold mb-1 text-dark" style="letter-spacing: -0.3px;">Student & Faculty Portal</h3>
+            <p class="small mb-4 text-muted">Log in to report restroom incidents & track repairs</p>
 
             <form method="post" action="{% url 'login' %}" class="text-start">
                 {% csrf_token %}
 
                 <!-- Username or Student ID -->
                 <div class="mb-3">
-                    <label class="form-label small fw-semibold text-light mb-1.5">Username or Student ID</label>
+                    <label class="form-label small fw-semibold text-dark mb-1.5">Username or Student ID</label>
                     <div class="input-group">
                         <span class="input-group-text input-water-addon border-end-0">
                             <i class="bi bi-person"></i>
@@ -36,15 +36,15 @@
                 <!-- Password & Forgot Password Link -->
                 <div class="mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-1.5">
-                        <label class="form-label small fw-semibold text-light mb-0">Password</label>
-                        <a href="{% url 'password_reset' %}" class="small text-decoration-none" style="color: #38bdf8; font-weight: 600;">Forgot Password?</a>
+                        <label class="form-label small fw-semibold text-dark mb-0">Password</label>
+                        <a href="{% url 'password_reset' %}" class="small text-decoration-none text-primary fw-semibold">Forgot Password?</a>
                     </div>
                     <div class="input-group">
                         <span class="input-group-text input-water-addon border-end-0">
                             <i class="bi bi-lock"></i>
                         </span>
                         <input type="password" name="password" id="password_input" class="form-control form-control-water border-start-0 ps-1" placeholder="Enter password" required autocomplete="current-password">
-                        <button class="btn btn-outline-secondary border-start-0 input-water-addon" type="button" onclick="togglePasswordVisibility()" style="border-color: rgba(148, 163, 184, 0.25);">
+                        <button class="btn btn-outline-secondary border-start-0 input-water-addon" type="button" onclick="togglePasswordVisibility()">
                             <i class="bi bi-eye" id="password_toggle_icon"></i>
                         </button>
                     </div>
@@ -57,18 +57,18 @@
             </form>
 
             <!-- Register Student Account Option -->
-            <p class="small mb-2" style="color: #94a3b8;">New student? Need account verification?</p>
+            <p class="small mb-2 text-muted">New student? Need account verification?</p>
             <a href="{% url 'register' %}" class="btn btn-teal-secondary w-100 py-2.5 mb-4">
                 <i class="bi bi-person-plus me-1"></i> Register Student Account
             </a>
 
-            <!-- Dedicated Yellow Admin Portal Callout Box -->
+            <!-- Dedicated Admin Portal Callout Box -->
             <div class="admin-callout-box">
                 <div class="d-flex flex-column text-start">
-                    <span class="badge fw-bold align-self-start mb-1" style="background: rgba(20, 184, 166, 0.18); color: #2dd4bf; border: 1px solid rgba(45, 212, 191, 0.35); font-size: 0.65rem; border-radius: 4px; padding: 2px 7px;">
+                    <span class="badge bg-secondary-subtle text-secondary-emphasis fw-bold align-self-start mb-1" style="font-size: 0.65rem; border-radius: 4px; padding: 2px 7px;">
                         STAFF ONLY
                     </span>
-                    <span class="small fw-semibold" style="color: #cbd5e1; font-size: 0.82rem;">
+                    <span class="small fw-semibold text-dark" style="font-size: 0.82rem;">
                         Campus Admin / Maintenance
                     </span>
                 </div>

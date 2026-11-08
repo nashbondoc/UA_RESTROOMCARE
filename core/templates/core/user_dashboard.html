@@ -6,14 +6,14 @@
 <div class="row align-items-center justify-content-between mb-4 g-3">
     <div class="col-12 col-md-8">
         <div class="d-flex align-items-center gap-3">
-            <div class="avatar-circle-teal mb-0" style="width: 54px; height: 54px; font-size: 1.6rem;">
+            <div class="avatar-circle-teal mb-0" style="width: 50px; height: 50px; font-size: 1.4rem;">
                 <i class="bi bi-clipboard-check"></i>
             </div>
             <div>
-                <h3 class="fw-bold mb-0 text-white">My Restroom Reports</h3>
-                <p class="small mb-0" style="color: #94a3b8;">
-                    Welcome, <strong class="text-light">{{ user.get_full_name|default:user.username }}</strong> 
-                    {% if profile.student_id %}(ID: <code class="text-info">{{ profile.student_id }}</code>){% endif %}
+                <h3 class="fw-bold mb-0 text-dark">My Restroom Reports</h3>
+                <p class="small mb-0 text-muted">
+                    Welcome, <strong class="text-dark">{{ user.get_full_name|default:user.username }}</strong> 
+                    {% if profile.student_id %}(ID: <code class="text-primary">{{ profile.student_id }}</code>){% endif %}
                     • Live status & resolution tracking
                 </p>
             </div>
@@ -30,21 +30,21 @@
 <div class="glass-card-pro p-3 p-md-4">
     {% if reports %}
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0" style="--bs-table-bg: transparent; --bs-table-color: #cbd5e1;">
+            <table class="table table-hover align-middle mb-0">
                 <thead>
-                    <tr style="border-bottom: 2px solid rgba(45, 212, 191, 0.25);">
-                        <th class="py-3 text-uppercase small" style="color: #94a3b8;">Incident #</th>
-                        <th class="py-3 text-uppercase small" style="color: #94a3b8;">Facility Location</th>
-                        <th class="py-3 text-uppercase small" style="color: #94a3b8;">Category</th>
-                        <th class="py-3 text-uppercase small" style="color: #94a3b8;">Photo Evidence</th>
-                        <th class="py-3 text-uppercase small" style="color: #94a3b8;">Resolution Status</th>
-                        <th class="py-3 text-uppercase small" style="color: #94a3b8;">Timestamp</th>
+                    <tr style="border-bottom: 2px solid var(--card-border);">
+                        <th class="py-3 text-uppercase small text-muted">Incident #</th>
+                        <th class="py-3 text-uppercase small text-muted">Facility Location</th>
+                        <th class="py-3 text-uppercase small text-muted">Category</th>
+                        <th class="py-3 text-uppercase small text-muted">Photo Evidence</th>
+                        <th class="py-3 text-uppercase small text-muted">Resolution Status</th>
+                        <th class="py-3 text-uppercase small text-muted">Timestamp</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for report in reports %}
-                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.07);">
-                        <td class="fw-bold" style="color: #38bdf8;">
+                    <tr style="border-bottom: 1px solid var(--card-border);">
+                        <td class="fw-bold text-primary">
                             #{{ report.id }}
                             {% if report.is_urgent %}
                                 <div class="mt-1">
@@ -53,24 +53,24 @@
                             {% endif %}
                         </td>
                         <td>
-                            <div class="fw-semibold text-light">{{ report.location.building }}</div>
-                            <small style="color: #94a3b8;">Flr {{ report.location.floor }} ({{ report.location.room_number }}) - {{ report.location.gender }}</small>
+                            <div class="fw-semibold text-dark">{{ report.location.building }}</div>
+                            <small class="text-muted">Flr {{ report.location.floor }} ({{ report.location.room_number }}) - {{ report.location.gender }}</small>
                         </td>
                         <td>
-                            <span class="badge px-2.5 py-1" style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(148, 163, 184, 0.25); color: #cbd5e1;">
+                            <span class="badge bg-light text-dark border">
                                 {{ report.get_category_display }}
                             </span>
-                            <div class="small mt-1 text-truncate" style="max-width: 220px; color: #94a3b8;" title="{{ report.description }}">
+                            <div class="small mt-1 text-truncate text-muted" style="max-width: 220px;" title="{{ report.description }}">
                                 {{ report.description }}
                             </div>
                         </td>
                         <td>
                             {% if report.photo %}
-                                <button type="button" class="btn btn-sm btn-outline-info px-3 py-1" data-bs-toggle="modal" data-bs-target="#userPhotoModal{{ report.id }}">
+                                <button type="button" class="btn btn-sm btn-outline-primary px-3 py-1" data-bs-toggle="modal" data-bs-target="#userPhotoModal{{ report.id }}">
                                     <i class="bi bi-image me-1"></i> View Photo
                                 </button>
                             {% else %}
-                                <span class="small" style="color: #64748b;">No photo</span>
+                                <span class="small text-muted">No photo</span>
                             {% endif %}
                         </td>
                         <td>
@@ -90,13 +90,13 @@
 
                             <!-- Maintenance Note -->
                             {% if report.resolution_notes or report.rejection_reason %}
-                                <div class="mt-1.5 p-2 rounded small" style="background: rgba(11, 18, 33, 0.85); border-left: 3px solid #0284c7; max-width: 250px;">
-                                    <strong class="d-block" style="font-size: 0.72rem; color: #38bdf8;">Maintenance Note:</strong>
-                                    <span style="font-size: 0.8rem; color: #cbd5e1;">{{ report.resolution_notes|default:report.rejection_reason }}</span>
+                                <div class="mt-1.5 p-2 rounded small bg-light border-start border-primary border-3" style="max-width: 250px;">
+                                    <strong class="d-block text-primary" style="font-size: 0.72rem;">Maintenance Note:</strong>
+                                    <span class="text-dark" style="font-size: 0.8rem;">{{ report.resolution_notes|default:report.rejection_reason }}</span>
                                 </div>
                             {% endif %}
                         </td>
-                        <td class="small" style="color: #94a3b8;">
+                        <td class="small text-muted">
                             {{ report.created_at|date:"M d, Y" }}<br>
                             <span class="opacity-75">{{ report.created_at|date:"h:i A" }}</span>
                         </td>
@@ -109,10 +109,10 @@
         <!-- Empty State -->
         <div class="text-center py-5">
             <div class="mb-3">
-                <i class="bi bi-inbox" style="font-size: 3.5rem; color: #475569; opacity: 0.5;"></i>
+                <i class="bi bi-inbox" style="font-size: 3.5rem; color: #94a3b8;"></i>
             </div>
-            <h5 class="fw-bold mb-1 text-white">No reports recorded yet</h5>
-            <p class="small mb-4" style="color: #94a3b8;">You have not submitted any sanitation or restroom maintenance reports.</p>
+            <h5 class="fw-bold mb-1 text-dark">No reports recorded yet</h5>
+            <p class="small mb-4 text-muted">You have not submitted any sanitation or restroom maintenance reports.</p>
             <a href="{% url 'submit_report' %}" class="btn btn-blue-signin px-4 py-2.5 shadow-sm">
                 <i class="bi bi-plus-circle me-1"></i> Submit Your First Incident
             </a>
@@ -127,27 +127,27 @@
     {% if report.photo %}
     <div class="modal fade" id="userPhotoModal{{ report.id }}" tabindex="-1" aria-labelledby="userPhotoModalLabel{{ report.id }}" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
-            <div class="modal-content glass-card-pro p-3 text-start" style="background: rgba(15, 23, 42, 0.98) !important; border: 1px solid rgba(45, 212, 191, 0.35); box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);">
+            <div class="modal-content glass-card-pro p-3 text-start">
                 <div class="modal-header border-0 pb-2">
                     <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-camera-fill text-info fs-5"></i>
-                        <h6 class="modal-title fw-bold text-white mb-0" id="userPhotoModalLabel{{ report.id }}">
+                        <i class="bi bi-camera-fill text-primary fs-5"></i>
+                        <h6 class="modal-title fw-bold text-dark mb-0" id="userPhotoModalLabel{{ report.id }}">
                             Report #{{ report.id }} Evidence Photo &bull; {{ report.location.building }}
                         </h6>
                     </div>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center py-3" style="max-height: 75vh; overflow-y: auto;">
-                    <img src="{{ report.photo.url }}" alt="Evidence" class="img-fluid rounded shadow" style="max-height: 520px; width: auto; object-fit: contain; border: 1px solid rgba(45, 212, 191, 0.3);">
-                    <div class="mt-3 text-start p-3 rounded" style="background: rgba(11, 18, 33, 0.85); border: 1px solid rgba(148, 163, 184, 0.2);">
+                    <img src="{{ report.photo.url }}" alt="Evidence" class="img-fluid rounded shadow-sm" style="max-height: 520px; width: auto; object-fit: contain; border: 1px solid var(--card-border);">
+                    <div class="mt-3 text-start p-3 rounded bg-light border">
                         <div class="row g-2 small">
-                            <div class="col-12 col-sm-6 text-light"><strong>Location:</strong> {{ report.location }}</div>
-                            <div class="col-12 col-sm-6 text-light"><strong>Category:</strong> {{ report.get_category_display }}</div>
-                            <div class="col-12 col-sm-6 text-light"><strong>Reported:</strong> {{ report.created_at|date:"M d, Y h:i A" }}</div>
-                            <div class="col-12 col-sm-6 text-light"><strong>Current Status:</strong> <span class="badge bg-secondary">{{ report.status }}</span></div>
-                            <div class="col-12 text-light mt-1"><strong>Description:</strong> {{ report.description }}</div>
+                            <div class="col-12 col-sm-6 text-dark"><strong>Location:</strong> {{ report.location }}</div>
+                            <div class="col-12 col-sm-6 text-dark"><strong>Category:</strong> {{ report.get_category_display }}</div>
+                            <div class="col-12 col-sm-6 text-dark"><strong>Reported:</strong> {{ report.created_at|date:"M d, Y h:i A" }}</div>
+                            <div class="col-12 col-sm-6 text-dark"><strong>Current Status:</strong> <span class="badge bg-secondary">{{ report.status }}</span></div>
+                            <div class="col-12 text-dark mt-1"><strong>Description:</strong> {{ report.description }}</div>
                             {% if report.resolution_notes or report.rejection_reason %}
-                                <div class="col-12 text-info mt-1"><strong>Maintenance Note:</strong> {{ report.resolution_notes|default:report.rejection_reason }}</div>
+                                <div class="col-12 text-primary mt-1"><strong>Maintenance Note:</strong> {{ report.resolution_notes|default:report.rejection_reason }}</div>
                             {% endif %}
                         </div>
                     </div>
