@@ -5,6 +5,7 @@ urlpatterns = [
     # 1. Authentication & Portal Access
     path('', views.login_view, name='login'),
     path('login/', views.login_view, name='login_alias'),
+    path('google-login/', views.google_login_view, name='google_login'),
     path('admin-portal/login/', views.admin_login_view, name='admin_login'),
     path('logout/', views.logout_view, name='logout'),
 

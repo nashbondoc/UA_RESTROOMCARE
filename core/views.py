@@ -124,6 +124,83 @@ def login_view(request):
     return render(request, 'core/login.html', {'form': form})
 
 
+def google_login_view(request):
+    """
+    Handle Google Sign-In with strict @ua.edu.ph institutional domain validation.
+    Non-UA accounts are rejected with an explicit error message and security logging.
+    """
+    if request.method != 'POST':
+        return redirect('login')
+
+    email = request.POST.get('google_email', '').strip().lower()
+
+    if not email:
+        messages.error(request, "Google authentication failed: No institutional email provided.")
+        return redirect('login')
+
+    # Strict backend validation: only @ua.edu.ph allowed
+    if not email.endswith('@ua.edu.ph'):
+        log_audit_event(
+            None,
+            "Blocked Non-UA Google Login Attempt",
+            f"Unauthorized domain sign-in attempt with email '{email}'. Only @ua.edu.ph is permitted.",
+            request
+        )
+        SuspiciousActivityLog.objects.create(
+            user=None,
+            reason=f"Attempted Google Sign-In with unauthorized non-institutional email '{email}'.",
+            ip_address=get_client_ip(request)
+        )
+        messages.error(
+            request,
+            f"Access Restricted: '{email}' is not an authorized University of the Assumption account. "
+            "Google Sign-In is strictly restricted to official @ua.edu.ph student and faculty emails."
+        )
+        return redirect('login')
+
+    # User has valid @ua.edu.ph domain
+    username_candidate = email.split('@')[0]
+    user = User.objects.filter(Q(email__iexact=email) | Q(username__iexact=username_candidate)).first()
+
+    if not user:
+        # Check if username collision with another email
+        if User.objects.filter(username__iexact=username_candidate).exists():
+            username_candidate = email.replace('@', '_').replace('.', '_')
+        
+        user = User.objects.create_user(
+            username=username_candidate,
+            email=email,
+            first_name=request.POST.get('google_first_name', '').strip() or username_candidate,
+            last_name=request.POST.get('google_last_name', '').strip(),
+            is_active=True
+        )
+        UserProfile.objects.create(
+            user=user,
+            role='student',
+            is_verified=True
+        )
+        log_audit_event(user, "Google SSO Account Provisioned", f"Auto-provisioned student account for '{email}'.", request)
+
+    if not user.is_active:
+        messages.warning(
+            request,
+            "Your account registration is currently pending administrative verification. "
+            "You will be granted access once your student ID has been confirmed."
+        )
+        return redirect('login')
+
+    login(request, user)
+
+    if is_admin(user):
+        log_audit_event(user, "Admin Google SSO Login", "Administrator authenticated via Google SSO.", request)
+        messages.success(request, f"Welcome back, Administrator {user.get_full_name() or user.username}!")
+        return redirect('admin_dashboard')
+    else:
+        log_audit_event(user, "User Google SSO Login", "Student/Faculty authenticated via Google SSO.", request)
+        messages.success(request, f"Welcome, {user.get_full_name() or user.username}! Successfully signed in with UA Google Account.")
+        return redirect('dashboard')
+
+
 def admin_login_view(request):
     """
     Dedicated Admin Portal (/admin-portal/login/).

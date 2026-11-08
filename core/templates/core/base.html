@@ -14,7 +14,7 @@
     <style>
         :root {
             /* Clean Light-Mode Institutional University Palette */
-            --bg-main: #f8fafc;
+            --bg-main: #eef2f6;
             --text-primary: #0f172a;
             --text-muted: #64748b;
             --card-bg: #ffffff;
@@ -131,16 +131,17 @@
 
         /* Solid White University Card */
         .glass-card-pro {
-            background: var(--card-bg) !important;
-            border: 1px solid var(--card-border);
+            background: #ffffff !important;
+            border: 1px solid #cbd5e1;
             border-radius: var(--radius);
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
-            transition: border-color 0.15s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
             position: relative;
         }
 
         .glass-card-pro:hover {
-            border-color: #cbd5e1;
+            border-color: #94a3b8;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
         }
 
         /* User Avatar Circle on Card */

@@ -376,3 +376,42 @@ class UARestroomCareSystemTests(TestCase):
         })
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "@ua.edu.ph")
+
+    # -------------------------------------------------------------
+    # 7. GOOGLE SSO & INSTITUTIONAL DOMAIN VALIDATION TESTS
+    # -------------------------------------------------------------
+
+    def test_google_login_rejects_non_ua_domain(self):
+        """Google sign-in strictly blocks non-@ua.edu.ph accounts and logs suspicious activity."""
+        response = self.client.post(reverse('google_login'), {
+            'google_email': 'intruder@gmail.com',
+            'google_first_name': 'External'
+        })
+        self.assertRedirects(response, reverse('login'))
+        
+        # Verify error message was delivered
+        response_follow = self.client.get(reverse('login'))
+        self.assertContains(response_follow, "Access Restricted")
+        self.assertContains(response_follow, "@ua.edu.ph")
+
+        # Verify SuspiciousActivityLog entry
+        self.assertTrue(
+            SuspiciousActivityLog.objects.filter(
+                reason__icontains="Attempted Google Sign-In with unauthorized non-institutional email 'intruder@gmail.com'"
+            ).exists()
+        )
+
+    def test_google_login_allows_valid_ua_student(self):
+        """Google sign-in successfully authenticates and redirects @ua.edu.ph account."""
+        response = self.client.post(reverse('google_login'), {
+            'google_email': 'maria.santos@ua.edu.ph',
+            'google_first_name': 'Maria',
+            'google_last_name': 'Santos'
+        })
+        self.assertRedirects(response, reverse('dashboard'))
+
+        # Verify account was provisioned
+        user = User.objects.filter(email='maria.santos@ua.edu.ph').first()
+        self.assertIsNotNone(user)
+        self.assertTrue(user.is_active)
+        self.assertEqual(user.profile.role, 'student')
