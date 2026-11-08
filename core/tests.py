@@ -401,17 +401,36 @@ class UARestroomCareSystemTests(TestCase):
             ).exists()
         )
 
-    def test_google_login_allows_valid_ua_student(self):
-        """Google sign-in successfully authenticates and redirects @ua.edu.ph account."""
+    def test_google_login_unregistered_ua_redirects_to_register(self):
+        """Google sign-in with unregistered @ua.edu.ph email redirects to registration with pre-filled email."""
+        unregistered_email = 'newstudent@ua.edu.ph'
         response = self.client.post(reverse('google_login'), {
-            'google_email': 'maria.santos@ua.edu.ph',
-            'google_first_name': 'Maria',
-            'google_last_name': 'Santos'
+            'google_email': unregistered_email,
+            'google_first_name': 'New',
+            'google_last_name': 'Student'
+        })
+        expected_url = reverse('register') + f"?email={unregistered_email}"
+        self.assertRedirects(response, expected_url)
+
+        # Verify alert message appears on registration page
+        follow_response = self.client.post(reverse('google_login'), {
+            'google_email': unregistered_email,
+            'google_first_name': 'New',
+            'google_last_name': 'Student'
+        }, follow=True)
+        self.assertContains(follow_response, "Account not registered. Please complete your registration first.")
+        # Pre-filled email in the form
+        self.assertContains(follow_response, unregistered_email)
+
+    def test_google_login_allows_existing_registered_ua_student(self):
+        """Google sign-in directly authenticates existing registered @ua.edu.ph accounts."""
+        response = self.client.post(reverse('google_login'), {
+            'google_email': self.student_user.email,
+            'google_first_name': 'Student',
+            'google_last_name': 'User'
         })
         self.assertRedirects(response, reverse('dashboard'))
 
-        # Verify account was provisioned
-        user = User.objects.filter(email='maria.santos@ua.edu.ph').first()
-        self.assertIsNotNone(user)
-        self.assertTrue(user.is_active)
-        self.assertEqual(user.profile.role, 'student')
+        # Verify user is logged in
+        follow_response = self.client.get(reverse('dashboard'))
+        self.assertEqual(follow_response.status_code, 200)

@@ -162,24 +162,15 @@ def google_login_view(request):
     username_candidate = email.split('@')[0]
     user = User.objects.filter(Q(email__iexact=email) | Q(username__iexact=username_candidate)).first()
 
+    # If user does not exist, do NOT auto-provision. Redirect to registration with email pre-filled.
     if not user:
-        # Check if username collision with another email
-        if User.objects.filter(username__iexact=username_candidate).exists():
-            username_candidate = email.replace('@', '_').replace('.', '_')
-        
-        user = User.objects.create_user(
-            username=username_candidate,
-            email=email,
-            first_name=request.POST.get('google_first_name', '').strip() or username_candidate,
-            last_name=request.POST.get('google_last_name', '').strip(),
-            is_active=True
+        from django.urls import reverse
+        register_url = reverse('register') + f"?email={email}"
+        messages.error(
+            request,
+            "Account not registered. Please complete your registration first."
         )
-        UserProfile.objects.create(
-            user=user,
-            role='student',
-            is_verified=True
-        )
-        log_audit_event(user, "Google SSO Account Provisioned", f"Auto-provisioned student account for '{email}'.", request)
+        return redirect(register_url)
 
     if not user.is_active:
         messages.warning(
@@ -383,7 +374,10 @@ def register_view(request):
 
             return redirect('login')
     else:
-        form = StudentRegistrationForm()
+        initial_data = {}
+        if request.GET.get('email'):
+            initial_data['email'] = request.GET.get('email').strip()
+        form = StudentRegistrationForm(initial=initial_data)
 
     return render(request, 'core/register.html', {'form': form})
 
