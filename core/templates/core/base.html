@@ -227,6 +227,44 @@
             margin-bottom: 1.15rem;
         }
 
+        /* Official University Seal Emblem */
+        .school-seal-emblem {
+            width: 86px;
+            height: 86px;
+            border-radius: 50%;
+            padding: 3px;
+            background: linear-gradient(135deg, rgba(45, 212, 191, 0.8) 0%, rgba(2, 132, 199, 0.6) 50%, rgba(245, 158, 11, 0.7) 100%);
+            box-shadow: 0 0 25px rgba(45, 212, 191, 0.35), 0 8px 24px rgba(0, 0, 0, 0.6);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.15rem;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+        }
+
+        .school-seal-emblem:hover {
+            transform: scale(1.06);
+            box-shadow: 0 0 35px rgba(45, 212, 191, 0.5), 0 12px 28px rgba(0, 0, 0, 0.7);
+        }
+
+        .school-seal-emblem.admin-seal {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.95) 0%, rgba(251, 191, 36, 0.75) 50%, rgba(217, 119, 6, 0.95) 100%);
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.4), 0 8px 24px rgba(0, 0, 0, 0.6);
+        }
+
+        .school-seal-emblem.admin-seal:hover {
+            box-shadow: 0 0 35px rgba(245, 158, 11, 0.6), 0 12px 28px rgba(0, 0, 0, 0.7);
+        }
+
+        .school-seal-emblem img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            background: #ffffff;
+            filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.25));
+        }
+
         /* Clean Dark Input Fields */
         .form-control-water, .form-select.form-control-water {
             background: rgba(11, 18, 33, 0.85) !important;
