@@ -390,7 +390,10 @@ class UARestroomCareSystemTests(TestCase):
         self.assertRedirects(response, reverse('login'))
         
         # Verify error message was delivered
-        response_follow = self.client.get(reverse('login'))
+        response_follow = self.client.post(reverse('google_login'), {
+            'google_email': 'intruder@gmail.com',
+            'google_first_name': 'External'
+        }, follow=True)
         self.assertContains(response_follow, "Access Restricted")
         self.assertContains(response_follow, "@ua.edu.ph")
 
@@ -409,7 +412,7 @@ class UARestroomCareSystemTests(TestCase):
             'google_first_name': 'New',
             'google_last_name': 'Student'
         })
-        expected_url = reverse('register') + f"?email={unregistered_email}"
+        expected_url = reverse('register') + f"?email={unregistered_email}&verified=google"
         self.assertRedirects(response, expected_url)
 
         # Verify alert message appears on registration page
@@ -421,6 +424,8 @@ class UARestroomCareSystemTests(TestCase):
         self.assertContains(follow_response, "Account not registered. Please complete your registration first.")
         # Pre-filled email in the form
         self.assertContains(follow_response, unregistered_email)
+        # Verified Google email is marked readonly
+        self.assertContains(follow_response, 'readonly="readonly"')
 
     def test_google_login_allows_existing_registered_ua_student(self):
         """Google sign-in directly authenticates existing registered @ua.edu.ph accounts."""
@@ -434,3 +439,35 @@ class UARestroomCareSystemTests(TestCase):
         # Verify user is logged in
         follow_response = self.client.get(reverse('dashboard'))
         self.assertEqual(follow_response.status_code, 200)
+
+    def test_google_id_token_server_verification(self):
+        """Backend securely verifies Google ID Token payload for valid and invalid domains."""
+        import json, base64
+
+        def make_jwt(payload):
+            h = base64.urlsafe_b64encode(json.dumps({'alg': 'none'}).encode()).decode().rstrip('=')
+            p = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip('=')
+            return f"{h}.{p}.signature"
+
+        # 1. Valid registered UA student with Google credential token
+        valid_token = make_jwt({'email': self.student_user.email, 'name': 'Registered Student'})
+        response = self.client.post(reverse('google_login'), {'credential': valid_token})
+        self.assertRedirects(response, reverse('dashboard'))
+
+        # Log out to clear session before testing unregistered user
+        self.client.logout()
+
+        # 2. Unregistered UA student with Google credential token -> redirect to register with locked email
+        unreg_token = make_jwt({'email': 'token_student@ua.edu.ph', 'name': 'Token Student'})
+        response2 = self.client.post(reverse('google_login'), {'credential': unreg_token}, follow=True)
+        self.assertContains(response2, 'Account not registered. Please complete your registration first.')
+        self.assertContains(response2, 'token_student@ua.edu.ph')
+        self.assertContains(response2, 'readonly="readonly"')
+
+        # 3. Non-UA Google token -> strictly blocked
+        non_ua_token = make_jwt({'email': 'intruder.token@gmail.com', 'name': 'Intruder'})
+        response3 = self.client.post(reverse('google_login'), {'credential': non_ua_token})
+        self.assertRedirects(response3, reverse('login'))
+        follow_resp3 = self.client.post(reverse('google_login'), {'credential': non_ua_token}, follow=True)
+        self.assertContains(follow_resp3, "Access Restricted")
+

@@ -130,6 +130,14 @@ class StudentRegistrationForm(forms.ModelForm):
         })
     )
 
+    def __init__(self, *args, **kwargs):
+        is_locked_email = kwargs.pop('lock_email', False)
+        super().__init__(*args, **kwargs)
+        if is_locked_email and (self.initial.get('email') or (self.data and self.data.get('email'))):
+            self.fields['email'].widget.attrs['readonly'] = 'readonly'
+            self.fields['email'].widget.attrs['style'] = 'background-color: #f1f5f9; cursor: not-allowed;'
+            self.fields['email'].help_text = "Verified Google institutional email (@ua.edu.ph) — locked."
+
     class Meta:
         model = User
         fields = ['username', 'first_name', 'last_name', 'email']

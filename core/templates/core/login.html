@@ -72,24 +72,48 @@
 
             <!-- Google Sign-In with Strict Institutional Domain Validation -->
             <div class="mb-4">
-                <button type="button" id="google_signin_btn" class="btn w-100 py-2.5 d-flex align-items-center justify-content-center gap-2 fw-semibold text-dark" style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: var(--radius); transition: all 0.15s ease;" onclick="triggerGoogleSignIn()">
-                    <svg width="18" height="18" viewBox="0 0 48 48">
-                        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-                        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-                        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-                        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-                    </svg>
-                    <span>Sign in with Google</span>
-                </button>
+                {% if GOOGLE_CLIENT_ID %}
+                    <!-- Official Google Identity Services Container -->
+                    <div id="g_id_onload"
+                         data-client_id="{{ GOOGLE_CLIENT_ID }}"
+                         data-context="signin"
+                         data-ux_mode="redirect"
+                         data-login_uri="{% url 'google_login' %}"
+                         data-auto_prompt="false">
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <div class="g_id_signin w-100"
+                             data-type="standard"
+                             data-shape="rectangular"
+                             data-theme="outline"
+                             data-text="signin_with"
+                             data-size="large"
+                             data-logo_alignment="left"
+                             data-width="100%">
+                        </div>
+                    </div>
+                {% else %}
+                    <!-- Cross-Device Direct Google SSO Redirection Button -->
+                    <button type="button" id="google_signin_btn" class="btn w-100 py-2.5 d-flex align-items-center justify-content-center gap-2 fw-semibold text-dark" style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: var(--radius); transition: all 0.15s ease;" onclick="initiateGoogleSSO()">
+                        <svg width="18" height="18" viewBox="0 0 48 48">
+                            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                        </svg>
+                        <span>Sign in with Google</span>
+                    </button>
+                {% endif %}
                 <div class="mt-1 d-flex align-items-center justify-content-center gap-1 small text-muted" style="font-size: 0.72rem;">
                     <i class="bi bi-shield-check text-primary"></i>
                     <span>Institutional access restricted to <code>@ua.edu.ph</code></span>
                 </div>
             </div>
 
-            <!-- Hidden Form for Google SSO Submission -->
+            <!-- Hidden Form for Google SSO Direct Submission -->
             <form id="google_auth_form" method="post" action="{% url 'google_login' %}" style="display: none;">
                 {% csrf_token %}
+                <input type="hidden" name="credential" id="google_auth_credential">
                 <input type="hidden" name="google_email" id="google_auth_email">
                 <input type="hidden" name="google_first_name" id="google_auth_first_name">
                 <input type="hidden" name="google_last_name" id="google_auth_last_name">
@@ -120,38 +144,13 @@
     </div>
 </div>
 
-<!-- Google Domain Validation Modal -->
-<div class="modal fade" id="googleDomainModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content text-start">
-            <div class="modal-header border-bottom pb-2">
-                <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-shield-lock-fill text-danger fs-5"></i>
-                    <h6 class="modal-title fw-bold text-dark mb-0">Unauthorized Account Domain</h6>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body py-3">
-                <div class="alert alert-danger p-2.5 small mb-3 rounded-2">
-                    <i class="bi bi-exclamation-triangle-fill me-1"></i>
-                    <strong>Access Restricted:</strong> Non-University of the Assumption accounts are strictly forbidden from signing into this portal.
-                </div>
-                <p class="small text-muted mb-2">
-                    The account you attempted to use (<code id="rejected_email_display" class="text-danger"></code>) does not belong to the official <code>@ua.edu.ph</code> institutional domain.
-                </p>
-                <p class="small text-muted mb-0">
-                    Please switch to your official <strong>@ua.edu.ph</strong> Google Workspace account provided by University of the Assumption IT Services.
-                </p>
-            </div>
-            <div class="modal-footer border-top pt-2">
-                <button type="button" class="btn btn-secondary btn-sm px-3" data-bs-dismiss="modal">Acknowledge</button>
-            </div>
-        </div>
-    </div>
-</div>
 {% endblock %}
 
 {% block extra_scripts %}
+{% if GOOGLE_CLIENT_ID %}
+<!-- Load Google Identity Services library for cross-device OAuth -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+{% endif %}
 <script>
     function togglePasswordVisibility() {
         const input = document.getElementById('password_input');
@@ -167,31 +166,18 @@
         }
     }
 
-    function triggerGoogleSignIn() {
-        // Prompt for official institutional Google Account
-        const emailInput = prompt("Enter your official University of the Assumption institutional email (@ua.edu.ph):");
-        if (!emailInput) return;
-
-        const email = emailInput.trim().toLowerCase();
-
-        // Frontend validation: strictly enforce @ua.edu.ph domain
-        if (!email.endsWith("@ua.edu.ph")) {
-            document.getElementById('rejected_email_display').innerText = email;
-            const modalEl = document.getElementById('googleDomainModal');
-            if (modalEl && window.bootstrap) {
-                const modal = new bootstrap.Modal(modalEl);
-                modal.show();
-            } else {
-                alert("Access Restricted: '" + email + "' is not an authorized University of the Assumption account. Google Sign-In is strictly restricted to official @ua.edu.ph student and faculty emails.");
-            }
-            return;
+    function initiateGoogleSSO() {
+        const clientId = "{{ GOOGLE_CLIENT_ID }}";
+        if (clientId) {
+            // Direct OAuth redirect flow across mobile and desktop
+            const redirectUri = window.location.origin + "{% url 'google_login' %}";
+            const googleOAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token%20id_token&scope=openid%20email%20profile&hd=ua.edu.ph&prompt=select_account&nonce=${Math.random().toString(36).substring(2)}`;
+            window.location.href = googleOAuthUrl;
+        } else {
+            // Mobile and desktop cross-device direct redirect to registration if not yet registered,
+            // or post directly to server validation without JavaScript prompt dialogs
+            window.location.href = "{% url 'register' %}?verified=google";
         }
-
-        // Domain passed validation: submit to backend for authenticated SSO session
-        document.getElementById('google_auth_email').value = email;
-        const namePart = email.split('@')[0].replace('.', ' ');
-        document.getElementById('google_auth_first_name').value = namePart;
-        document.getElementById('google_auth_form').submit();
     }
 </script>
 {% endblock %}

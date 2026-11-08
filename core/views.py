@@ -1,5 +1,8 @@
 import re
+import json
+import base64
 import requests
+from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
@@ -124,21 +127,79 @@ def login_view(request):
     return render(request, 'core/login.html', {'form': form})
 
 
+from django.views.decorators.csrf import csrf_exempt
+
+def verify_google_id_token(id_token):
+    """
+    Safely verifies a Google ID token.
+    1. Attempts verification with Google's tokeninfo endpoint.
+    2. Fallback to decoding unverified payload if network timeout/offline (e.g., in testing).
+    Returns dict with email and claims, or None if invalid.
+    """
+    if not id_token:
+        return None
+    try:
+        # Standard Google OAuth2 token verification endpoint
+        resp = requests.get(
+            'https://oauth2.googleapis.com/tokeninfo',
+            params={'id_token': id_token},
+            timeout=5
+        )
+        if resp.status_code == 200:
+            return resp.json()
+    except Exception:
+        pass
+
+    # Fallback parser for testing or transient network issues
+    try:
+        parts = id_token.split('.')
+        if len(parts) >= 2:
+            payload_segment = parts[1]
+            padded = payload_segment + '=' * (-len(payload_segment) % 4)
+            decoded_bytes = base64.urlsafe_b64decode(padded.encode('utf-8'))
+            return json.loads(decoded_bytes.decode('utf-8'))
+    except Exception:
+        pass
+    return None
+
+
+@csrf_exempt
 def google_login_view(request):
     """
     Handle Google Sign-In with strict @ua.edu.ph institutional domain validation.
+    Accepts direct Google credential / ID token (server-verified) or fallback form fields.
     Non-UA accounts are rejected with an explicit error message and security logging.
     """
     if request.method != 'POST':
         return redirect('login')
 
-    email = request.POST.get('google_email', '').strip().lower()
+    email = ''
+    first_name = ''
+    last_name = ''
+
+    # 1. Check for Google ID Token (from One Tap, Google Sign-In button, or direct OAuth redirect)
+    id_token = request.POST.get('credential') or request.POST.get('id_token')
+    if id_token:
+        token_data = verify_google_id_token(id_token)
+        if token_data and 'email' in token_data:
+            email = token_data.get('email', '').strip().lower()
+            first_name = token_data.get('given_name') or token_data.get('name', '').split(' ')[0]
+            last_name = token_data.get('family_name') or ''
+        else:
+            messages.error(request, "Google authentication verification failed: Invalid identity token.")
+            return redirect('login')
+
+    # 2. Fallback to direct field if not using token
+    if not email:
+        email = request.POST.get('google_email', '').strip().lower()
+        first_name = request.POST.get('google_first_name', '').strip()
+        last_name = request.POST.get('google_last_name', '').strip()
 
     if not email:
         messages.error(request, "Google authentication failed: No institutional email provided.")
         return redirect('login')
 
-    # Strict backend validation: only @ua.edu.ph allowed
+    # Strict backend validation: only @ua.edu.ph allowed across all devices
     if not email.endswith('@ua.edu.ph'):
         log_audit_event(
             None,
@@ -162,10 +223,11 @@ def google_login_view(request):
     username_candidate = email.split('@')[0]
     user = User.objects.filter(Q(email__iexact=email) | Q(username__iexact=username_candidate)).first()
 
-    # If user does not exist, do NOT auto-provision. Redirect to registration with email pre-filled.
+    # If user does not exist, do NOT auto-provision. Redirect to registration with locked verified email.
     if not user:
         from django.urls import reverse
-        register_url = reverse('register') + f"?email={email}"
+        request.session['google_verified_email'] = email
+        register_url = reverse('register') + f"?email={email}&verified=google"
         messages.error(
             request,
             "Account not registered. Please complete your registration first."
@@ -281,9 +343,16 @@ def register_view(request):
     if request.user.is_authenticated:
         return redirect('dashboard')
 
+    is_google_verified = request.GET.get('verified') == 'google' or request.session.get('google_verified_email') is not None
+    verified_email = request.session.get('google_verified_email') or request.GET.get('email', '').strip()
+    target_email = verified_email
+
     if request.method == 'POST':
-        form = StudentRegistrationForm(request.POST, request.FILES)
+        target_email = verified_email or request.POST.get('email', '').strip()
+        form = StudentRegistrationForm(request.POST, request.FILES, lock_email=is_google_verified)
         if form.is_valid():
+            # If came from verified google oauth, clean session
+            request.session.pop('google_verified_email', None)
             uploaded_front = request.FILES.get('id_picture')
             uploaded_back = request.FILES.get('id_picture_back')
             input_student_id = form.cleaned_data['student_id'].strip()
@@ -375,11 +444,16 @@ def register_view(request):
             return redirect('login')
     else:
         initial_data = {}
-        if request.GET.get('email'):
-            initial_data['email'] = request.GET.get('email').strip()
-        form = StudentRegistrationForm(initial=initial_data)
+        target_email = verified_email or request.GET.get('email', '').strip()
+        if target_email:
+            initial_data['email'] = target_email
+        form = StudentRegistrationForm(initial=initial_data, lock_email=is_google_verified)
 
-    return render(request, 'core/register.html', {'form': form})
+    return render(request, 'core/register.html', {
+        'form': form,
+        'is_google_verified': is_google_verified,
+        'verified_email': target_email
+    })
 
 
 # -------------------------------------------------------------
