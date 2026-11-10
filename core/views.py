@@ -83,26 +83,69 @@ def login_view(request):
 
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
-        username = request.POST.get('username', '').strip()
+        identifier = request.POST.get('username', '').strip()
         password = request.POST.get('password', '')
 
+        # First check if an admin username is attempting login via Student Portal
+        direct_user = User.objects.filter(
+            Q(username__iexact=identifier) | Q(email__iexact=identifier)
+        ).first()
+        if direct_user and direct_user.check_password(password) and (direct_user.is_staff or direct_user.is_superuser or is_admin(direct_user)):
+            logout(request)
+            log_audit_event(
+                direct_user,
+                "Blocked Admin Login (Student Portal)",
+                "Admin account attempted to authenticate via Student Portal and was redirected to Admin Portal.",
+                request
+            )
+            messages.error(
+                request,
+                "Access Denied: Administrative accounts must log in through the official Admin Portal."
+            )
+            return redirect('admin_login')
+
+        # Enforce strict identifier format: only valid @ua.edu.ph email or numeric Student ID
+        is_ua_email = bool(re.match(r'^[a-zA-Z0-9._%+\-]+@ua\.edu\.ph$', identifier, re.IGNORECASE))
+        is_numeric_id = bool(re.match(r'^[0-9][0-9\-]*$', identifier)) and any(c.isdigit() for c in identifier)
+
+        if not (is_ua_email or is_numeric_id):
+            messages.error(
+                request,
+                "Invalid login format: Please enter a valid @ua.edu.ph institutional email or your numeric Student ID."
+            )
+            log_audit_event(
+                None,
+                "Invalid Login Format Rejected",
+                f"Rejected student portal login attempt with non-conforming identifier '{identifier}'.",
+                request
+            )
+            return render(request, 'core/login.html', {'form': form, 'entered_username': identifier})
+
+        # Resolve user from @ua.edu.ph email or registered numeric Student ID
+        resolved_user = None
+        if is_ua_email:
+            resolved_user = User.objects.filter(email__iexact=identifier).first()
+        elif is_numeric_id:
+            clean_target = re.sub(r'[^0-9]', '', identifier)
+            for profile in UserProfile.objects.select_related('user').exclude(student_id__isnull=True):
+                if profile.student_id and re.sub(r'[^0-9]', '', profile.student_id) == clean_target:
+                    resolved_user = profile.user
+                    break
+
         # Check if user exists but is currently deactivated (pending review)
-        user_query = User.objects.filter(username__iexact=username).first()
-        if user_query and user_query.check_password(password) and not user_query.is_active:
+        if resolved_user and resolved_user.check_password(password) and not resolved_user.is_active:
             messages.warning(
                 request,
                 "Your account registration is currently pending administrative verification. "
                 "You will be granted access once your student ID has been confirmed."
             )
-            return render(request, 'core/login.html', {'form': form, 'entered_username': username})
+            return render(request, 'core/login.html', {'form': form, 'entered_username': identifier})
 
-        if form.is_valid():
-            user = form.get_user()
-
-            if user.is_staff or user.is_superuser or is_admin(user):
+        if resolved_user and resolved_user.check_password(password) and resolved_user.is_active:
+            if resolved_user.is_staff or resolved_user.is_superuser or is_admin(resolved_user):
                 logout(request)
                 log_audit_event(
-                    user,
+                    resolved_user,
                     "Blocked Admin Login (Student Portal)",
                     "Admin account attempted to authenticate via Student Portal and was redirected to Admin Portal.",
                     request
@@ -113,18 +156,19 @@ def login_view(request):
                 )
                 return redirect('admin_login')
 
-            login(request, user)
-            log_audit_event(user, "User Login", "Authenticated via Main Portal.", request)
-            messages.success(request, f"Welcome back, {user.get_full_name() or user.username}!")
+            login(request, resolved_user)
+            log_audit_event(resolved_user, "User Login", "Authenticated via Main Portal.", request)
+            messages.success(request, f"Welcome back, {resolved_user.get_full_name() or resolved_user.username}!")
             return redirect('dashboard')
         else:
-            messages.error(request, "Invalid username or password. Please verify your credentials.")
+            messages.error(request, "Invalid @ua.edu.ph email, Student ID, or password. Please verify your credentials.")
             log_audit_event(
                 None,
                 "Failed Login Attempt",
-                f"Failed authentication attempt for username '{username}'.",
+                f"Failed authentication attempt for identifier '{identifier}'.",
                 request
             )
+            return render(request, 'core/login.html', {'form': form, 'entered_username': identifier})
     else:
         form = AuthenticationForm()
 

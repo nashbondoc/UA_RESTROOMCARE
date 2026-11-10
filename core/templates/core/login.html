@@ -3,46 +3,49 @@
 {% block title %}Student & Faculty Portal — UA RESTROOMCARE{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center my-3 my-md-5">
+<div class="row justify-content-center my-2 my-md-3">
     <div class="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
         <!-- Solid White Institutional Central Login Card -->
-        <div class="glass-card-pro p-4 p-md-5 text-center">
+        <div class="glass-card-pro px-4 py-3 p-md-4 text-center">
 
             <!-- Official University of the Assumption Seal -->
             <div class="d-flex justify-content-center">
-                <div class="school-seal-emblem">
+                <div class="school-seal-emblem mb-2" style="width: 72px; height: 72px;">
                     <img src="{% static 'img/ua_seal.png' %}" alt="University of the Assumption Seal">
                 </div>
             </div>
 
             <!-- Kapampangan Motto -->
-            <div class="mb-2">
-                <span class="badge px-3 py-1 text-uppercase fw-bold" style="background: #f1f5f9; color: #1e3a8a; border: 1px solid #cbd5e1; font-size: 0.72rem; letter-spacing: 0.6px;">
+            <div class="mb-1.5">
+                <span class="badge px-2.5 py-1 text-uppercase fw-bold" style="background: #f1f5f9; color: #1e3a8a; border: 1px solid #cbd5e1; font-size: 0.7rem; letter-spacing: 0.6px;">
                     &ldquo;Biasa, Maganaca, Mayap&rdquo;
                 </span>
             </div>
 
             <!-- Portal Header -->
-            <h3 class="fw-bold mb-1 text-dark" style="letter-spacing: -0.3px;">Student & Faculty Portal</h3>
-            <p class="small mb-4 text-muted">Log in to report restroom incidents & track repairs</p>
+            <h4 class="fw-bold mb-1 text-dark mt-1" style="letter-spacing: -0.3px;">Student & Faculty Portal</h4>
+            <p class="small mb-3 text-muted">Log in to report restroom incidents & track repairs</p>
 
-            <form method="post" action="{% url 'login' %}" class="text-start">
+            <form method="post" action="{% url 'login' %}" class="text-start" id="student_login_form" onsubmit="return validateStudentLoginIdentifier(event)">
                 {% csrf_token %}
 
-                <!-- Username or Student ID -->
-                <div class="mb-3">
-                    <label class="form-label small fw-semibold text-dark mb-1.5">Username or Student ID</label>
+                <!-- @ua.edu.ph Email or Student ID -->
+                <div class="mb-2.5">
+                    <label class="form-label small fw-semibold text-dark mb-1">@ua.edu.ph Email or Student ID</label>
                     <div class="input-group">
                         <span class="input-group-text input-water-addon border-end-0">
                             <i class="bi bi-person"></i>
                         </span>
-                        <input type="text" name="username" class="form-control form-control-water border-start-0 ps-1" placeholder="Enter username" value="{{ entered_username|default:'' }}" required autofocus autocomplete="username">
+                        <input type="text" name="username" id="login_identifier_input" class="form-control form-control-water border-start-0 ps-1" placeholder="name@ua.edu.ph or Student ID" value="{{ entered_username|default:'' }}" pattern="^[a-zA-Z0-9._%+\-]+@ua\.edu\.ph$|^[0-9][0-9\-]*$" title="Enter an official @ua.edu.ph email address or your numeric Student ID (e.g. 2024-00123)" required autofocus autocomplete="username">
+                    </div>
+                    <div id="login_identifier_error" class="text-danger small mt-1 d-none" style="font-size: 0.78rem;">
+                        <i class="bi bi-exclamation-circle me-1"></i>Please enter a valid <code>@ua.edu.ph</code> email address or numeric Student ID.
                     </div>
                 </div>
 
                 <!-- Password & Forgot Password Link -->
-                <div class="mb-4">
-                    <label class="form-label small fw-semibold text-dark mb-1.5">Password</label>
+                <div class="mb-3 mt-2.5">
+                    <label class="form-label small fw-semibold text-dark mb-1">Password</label>
                     <div class="input-group">
                         <span class="input-group-text input-water-addon border-end-0">
                             <i class="bi bi-lock"></i>
@@ -52,26 +55,26 @@
                             <i class="bi bi-eye" id="password_toggle_icon"></i>
                         </button>
                     </div>
-                    <div class="text-end mt-2">
-                        <a href="{% url 'password_reset' %}" class="small text-decoration-none fw-semibold" style="color: #1e3a8a; font-size: 0.82rem; transition: color 0.15s ease;">Forgot Password?</a>
+                    <div class="text-end mt-1.5">
+                        <a href="{% url 'password_reset' %}" class="small text-decoration-none fw-semibold" style="color: #1e3a8a; font-size: 0.8rem; transition: color 0.15s ease;">Forgot Password?</a>
                     </div>
                 </div>
 
                 <!-- Blue "Sign In to Portal" Button -->
-                <button type="submit" class="btn btn-blue-signin w-100 py-2.5 mb-3">
+                <button type="submit" class="btn btn-blue-signin w-100 py-2 mb-2.5">
                     <i class="bi bi-box-arrow-in-right"></i> Sign In to Portal
                 </button>
             </form>
 
             <!-- Divider -->
-            <div class="d-flex align-items-center my-3">
+            <div class="d-flex align-items-center my-2.5">
                 <hr class="flex-grow-1 my-0" style="border-color: #cbd5e1;">
-                <span class="px-2 small text-muted text-uppercase fw-semibold" style="font-size: 0.68rem; letter-spacing: 0.5px;">Or continue with</span>
+                <span class="px-2 small text-muted text-uppercase fw-semibold" style="font-size: 0.66rem; letter-spacing: 0.5px;">Or continue with</span>
                 <hr class="flex-grow-1 my-0" style="border-color: #cbd5e1;">
             </div>
 
             <!-- Google Sign-In with Strict Institutional Domain Validation -->
-            <div class="mb-4">
+            <div class="mb-3">
                 {% if GOOGLE_CLIENT_ID %}
                     <!-- Official Google Identity Services Container -->
                     <div id="g_id_onload"
@@ -94,7 +97,7 @@
                     </div>
                 {% else %}
                     <!-- Cross-Device Direct Google SSO Redirection Button -->
-                    <button type="button" id="google_signin_btn" class="btn w-100 py-2.5 d-flex align-items-center justify-content-center gap-2 fw-semibold text-dark" style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04); transition: all 0.2s ease;" onmouseover="this.style.backgroundColor='#f8fafc'; this.style.borderColor='#94a3b8'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 8px rgba(15, 23, 42, 0.07)';" onmouseout="this.style.backgroundColor='#ffffff'; this.style.borderColor='#cbd5e1'; this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(15, 23, 42, 0.04)';" onclick="initiateGoogleSSO()">
+                    <button type="button" id="google_signin_btn" class="btn w-100 py-2 d-flex align-items-center justify-content-center gap-2 fw-semibold text-dark" style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04); transition: all 0.2s ease;" onmouseover="this.style.backgroundColor='#f8fafc'; this.style.borderColor='#94a3b8'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 8px rgba(15, 23, 42, 0.07)';" onmouseout="this.style.backgroundColor='#ffffff'; this.style.borderColor='#cbd5e1'; this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(15, 23, 42, 0.04)';" onclick="initiateGoogleSSO()">
                         <svg width="18" height="18" viewBox="0 0 48 48">
                             <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
                             <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
@@ -120,22 +123,22 @@
             </form>
 
             <!-- Register Student Account Option -->
-            <p class="small mb-2 text-muted">New student? Need account verification?</p>
-            <a href="{% url 'register' %}" class="btn btn-teal-secondary w-100 py-2.5 mb-4">
+            <p class="small mb-1.5 text-muted" style="font-size: 0.8rem;">New student? Need account verification?</p>
+            <a href="{% url 'register' %}" class="btn btn-teal-secondary w-100 py-2 mb-3">
                 <i class="bi bi-person-plus me-1"></i> Register Student Account
             </a>
 
             <!-- Dedicated Admin Portal Callout Box -->
-            <div class="admin-callout-box">
+            <div class="admin-callout-box py-2 px-3">
                 <div class="d-flex flex-column text-start">
-                    <span class="badge bg-secondary-subtle text-secondary-emphasis fw-bold align-self-start mb-1" style="font-size: 0.65rem; border-radius: 4px; padding: 2px 7px;">
+                    <span class="badge bg-secondary-subtle text-secondary-emphasis fw-bold align-self-start mb-0.5" style="font-size: 0.62rem; border-radius: 4px; padding: 2px 6px;">
                         STAFF ONLY
                     </span>
-                    <span class="small fw-semibold text-dark" style="font-size: 0.82rem;">
+                    <span class="small fw-semibold text-dark" style="font-size: 0.8rem;">
                         Campus Admin / Maintenance
                     </span>
                 </div>
-                <a href="{% url 'admin_login' %}" class="btn btn-admin-yellow">
+                <a href="{% url 'admin_login' %}" class="btn btn-admin-yellow py-1.5 px-2.5">
                     Admin Portal <i class="bi bi-arrow-right"></i>
                 </a>
             </div>
@@ -164,6 +167,23 @@
             icon.classList.remove('bi-eye-slash');
             icon.classList.add('bi-eye');
         }
+    }
+
+    function validateStudentLoginIdentifier(event) {
+        const input = document.getElementById('login_identifier_input');
+        const errDiv = document.getElementById('login_identifier_error');
+        if (!input) return true;
+        const val = input.value.trim();
+        const uaEmailRegex = /^[a-zA-Z0-9._%+\-]+@ua\.edu\.ph$/i;
+        const studentIdRegex = /^[0-9][0-9\-]*$/;
+        if (!uaEmailRegex.test(val) && !studentIdRegex.test(val)) {
+            if (event) event.preventDefault();
+            if (errDiv) errDiv.classList.remove('d-none');
+            input.focus();
+            return false;
+        }
+        if (errDiv) errDiv.classList.add('d-none');
+        return true;
     }
 
     function initiateGoogleSSO() {

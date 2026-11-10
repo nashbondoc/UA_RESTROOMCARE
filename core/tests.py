@@ -118,12 +118,49 @@ class UARestroomCareSystemTests(TestCase):
         self.assertFalse(follow_response.wsgi_request.user.is_authenticated)
 
     def test_student_login_via_main_portal_redirects_to_user_dashboard(self):
-        """When Student logs in through Main Portal, redirected to user dashboard."""
-        response = self.client.post(reverse('login'), {
+        """When Student logs in through Main Portal using @ua.edu.ph email or Student ID, redirected to user dashboard."""
+        # 1. Login with @ua.edu.ph email
+        response_email = self.client.post(reverse('login'), {
+            'username': 'john.doe@ua.edu.ph',
+            'password': 'Password123!'
+        })
+        self.assertRedirects(response_email, reverse('dashboard'))
+        self.client.logout()
+
+        # 2. Login with numeric Student ID (with hyphen)
+        response_id = self.client.post(reverse('login'), {
+            'username': '2024-00123',
+            'password': 'Password123!'
+        })
+        self.assertRedirects(response_id, reverse('dashboard'))
+        self.client.logout()
+
+        # 3. Login with numeric Student ID (digits only)
+        response_digits = self.client.post(reverse('login'), {
+            'username': '202400123',
+            'password': 'Password123!'
+        })
+        self.assertRedirects(response_digits, reverse('dashboard'))
+
+    def test_student_login_rejects_non_email_non_numeric_username(self):
+        """Main Portal rejects plain non-email usernames or non-@ua.edu.ph emails."""
+        # Plain text handle rejected
+        resp1 = self.client.post(reverse('login'), {
             'username': 'student_john',
             'password': 'Password123!'
         })
-        self.assertRedirects(response, reverse('dashboard'))
+        self.assertEqual(resp1.status_code, 200)
+        self.assertContains(resp1, "Invalid login format")
+        self.assertFalse(resp1.wsgi_request.user.is_authenticated)
+
+        # Non-UA email rejected
+        resp2 = self.client.post(reverse('login'), {
+            'username': 'john.doe@gmail.com',
+            'password': 'Password123!'
+        })
+        self.assertEqual(resp2.status_code, 200)
+        self.assertContains(resp2, "Invalid login format")
+        self.assertFalse(resp2.wsgi_request.user.is_authenticated)
 
     # -------------------------------------------------------------
     # 2. STUDENT REGISTRATION, DUAL-ID (FRONT & BACK) & DUPLICATION CHECK
