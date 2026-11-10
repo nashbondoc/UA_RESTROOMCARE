@@ -85,13 +85,37 @@ class UARestroomCareSystemTests(TestCase):
             ).exists()
         )
 
-    def test_admin_login_via_main_portal_redirects_to_admin_dashboard(self):
-        """When an Admin logs in through the Main Portal, system automatically redirects them to Admin Dashboard."""
+    def test_admin_blocked_from_student_portal_redirects_to_admin_portal(self):
+        """When an Admin attempts to log in through the Student Portal, they are blocked and redirected to Admin Portal."""
         response = self.client.post(reverse('login'), {
             'username': 'admin_boss',
             'password': 'Password123!'
         })
-        self.assertRedirects(response, reverse('admin_dashboard'))
+        self.assertRedirects(response, reverse('admin_login'))
+
+        follow_response = self.client.post(reverse('login'), {
+            'username': 'admin_boss',
+            'password': 'Password123!'
+        }, follow=True)
+        self.assertContains(follow_response, "Administrative accounts must log in through the official Admin Portal.")
+        self.assertFalse(follow_response.wsgi_request.user.is_authenticated)
+
+    def test_admin_blocked_from_google_student_login(self):
+        """When an Admin attempts Google Sign-In on the Student Portal, they are logged out and redirected to Admin Portal."""
+        response = self.client.post(reverse('google_login'), {
+            'google_email': self.admin_user.email,
+            'google_first_name': 'Admin',
+            'google_last_name': 'Boss'
+        })
+        self.assertRedirects(response, reverse('admin_login'))
+
+        follow_response = self.client.post(reverse('google_login'), {
+            'google_email': self.admin_user.email,
+            'google_first_name': 'Admin',
+            'google_last_name': 'Boss'
+        }, follow=True)
+        self.assertContains(follow_response, "Administrative accounts must log in through the official Admin Portal.")
+        self.assertFalse(follow_response.wsgi_request.user.is_authenticated)
 
     def test_student_login_via_main_portal_redirects_to_user_dashboard(self):
         """When Student logs in through Main Portal, redirected to user dashboard."""

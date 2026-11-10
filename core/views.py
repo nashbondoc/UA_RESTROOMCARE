@@ -72,8 +72,8 @@ def parse_ocr_text(image_file):
 def login_view(request):
     """
     Main Student / Faculty Login Portal.
-    - When valid credentials entered: logs in and redirects to User Dashboard.
-    - When an Admin logs in through Main Portal: automatically redirects to Admin Dashboard.
+    - When valid student/faculty credentials entered: logs in and redirects to User Dashboard.
+    - When an Admin attempts to log in through Main Portal: logs out immediately and redirects to Admin Portal.
     - If account pending verification: informs the user that review is underway.
     """
     if request.user.is_authenticated:
@@ -98,21 +98,25 @@ def login_view(request):
 
         if form.is_valid():
             user = form.get_user()
-            login(request, user)
 
-            if is_admin(user):
+            if user.is_staff or user.is_superuser or is_admin(user):
+                logout(request)
                 log_audit_event(
                     user,
-                    "Admin Login (Main Portal)",
-                    "Admin logged in through Main Portal and was redirected to Admin Dashboard.",
+                    "Blocked Admin Login (Student Portal)",
+                    "Admin account attempted to authenticate via Student Portal and was redirected to Admin Portal.",
                     request
                 )
-                messages.success(request, f"Welcome back, Administrator {user.get_full_name() or user.username}!")
-                return redirect('admin_dashboard')
-            else:
-                log_audit_event(user, "User Login", "Authenticated via Main Portal.", request)
-                messages.success(request, f"Welcome back, {user.get_full_name() or user.username}!")
-                return redirect('dashboard')
+                messages.error(
+                    request,
+                    "Access Denied: Administrative accounts must log in through the official Admin Portal."
+                )
+                return redirect('admin_login')
+
+            login(request, user)
+            log_audit_event(user, "User Login", "Authenticated via Main Portal.", request)
+            messages.success(request, f"Welcome back, {user.get_full_name() or user.username}!")
+            return redirect('dashboard')
         else:
             messages.error(request, "Invalid username or password. Please verify your credentials.")
             log_audit_event(
@@ -242,16 +246,24 @@ def google_login_view(request):
         )
         return redirect('login')
 
-    login(request, user)
+    if user.is_staff or user.is_superuser or is_admin(user):
+        logout(request)
+        log_audit_event(
+            user,
+            "Blocked Admin Google SSO Login (Student Portal)",
+            "Administrator attempted to authenticate via Student Google SSO and was redirected to Admin Portal.",
+            request
+        )
+        messages.error(
+            request,
+            "Access Denied: Administrative accounts must log in through the official Admin Portal."
+        )
+        return redirect('admin_login')
 
-    if is_admin(user):
-        log_audit_event(user, "Admin Google SSO Login", "Administrator authenticated via Google SSO.", request)
-        messages.success(request, f"Welcome back, Administrator {user.get_full_name() or user.username}!")
-        return redirect('admin_dashboard')
-    else:
-        log_audit_event(user, "User Google SSO Login", "Student/Faculty authenticated via Google SSO.", request)
-        messages.success(request, f"Welcome, {user.get_full_name() or user.username}! Successfully signed in with UA Google Account.")
-        return redirect('dashboard')
+    login(request, user)
+    log_audit_event(user, "User Google SSO Login", "Student/Faculty authenticated via Google SSO.", request)
+    messages.success(request, f"Welcome, {user.get_full_name() or user.username}! Successfully signed in with UA Google Account.")
+    return redirect('dashboard')
 
 
 def admin_login_view(request):
