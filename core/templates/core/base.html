@@ -133,15 +133,15 @@
         .glass-card-pro {
             background: #ffffff !important;
             border: 1px solid #cbd5e1;
-            border-radius: var(--radius);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.06), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
             position: relative;
         }
 
         .glass-card-pro:hover {
             border-color: #94a3b8;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 14px 30px -5px rgba(15, 23, 42, 0.09), 0 8px 12px -6px rgba(15, 23, 42, 0.05);
         }
 
         /* User Avatar Circle on Card */
@@ -187,10 +187,11 @@
             background: #ffffff !important;
             border: 1px solid var(--card-border) !important;
             color: var(--text-primary) !important;
-            border-radius: var(--radius);
+            border-radius: 8px;
             padding: 0.65rem 0.9rem;
             font-size: 0.94rem;
-            transition: all 0.15s ease;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
         .form-control-water::placeholder {
@@ -199,16 +200,34 @@
 
         .form-control-water:focus, .form-select.form-control-water:focus {
             border-color: #1e3a8a !important;
-            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15) !important;
+            box-shadow: 0 0 0 3.5px rgba(30, 58, 138, 0.18) !important;
             background: #ffffff !important;
             outline: none;
         }
 
-        .input-group-text.input-water-addon {
+        .input-group:focus-within {
+            border-radius: 8px;
+            box-shadow: 0 0 0 3.5px rgba(30, 58, 138, 0.18);
+            transition: box-shadow 0.2s ease;
+        }
+
+        .input-group:focus-within .form-control-water,
+        .input-group:focus-within .input-water-addon {
+            border-color: #1e3a8a !important;
+            box-shadow: none !important;
+        }
+
+        .input-group-text.input-water-addon, .btn.input-water-addon {
             background: #f8fafc !important;
             border: 1px solid var(--card-border) !important;
             color: #64748b !important;
-            border-radius: var(--radius);
+            border-radius: 8px;
+            transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+        }
+
+        .btn.input-water-addon:hover {
+            background: #f1f5f9 !important;
+            color: #1e3a8a !important;
         }
 
         /* Primary Navy Buttons */
@@ -217,10 +236,11 @@
             border: 1px solid var(--primary-btn-bg) !important;
             color: var(--primary-btn-fg) !important;
             font-weight: 600;
-            border-radius: var(--radius);
+            border-radius: 8px;
             padding: 0.75rem 1.4rem;
             letter-spacing: 0.2px;
-            transition: all 0.15s ease;
+            box-shadow: 0 2px 4px rgba(30, 58, 138, 0.15);
+            transition: all 0.2s ease;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -230,6 +250,8 @@
             background: var(--primary-btn-hover) !important;
             border-color: var(--primary-btn-hover) !important;
             color: #ffffff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.25);
         }
 
         .btn-teal-secondary {
@@ -237,9 +259,10 @@
             border: 1px solid var(--secondary-btn-bg) !important;
             color: #ffffff !important;
             font-weight: 600;
-            border-radius: var(--radius);
+            border-radius: 8px;
             padding: 0.75rem 1.25rem;
-            transition: all 0.15s ease;
+            box-shadow: 0 2px 4px rgba(15, 118, 110, 0.15);
+            transition: all 0.2s ease;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -250,13 +273,15 @@
             background: var(--secondary-btn-hover) !important;
             border-color: var(--secondary-btn-hover) !important;
             color: #ffffff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(15, 118, 110, 0.22);
         }
 
         /* Institutional Admin Callout Box */
         .admin-callout-box {
             background: #f8fafc;
             border: 1px solid var(--card-border);
-            border-radius: var(--radius);
+            border-radius: 8px;
             padding: 0.85rem 1.15rem;
             display: flex;
             align-items: center;
@@ -271,8 +296,9 @@
             font-weight: 600;
             font-size: 0.85rem;
             padding: 0.55rem 1.15rem;
-            border-radius: var(--radius);
-            transition: all 0.15s ease;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(180, 83, 9, 0.15);
+            transition: all 0.2s ease;
             display: inline-flex;
             align-items: center;
             gap: 0.35rem;
@@ -283,6 +309,8 @@
             background: var(--admin-btn-hover) !important;
             border-color: var(--admin-btn-hover) !important;
             color: #ffffff !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(180, 83, 9, 0.22);
         }
 
         /* Status Badges */
