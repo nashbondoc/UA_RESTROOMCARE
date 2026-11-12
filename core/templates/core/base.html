@@ -39,7 +39,7 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--bg-main);
             background-image:
-                linear-gradient(180deg, rgba(248, 250, 252, 0.72) 0%, rgba(238, 242, 246, 0.78) 100%),
+                linear-gradient(180deg, rgba(15, 23, 42, 0.38) 0%, rgba(15, 23, 42, 0.38) 100%),
                 url("{% static 'img/ua_campus_bg.jpg' %}");
             background-size: cover;
             background-position: center center;
@@ -488,7 +488,7 @@
                             </a>
                         </li>
                         <li class="nav-item ms-lg-1">
-                            <a href="{% url 'login' %}" class="nav-btn-register">
+                            <a href="{% url 'login_alias' %}" class="nav-btn-register" id="header_student_login_btn">
                                 <i class="bi bi-box-arrow-in-right"></i> Student Login
                             </a>
                         </li>

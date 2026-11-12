@@ -3,7 +3,84 @@
 {% block title %}Student & Faculty Portal — UA RESTROOMCARE{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center my-2 my-md-3">
+{% if request.path == '/' and not entered_username and not form.errors and not messages %}
+<!-- ============================================================== -->
+<!-- INITIAL ROOT LANDING HERO SECTION (/)                          -->
+<!-- ============================================================== -->
+<div id="landing_hero_section" class="row justify-content-center align-items-center my-4 my-md-5 py-md-3">
+    <div class="col-12 col-md-10 col-lg-8 col-xl-7">
+        <div class="glass-card-pro p-4 p-md-5 text-center" style="background: rgba(255, 255, 255, 0.96) !important;">
+            <!-- Official University of the Assumption Seal -->
+            <div class="d-flex justify-content-center">
+                <div class="school-seal-emblem mb-2.5" style="width: 84px; height: 84px;">
+                    <img src="{% static 'img/ua_seal.png' %}" alt="University of the Assumption Seal">
+                </div>
+            </div>
+
+            <!-- Kapampangan Motto -->
+            <div class="mb-2">
+                <span class="badge px-3 py-1 text-uppercase fw-bold" style="background: #f1f5f9; color: #1e3a8a; border: 1px solid #cbd5e1; font-size: 0.72rem; letter-spacing: 0.6px;">
+                    &ldquo;Biasa, Maganaca, Mayap&rdquo;
+                </span>
+            </div>
+
+            <h2 class="fw-bold text-dark mt-2 mb-2" style="letter-spacing: -0.4px;">
+                University of the Assumption<br>
+                <span style="color: #1e3a8a;">Restroom Care &amp; Sanitation System</span>
+            </h2>
+            <p class="text-muted mx-auto mb-4" style="max-width: 540px; font-size: 0.95rem; line-height: 1.6;">
+                Official campus sanitation reporting, real-time maintenance dispatch, and verified student &amp; faculty facility tracking portal.
+            </p>
+
+            <!-- Hero Action Triggers -->
+            <div class="d-flex flex-column flex-sm-row justify-content-center align-items-center gap-2.5">
+                <a href="{% url 'register' %}" class="btn btn-teal-secondary px-4 py-2.5 w-100 w-sm-auto">
+                    <i class="bi bi-person-plus"></i> Register Student Account
+                </a>
+                <a href="{% url 'login_alias' %}" onclick="showStudentLoginCard(event)" class="btn btn-blue-signin px-4 py-2.5 w-100 w-sm-auto">
+                    <i class="bi bi-box-arrow-in-right"></i> Student &amp; Faculty Login
+                </a>
+            </div>
+
+            <!-- Institutional Feature Highlights -->
+            <div class="row g-2 mt-4 pt-3 border-top text-start" style="border-color: var(--card-border) !important;">
+                <div class="col-12 col-sm-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-shield-check text-primary fs-5"></i>
+                        <div>
+                            <div class="fw-bold text-dark" style="font-size: 0.78rem;">Verified UA Access</div>
+                            <div class="text-muted" style="font-size: 0.72rem;">Official @ua.edu.ph &amp; ID</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-camera text-primary fs-5"></i>
+                        <div>
+                            <div class="fw-bold text-dark" style="font-size: 0.78rem;">Photo Evidence</div>
+                            <div class="text-muted" style="font-size: 0.72rem;">Direct incident capture</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-clock-history text-primary fs-5"></i>
+                        <div>
+                            <div class="fw-bold text-dark" style="font-size: 0.78rem;">Live Tracking</div>
+                            <div class="text-muted" style="font-size: 0.72rem;">Real-time repair updates</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- ============================================================== -->
+<!-- COMPACT STUDENT & FACULTY LOGIN CARD (/login/)                 -->
+<!-- ============================================================== -->
+<div id="student_login_card_section" class="row justify-content-center my-2 my-md-3 {% if request.path == '/' and not entered_username and not form.errors and not messages %}d-none{% endif %}">
     <div class="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
         <!-- Solid White Institutional Central Login Card -->
         <div class="glass-card-pro px-4 py-3 p-md-4 text-center">
@@ -162,6 +239,31 @@
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 {% endif %}
 <script>
+    function showStudentLoginCard(event) {
+        const hero = document.getElementById('landing_hero_section');
+        const loginCard = document.getElementById('student_login_card_section');
+        if (hero && loginCard) {
+            if (event) event.preventDefault();
+            hero.classList.add('d-none');
+            loginCard.classList.remove('d-none');
+            if (window.history && window.history.pushState) {
+                window.history.pushState({ view: 'login' }, '', "{% url 'login_alias' %}");
+            }
+            const input = document.getElementById('login_identifier_input');
+            if (input) input.focus();
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const headerLoginBtn = document.getElementById('header_student_login_btn');
+        const hero = document.getElementById('landing_hero_section');
+        if (headerLoginBtn && hero) {
+            headerLoginBtn.addEventListener('click', function(e) {
+                showStudentLoginCard(e);
+            });
+        }
+    });
+
     function togglePasswordVisibility() {
         const input = document.getElementById('password_input');
         const icon = document.getElementById('password_toggle_icon');

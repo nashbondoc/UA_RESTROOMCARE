@@ -426,6 +426,19 @@ class UARestroomCareSystemTests(TestCase):
             ).exists()
         )
 
+    def test_admin_audit_logs_stays_authenticated(self):
+        """Admin navigating from Admin Dashboard to Audit Logs remains authenticated and is not logged out."""
+        login_resp = self.client.post(reverse('admin_login'), {
+            'username': 'admin_boss',
+            'password': 'Password123!'
+        })
+        self.assertRedirects(login_resp, reverse('admin_dashboard'))
+
+        audit_resp = self.client.get(reverse('audit_logs'))
+        self.assertEqual(audit_resp.status_code, 200)
+        self.assertContains(audit_resp, "System Audit Trail")
+        self.assertTrue(audit_resp.wsgi_request.user.is_authenticated)
+
     # -------------------------------------------------------------
     # 6. ACCOUNT RECOVERY (PASSWORD RESET) TESTS
     # -------------------------------------------------------------
