@@ -569,3 +569,11 @@ class UARestroomCareSystemTests(TestCase):
         follow_resp3 = self.client.post(reverse('google_login'), {'credential': non_ua_token}, follow=True)
         self.assertContains(follow_resp3, "Access Restricted")
 
+
+    def test_auth_diagnostics_reports_password_hash_mismatch(self):
+        """If a session no longer matches the user's password hash, the login card explains why."""
+        self.client.login(username='admin_boss', password='Password123!')
+        self.admin_user.set_password('Another#Pass456')
+        self.admin_user.save()
+        response = self.client.get(reverse('admin_verifications'), follow=True)
+        self.assertContains(response, 'password-hash-mismatch')

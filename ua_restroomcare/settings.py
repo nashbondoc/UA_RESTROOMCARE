@@ -32,8 +32,10 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'core.diagnostics.AuthDiagBefore',  # TEMPORARY: remove after logout issue is solved
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'core.diagnostics.AuthDiagAfter',  # TEMPORARY: remove after logout issue is solved
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
