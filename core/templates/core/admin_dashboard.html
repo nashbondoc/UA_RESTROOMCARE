@@ -14,15 +14,18 @@
             <p class="small mb-0 text-muted">Campus Facilities Management, Dual-ID Verification & Security Oversight</p>
         </div>
     </div>
-    <div class="d-flex gap-2 flex-wrap">
-        <a href="{% url 'admin_verifications' %}" class="btn btn-teal-secondary btn-sm px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5">
-            <i class="bi bi-person-vcard"></i> Student Verifications
+    <div class="d-flex gap-2 flex-wrap align-items-center">
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-teal-secondary btn-sm px-3 py-2 fw-bold d-inline-flex align-items-center gap-1.5 shadow-sm">
+            <i class="bi bi-speedometer2"></i> Control Center
+        </a>
+        <a href="{% url 'admin_verifications' %}" class="btn btn-outline-primary btn-sm px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5">
+            <i class="bi bi-person-vcard"></i> Verifications
             {% if stats.pending_registrations > 0 %}
                 <span class="badge bg-danger rounded-pill">{{ stats.pending_registrations }}</span>
             {% endif %}
         </a>
-        <a href="{% url 'audit_logs' %}" class="btn btn-outline-secondary btn-sm px-3 py-2 fw-semibold">
-            <i class="bi bi-shield-check me-1"></i> System Audit Trail
+        <a href="{% url 'audit_logs' %}" class="btn btn-outline-secondary btn-sm px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5">
+            <i class="bi bi-shield-check"></i> Audit Logs
         </a>
     </div>
 </div>

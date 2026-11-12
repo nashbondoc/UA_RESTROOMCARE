@@ -140,6 +140,12 @@
             color: #1e3a8a !important;
             background: #f1f5f9;
         }
+        .nav-btn-link.active {
+            color: #1e3a8a !important;
+            background: #e0f2fe !important;
+            border: 1px solid #bae6fd !important;
+            font-weight: 700;
+        }
 
         .nav-btn-admin {
             color: #b45309 !important;
@@ -477,12 +483,12 @@
                     {% if user.is_authenticated %}
                         {% if user.is_superuser or user.is_staff or user.profile.role == 'admin' %}
                             <li class="nav-item">
-                                <a class="nav-btn-link" href="{% url 'admin_dashboard' %}">
+                                <a class="nav-btn-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}" href="{% url 'admin_dashboard' %}">
                                     <i class="bi bi-speedometer2 text-primary"></i> Control Center
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-btn-link d-inline-flex align-items-center gap-1.5" href="{% url 'admin_verifications' %}">
+                                <a class="nav-btn-link d-inline-flex align-items-center gap-1.5 {% if request.resolver_match.url_name == 'admin_verifications' %}active{% endif %}" href="{% url 'admin_verifications' %}">
                                     <i class="bi bi-person-vcard text-success"></i> Verifications
                                     {% if pending_verifications_count > 0 %}
                                         <span class="badge rounded-pill bg-danger" style="font-size: 0.65rem; padding: 0.25em 0.55em;">{{ pending_verifications_count }}</span>
@@ -490,7 +496,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-btn-link" href="{% url 'audit_logs' %}">
+                                <a class="nav-btn-link {% if request.resolver_match.url_name == 'audit_logs' %}active{% endif %}" href="{% url 'audit_logs' %}">
                                     <i class="bi bi-shield-check text-warning"></i> Audit Logs
                                 </a>
                             </li>
