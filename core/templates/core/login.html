@@ -34,11 +34,18 @@
 
             <!-- Hero Action Triggers -->
             <div class="d-flex flex-column flex-sm-row justify-content-center align-items-center gap-2.5">
-                <a href="{% url 'register' %}" class="btn btn-teal-secondary px-4 py-2.5 w-100 w-sm-auto">
-                    <i class="bi bi-person-plus"></i> Register Student Account
-                </a>
                 <a href="{% url 'login_alias' %}" onclick="showStudentLoginCard(event)" class="btn btn-blue-signin px-4 py-2.5 w-100 w-sm-auto">
                     <i class="bi bi-box-arrow-in-right"></i> Student &amp; Faculty Login
+                </a>
+            </div>
+
+            <!-- Subtle Divider & Registration Call-to-Action -->
+            <div class="my-4 pt-3 border-top" style="border-color: var(--card-border) !important;">
+                <p class="text-muted small mb-2.5 mx-auto" style="max-width: 500px; font-size: 0.86rem; line-height: 1.5;">
+                    <i class="bi bi-info-circle text-primary me-1"></i> Don't have an account yet? Activate your access first using your official <code>@ua.edu.ph</code> email or Student/Faculty ID.
+                </p>
+                <a href="{% url 'register' %}" class="btn btn-teal-secondary px-4 py-2 text-nowrap">
+                    <i class="bi bi-person-plus me-1"></i> Register Student Account
                 </a>
             </div>
 
@@ -217,15 +224,16 @@
         </div>
 
         <!-- Separate Student Registration Call-to-Action in Hero Section -->
-        <div class="glass-card-pro mt-3 px-4 py-3 text-center">
-            <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2">
-                <div class="text-sm-start">
-                    <span class="d-block fw-bold text-dark" style="font-size: 0.88rem;">New Student or Faculty?</span>
-                    <span class="small text-muted" style="font-size: 0.78rem;">Verify your official UA ID to activate your account</span>
+        <div class="glass-card-pro mt-4 px-4 py-3 text-center" style="margin-top: 1.5rem !important;">
+            <div class="d-flex flex-column gap-2.5">
+                <div class="text-muted small px-1" style="font-size: 0.84rem; line-height: 1.5;">
+                    <i class="bi bi-info-circle text-primary me-1"></i> Don't have an account yet? Activate your access first using your official <code>@ua.edu.ph</code> email or Student/Faculty ID.
                 </div>
-                <a href="{% url 'register' %}" class="btn btn-teal-secondary py-2 px-3.5 text-nowrap">
-                    <i class="bi bi-person-plus"></i> Register Student Account
-                </a>
+                <div class="d-flex justify-content-center">
+                    <a href="{% url 'register' %}" class="btn btn-teal-secondary py-2 px-4 text-nowrap">
+                        <i class="bi bi-person-plus me-1"></i> Register Student Account
+                    </a>
+                </div>
             </div>
         </div>
     </div>
