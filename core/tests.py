@@ -577,3 +577,11 @@ class UARestroomCareSystemTests(TestCase):
         self.admin_user.save()
         response = self.client.get(reverse('admin_verifications'), follow=True)
         self.assertContains(response, 'password-hash-mismatch')
+
+    def test_login_does_not_rewrite_password_hash(self):
+        """Logging in must not re-hash the password (would desync sessions across serverless instances)."""
+        before = User.objects.get(pk=self.admin_user.pk).password
+        self.client.post(reverse('admin_login'), {'username': 'admin_boss', 'password': 'Password123!'})
+        after = User.objects.get(pk=self.admin_user.pk).password
+        self.assertEqual(before, after)
+        self.assertIn('$1500000$', before)
