@@ -272,7 +272,7 @@ class UARestroomCareSystemTests(TestCase):
 
         self.client.login(username='admin_boss', password='Password123!')
         response = self.client.get(reverse('verify_student', args=[pending_profile.id, 'approve']))
-        self.assertRedirects(response, reverse('admin_dashboard'))
+        self.assertRedirects(response, reverse('admin_verifications'))
 
         pending_user.refresh_from_db()
         pending_profile.refresh_from_db()
@@ -295,7 +295,7 @@ class UARestroomCareSystemTests(TestCase):
 
         self.client.login(username='admin_boss', password='Password123!')
         response = self.client.get(reverse('verify_student', args=[reject_profile.id, 'reject']))
-        self.assertRedirects(response, reverse('admin_dashboard'))
+        self.assertRedirects(response, reverse('admin_verifications'))
 
         self.assertFalse(User.objects.filter(username='reject_student').exists())
         self.assertFalse(UserProfile.objects.filter(id=reject_profile.id).exists())
@@ -426,18 +426,42 @@ class UARestroomCareSystemTests(TestCase):
             ).exists()
         )
 
-    def test_admin_audit_logs_stays_authenticated(self):
-        """Admin navigating from Admin Dashboard to Audit Logs remains authenticated and is not logged out."""
+    def test_admin_navigation_control_center_verifications_audit_logs_stays_authenticated(self):
+        """Admin navigating across Control Center, Verifications, and Audit Logs remains authenticated without session logout."""
         login_resp = self.client.post(reverse('admin_login'), {
             'username': 'admin_boss',
             'password': 'Password123!'
         })
         self.assertRedirects(login_resp, reverse('admin_dashboard'))
 
+        # 1. Access Admin Control Center
+        dashboard_resp = self.client.get(reverse('admin_dashboard'))
+        self.assertEqual(dashboard_resp.status_code, 200)
+        self.assertContains(dashboard_resp, "Restroom Operations Command")
+        self.assertTrue(dashboard_resp.wsgi_request.user.is_authenticated)
+
+        # 2. Access Verifications Portal
+        verif_resp = self.client.get(reverse('admin_verifications'))
+        self.assertEqual(verif_resp.status_code, 200)
+        self.assertContains(verif_resp, "Student Identity Verifications")
+        self.assertTrue(verif_resp.wsgi_request.user.is_authenticated)
+
+        # 3. Access Audit Logs
         audit_resp = self.client.get(reverse('audit_logs'))
         self.assertEqual(audit_resp.status_code, 200)
         self.assertContains(audit_resp, "System Audit Trail")
         self.assertTrue(audit_resp.wsgi_request.user.is_authenticated)
+
+    def test_admin_verifications_rbac(self):
+        """Non-admin student cannot access verifications portal; unauthenticated user is redirected to login."""
+        # Unauthenticated access
+        unauth_resp = self.client.get(reverse('admin_verifications'))
+        self.assertRedirects(unauth_resp, f"{reverse('login')}?next={reverse('admin_verifications')}")
+
+        # Student access is redirected with permission error
+        self.client.login(username='student_john', password='Password123!')
+        student_resp = self.client.get(reverse('admin_verifications'))
+        self.assertRedirects(student_resp, reverse('dashboard'))
 
     # -------------------------------------------------------------
     # 6. ACCOUNT RECOVERY (PASSWORD RESET) TESTS

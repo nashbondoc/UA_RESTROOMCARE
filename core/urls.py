@@ -19,6 +19,7 @@ urlpatterns = [
 
     # 4. Maintenance Management & Administration
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('verifications/', views.admin_verifications_view, name='admin_verifications'),
     path('update-status/<int:report_id>/', views.update_report_status, name='update_status'),
     path('review-suspicious/<int:log_id>/', views.mark_suspicious_reviewed, name='mark_suspicious_reviewed'),
     path('audit-logs/', views.audit_logs_view, name='audit_logs'),

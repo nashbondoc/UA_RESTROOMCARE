@@ -1,0 +1,158 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Student Identity Verifications — UA RESTROOMCARE{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard-container mb-4">
+    <!-- Header Section -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <a href="{% url 'admin_dashboard' %}" class="btn btn-teal-secondary btn-sm p-2" title="Back to Control Center">
+                <i class="bi bi-arrow-left fs-5"></i>
+            </a>
+            <div class="avatar-circle-teal mb-0" style="width: 50px; height: 50px; font-size: 1.4rem; border-color: #2563eb; background: #dbeafe; color: #1d4ed8;">
+                <i class="bi bi-person-vcard"></i>
+            </div>
+            <div>
+                <h2 class="fw-bold mb-0 text-dark">Student Identity Verifications</h2>
+                <p class="small mb-0 text-muted">Review, inspect dual-sided ID cards, and approve or reject student account registrations</p>
+            </div>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="{% url 'admin_dashboard' %}" class="btn btn-teal-secondary btn-sm px-3 py-2 fw-semibold">
+                <i class="bi bi-speedometer2 me-1"></i> Control Center
+            </a>
+            <a href="{% url 'audit_logs' %}" class="btn btn-outline-secondary btn-sm px-3 py-2 fw-semibold">
+                <i class="bi bi-shield-check me-1"></i> Audit Logs
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Card -->
+    <div class="glass-card-pro p-3 p-md-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-shield-lock text-primary fs-5"></i>
+                <h5 class="fw-bold mb-0 text-dark">Pending Dual-Card Identity Submissions</h5>
+            </div>
+            <span class="badge {% if pending_count > 0 %}bg-warning text-dark{% else %}bg-secondary text-white{% endif %} px-3 py-1.5 fw-bold" style="font-size: 0.75rem;">
+                {{ pending_count }} Requiring Review
+            </span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--card-border);">
+                        <th class="py-2.5 text-uppercase small text-muted">Student Full Name</th>
+                        <th class="py-2.5 text-uppercase small text-muted">Username</th>
+                        <th class="py-2.5 text-uppercase small text-muted">Institutional Email</th>
+                        <th class="py-2.5 text-uppercase small text-muted">Student ID #</th>
+                        <th class="py-2.5 text-uppercase small text-muted">ID Card Evidence</th>
+                        <th class="py-2.5 text-uppercase small text-center text-muted">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for profile in pending_students %}
+                    <tr style="border-bottom: 1px solid var(--card-border);">
+                        <td>
+                            <strong class="text-dark">{{ profile.user.get_full_name|default:profile.user.username }}</strong>
+                        </td>
+                        <td class="text-primary fw-semibold">@{{ profile.user.username }}</td>
+                        <td>
+                            <code class="text-dark">{{ profile.user.email }}</code>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border">{{ profile.student_id|default:"N/A" }}</span>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-outline-primary px-3 py-1" data-bs-toggle="modal" data-bs-target="#studentDualIdModal{{ profile.id }}">
+                                <i class="bi bi-images me-1"></i> Inspect Front & Back
+                            </button>
+                        </td>
+                        <td class="text-center">
+                            <div class="d-inline-flex gap-2">
+                                <a href="{% url 'verify_student' profile.id 'approve' %}" class="btn btn-success btn-sm px-3 fw-semibold">
+                                    <i class="bi bi-check-lg"></i> Approve
+                                </a>
+                                <a href="{% url 'verify_student' profile.id 'reject' %}" class="btn btn-outline-danger btn-sm px-3 fw-semibold" onclick="return confirm('Are you sure you want to reject and remove this student registration?');">
+                                    <i class="bi bi-trash3"></i> Reject
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <i class="bi bi-check2-circle text-success fs-3 d-block mb-2"></i>
+                            <div class="fw-semibold">No student identity verifications currently awaiting review.</div>
+                            <small class="text-muted">All student accounts are verified or no pending registrations exist.</small>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================== -->
+<!-- TOP-LEVEL MODALS: DUAL ID INSPECTION                           -->
+<!-- ============================================================== -->
+{% for profile in pending_students %}
+<div class="modal fade" id="studentDualIdModal{{ profile.id }}" tabindex="-1" aria-labelledby="studentDualIdModalLabel{{ profile.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content glass-card-pro p-3 text-start">
+            <div class="modal-header border-0 pb-2">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-person-vcard text-primary fs-5"></i>
+                    <h6 class="modal-title fw-bold text-dark mb-0" id="studentDualIdModalLabel{{ profile.id }}">
+                        Identity Verification: {{ profile.user.get_full_name|default:profile.user.username }} (ID: {{ profile.student_id }})
+                    </h6>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-2" style="max-height: 75vh; overflow-y: auto;">
+                <div class="row g-3">
+                    <!-- Front ID -->
+                    <div class="col-12 col-md-6 text-center">
+                        <div class="p-2 rounded mb-2 bg-light border">
+                            <span class="small fw-bold text-dark"><i class="bi bi-person-bounding-box me-1 text-primary"></i> Front Face (Photo & Name)</span>
+                        </div>
+                        {% if profile.id_picture %}
+                            <img src="{{ profile.id_picture.url }}" alt="Front ID" class="img-fluid rounded shadow-sm" style="max-height: 380px; object-fit: contain; border: 1px solid var(--card-border);">
+                        {% else %}
+                            <div class="p-4 small text-muted">No front image uploaded</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Back ID -->
+                    <div class="col-12 col-md-6 text-center">
+                        <div class="p-2 rounded mb-2 bg-light border">
+                            <span class="small fw-bold text-dark"><i class="bi bi-upc-scan me-1 text-primary"></i> Back Face (Student ID & Barcode)</span>
+                        </div>
+                        {% if profile.id_picture_back %}
+                            <img src="{{ profile.id_picture_back.url }}" alt="Back ID" class="img-fluid rounded shadow-sm" style="max-height: 380px; object-fit: contain; border: 1px solid var(--card-border);">
+                        {% else %}
+                            <div class="p-4 small text-muted">No back image uploaded</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-2 d-flex justify-content-between flex-wrap gap-2">
+                <small class="text-muted">Email: {{ profile.user.email }}</small>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'verify_student' profile.id 'approve' %}" class="btn btn-success btn-sm px-3 fw-bold">
+                        <i class="bi bi-check-lg"></i> Approve Identity
+                    </a>
+                    <a href="{% url 'verify_student' profile.id 'reject' %}" class="btn btn-outline-danger btn-sm px-3 fw-bold" onclick="return confirm('Are you sure you want to reject and delete this registration?');">
+                        <i class="bi bi-trash3"></i> Reject
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
+

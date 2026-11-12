@@ -482,6 +482,14 @@
                                 </a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-btn-link d-inline-flex align-items-center gap-1.5" href="{% url 'admin_verifications' %}">
+                                    <i class="bi bi-person-vcard text-success"></i> Verifications
+                                    {% if pending_verifications_count > 0 %}
+                                        <span class="badge rounded-pill bg-danger" style="font-size: 0.65rem; padding: 0.25em 0.55em;">{{ pending_verifications_count }}</span>
+                                    {% endif %}
+                                </a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-btn-link" href="{% url 'audit_logs' %}">
                                     <i class="bi bi-shield-check text-warning"></i> Audit Logs
                                 </a>

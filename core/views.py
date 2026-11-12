@@ -601,9 +601,8 @@ def dashboard(request):
 @login_required
 def admin_dashboard(request):
     """
-    Admin Dashboard:
-    - View system status metrics (Total Reports, Pending, Under Review, In Progress, Resolved).
-    - View and manage pending student account verification requests (Approve / Reject) with Front and Back ID photos.
+    Admin Control Center:
+    - Focused on KPI metrics and Incident Report Queue.
     - View and update report statuses with resolution or rejection notes.
     - View suspicious activity logs.
     """
@@ -618,7 +617,7 @@ def admin_dashboard(request):
         return redirect('dashboard')
 
     reports = RestroomReport.objects.all().order_by('-created_at')
-    pending_students = UserProfile.objects.filter(is_verified=False, role='student').select_related('user')
+    pending_students_count = UserProfile.objects.filter(is_verified=False, role='student').count()
     suspicious_logs = SuspiciousActivityLog.objects.filter(reviewed=False).order_by('-flagged_at')[:20]
 
     stats = {
@@ -629,14 +628,31 @@ def admin_dashboard(request):
         'resolved': reports.filter(status='Resolved').count(),
         'rejected': reports.filter(status='Rejected').count(),
         'suspicious': SuspiciousActivityLog.objects.filter(reviewed=False).count(),
-        'pending_registrations': pending_students.count()
+        'pending_registrations': pending_students_count
     }
 
     return render(request, 'core/admin_dashboard.html', {
         'reports': reports,
         'stats': stats,
         'suspicious_logs': suspicious_logs,
-        'pending_students': pending_students
+    })
+
+
+@login_required
+def admin_verifications_view(request):
+    """
+    Dedicated Student Identity Verifications Portal (/verifications/):
+    - Front & Back ID Card review with Dual-ID inspection modals.
+    - Approve / Reject student identity registration workflows.
+    """
+    if not is_admin(request.user):
+        messages.error(request, "Access Denied: Administrative privileges required.")
+        return redirect('dashboard')
+
+    pending_students = UserProfile.objects.filter(is_verified=False, role='student').select_related('user').order_by('-user__date_joined')
+    return render(request, 'core/verifications.html', {
+        'pending_students': pending_students,
+        'pending_count': pending_students.count(),
     })
 
 
@@ -680,7 +696,11 @@ def verify_student(request, profile_id, action):
         student_user.delete()
         messages.warning(request, f"Student registration for '{student_name}' has been rejected and permanently removed.")
 
-    return redirect('admin_dashboard')
+    # Redirect back to referring page (Verifications or Admin Dashboard)
+    next_url = request.GET.get('next')
+    if next_url:
+        return redirect(next_url)
+    return redirect('admin_verifications')
 
 
 @login_required
