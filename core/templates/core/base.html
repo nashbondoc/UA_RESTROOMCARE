@@ -38,6 +38,13 @@
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--bg-main);
+            background-image:
+                linear-gradient(180deg, rgba(248, 250, 252, 0.72) 0%, rgba(238, 242, 246, 0.78) 100%),
+                url("{% static 'img/ua_campus_bg.jpg' %}");
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
             color: var(--text-primary);
             min-height: 100vh;
             overflow-x: hidden;
@@ -45,9 +52,17 @@
             flex-direction: column;
         }
 
+        @media (max-width: 768px) {
+            body {
+                background-attachment: scroll;
+            }
+        }
+
         /* Clean White Top Navigation Bar */
         .navbar-custom {
-            background: #ffffff !important;
+            background: rgba(255, 255, 255, 0.94) !important;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             border-bottom: 1px solid var(--card-border);
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
             z-index: 1050;
@@ -466,20 +481,15 @@
                             </a>
                         </li>
                     {% else %}
-                        <!-- Unauthenticated Navigation Buttons -->
-                        <li class="nav-item">
-                            <a href="{% url 'login' %}" class="nav-btn-link">
-                                <i class="bi bi-box-arrow-in-right"></i> Student Login
-                            </a>
-                        </li>
+                        <!-- Unauthenticated Minimal Navigation Buttons -->
                         <li class="nav-item">
                             <a href="{% url 'admin_login' %}" class="nav-btn-admin">
                                 <i class="bi bi-shield-lock"></i> Admin Portal
                             </a>
                         </li>
-                        <li class="nav-item ms-lg-2">
-                            <a href="{% url 'register' %}" class="nav-btn-register">
-                                <i class="bi bi-person-plus"></i> Student Register
+                        <li class="nav-item ms-lg-1">
+                            <a href="{% url 'login' %}" class="nav-btn-register">
+                                <i class="bi bi-box-arrow-in-right"></i> Student Login
                             </a>
                         </li>
                     {% endif %}
