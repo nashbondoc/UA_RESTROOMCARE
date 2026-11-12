@@ -148,6 +148,11 @@ SESSION_COOKIE_SECURE = IS_VERCEL or (not DEBUG)
 CSRF_COOKIE_SECURE = IS_VERCEL or (not DEBUG)
 CSRF_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_PATH = '/'
+# Serverless hosts (Vercel) can drop/merge multiple Set-Cookie headers per response.
+# Keep CSRF token and flash messages inside the single signed session cookie so the
+# app never emits more than one cookie and the admin session cannot be lost.
+CSRF_USE_SESSIONS = True
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_COOKIE_AGE = 86400  # 24 hours
 USE_X_FORWARDED_HOST = True
