@@ -138,11 +138,14 @@ LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'
 
 # Session & Reverse-Proxy Persistence (prevents auto-logout across serverless instances on Vercel)
+IS_VERCEL = bool(os.environ.get('VERCEL'))
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+SESSION_COOKIE_NAME = 'ua_sessionid'
+SESSION_COOKIE_PATH = '/'
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
-SESSION_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_SECURE = IS_VERCEL or (not DEBUG)
+CSRF_COOKIE_SECURE = IS_VERCEL or (not DEBUG)
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_COOKIE_AGE = 86400  # 24 hours
 USE_X_FORWARDED_HOST = True
