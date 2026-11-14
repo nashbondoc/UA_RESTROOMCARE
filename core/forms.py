@@ -93,7 +93,7 @@ class StudentRegistrationForm(forms.ModelForm):
         required=True,
         widget=forms.TextInput(attrs={
             'class': 'form-control form-control-water',
-            'placeholder': 'Student ID Number (e.g. 2024-00123)'
+            'placeholder': 'Student ID Number (e.g. 2024001234)'
         })
     )
     id_picture = forms.ImageField(
