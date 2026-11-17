@@ -20,7 +20,7 @@ from django.db.models import Q
 
 from .models import RestroomReport, RestroomLocation, AuditLog, SuspiciousActivityLog, UserProfile
 from .forms import RestroomReportForm, StudentRegistrationForm, InstitutionalPasswordResetForm
-from .utils import check_rate_limit_and_duplicates, log_audit_event, get_client_ip
+from .utils import check_rate_limit_and_duplicates, log_audit_event, get_client_ip, get_user_role
 
 
 def is_admin(user):
@@ -51,7 +51,7 @@ def parse_ocr_text(image_file):
             'https://api.ocr.space/parse/image',
             files=files,
             data=payload,
-            timeout=8
+            timeout=4
         )
         result = response.json()
         image_file.seek(0)
@@ -69,31 +69,75 @@ def parse_ocr_text(image_file):
 # 1. AUTHENTICATION & PORTAL ACCESS
 # -------------------------------------------------------------
 
+PENDING_MSG = (
+    "Your account registration is currently pending administrative verification. "
+    "You will be granted access once your student ID has been confirmed."
+)
+
+
+def _resolve_portal_user(identifier):
+    """Find the REGISTERED account for an @ua.edu.ph email or numeric Student ID.
+    Never creates accounts; returns None when nothing is registered."""
+    is_ua_email = bool(re.match(r'^[a-zA-Z0-9._%+\-]+@ua\.edu\.ph$', identifier, re.IGNORECASE))
+    if is_ua_email:
+        return User.objects.filter(email__iexact=identifier).first()
+    clean_target = re.sub(r'[^0-9]', '', identifier)
+    if not clean_target:
+        return None
+    for profile in UserProfile.objects.select_related('user').exclude(student_id__isnull=True):
+        if profile.student_id and re.sub(r'[^0-9]', '', profile.student_id) == clean_target:
+            return profile.user
+    return None
+
+
+def _is_verified_for_portal(user):
+    """Admins skip ID verification; student/professor need profile.is_verified == True."""
+    if is_admin(user):
+        return True
+    profile = getattr(user, 'profile', None)
+    return bool(profile and profile.is_verified)
+
+
+def _log_failed_login(request, identifier, reason, user=None):
+    log_audit_event(
+        None,
+        "Failed Login Attempt",
+        f"Identifier '{identifier}' rejected: {reason}.",
+        request,
+        username=identifier or 'anonymous',
+        role=get_user_role(user) if user else 'unregistered',
+    )
+
+
 def login_view(request):
     """
     Main Student / Faculty Login Portal.
-    - When valid student/faculty credentials entered: logs in and redirects to User Dashboard.
-    - When an Admin attempts to log in through Main Portal: logs out immediately and redirects to Admin Portal.
-    - If account pending verification: informs the user that review is underway.
+    - Credentials are checked only with django.contrib.auth.authenticate() against registered accounts.
+    - Unregistered identifiers and wrong passwords are rejected immediately (no fallback / auto-create).
+    - Non-admin roles must be is_active AND profile.is_verified before login() is called.
+    - Admin accounts are bounced to the Admin Portal.
     """
     if request.user.is_authenticated:
         if is_admin(request.user):
             return redirect('admin_dashboard')
         return redirect('dashboard')
 
-    if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
-        identifier = request.POST.get('username', '').strip()
-        password = request.POST.get('password', '')
+    if request.method != 'POST':
+        return render(request, 'core/login.html', {'form': AuthenticationForm()})
 
-        # First check if an admin username is attempting login via Student Portal
-        direct_user = User.objects.filter(
-            Q(username__iexact=identifier) | Q(email__iexact=identifier)
-        ).first()
-        if direct_user and direct_user.check_password(password) and (direct_user.is_staff or direct_user.is_superuser or is_admin(direct_user)):
-            logout(request)
+    form = AuthenticationForm(request, data=request.POST)
+    identifier = request.POST.get('username', '').strip()
+    password = request.POST.get('password', '')
+    ctx = {'form': form, 'entered_username': identifier}
+
+    # Admin usernames are not valid student identifiers: detect correct admin credentials first.
+    admin_candidate = User.objects.filter(
+        Q(username__iexact=identifier) | Q(email__iexact=identifier)
+    ).first()
+    if admin_candidate and is_admin(admin_candidate):
+        if authenticate(request, username=admin_candidate.get_username(), password=password) is not None:
             log_audit_event(
-                direct_user,
+                admin_candidate,
                 "Blocked Admin Login (Student Portal)",
                 "Admin account attempted to authenticate via Student Portal and was redirected to Admin Portal.",
                 request
@@ -104,111 +148,74 @@ def login_view(request):
             )
             return redirect('admin_login')
 
-        # Enforce strict identifier format: only valid @ua.edu.ph email or numeric Student ID
-        is_ua_email = bool(re.match(r'^[a-zA-Z0-9._%+\-]+@ua\.edu\.ph$', identifier, re.IGNORECASE))
-        is_numeric_id = bool(re.match(r'^[0-9][0-9\-]*$', identifier)) and any(c.isdigit() for c in identifier)
+    # Strict identifier format: only a valid @ua.edu.ph email or numeric Student ID
+    is_ua_email = bool(re.match(r'^[a-zA-Z0-9._%+\-]+@ua\.edu\.ph$', identifier, re.IGNORECASE))
+    is_numeric_id = bool(re.match(r'^[0-9][0-9\-]*$', identifier)) and any(c.isdigit() for c in identifier)
+    if not (is_ua_email or is_numeric_id):
+        messages.error(
+            request,
+            "Invalid login format: Please enter a valid @ua.edu.ph institutional email or your numeric Student ID."
+        )
+        _log_failed_login(request, identifier, "invalid identifier format")
+        return render(request, 'core/login.html', ctx)
 
-        if not (is_ua_email or is_numeric_id):
-            messages.error(
-                request,
-                "Invalid login format: Please enter a valid @ua.edu.ph institutional email or your numeric Student ID."
-            )
-            log_audit_event(
-                None,
-                "Invalid Login Format Rejected",
-                f"Rejected student portal login attempt with non-conforming identifier '{identifier}'.",
-                request
-            )
-            return render(request, 'core/login.html', {'form': form, 'entered_username': identifier})
+    resolved_user = _resolve_portal_user(identifier)
+    if resolved_user is None:
+        messages.error(request, "Invalid @ua.edu.ph email, Student ID, or password. Please verify your credentials.")
+        _log_failed_login(request, identifier, "no registered account")
+        return render(request, 'core/login.html', ctx)
 
-        # Resolve user from @ua.edu.ph email or registered numeric Student ID
-        resolved_user = None
-        if is_ua_email:
-            resolved_user = User.objects.filter(email__iexact=identifier).first()
-        elif is_numeric_id:
-            clean_target = re.sub(r'[^0-9]', '', identifier)
-            for profile in UserProfile.objects.select_related('user').exclude(student_id__isnull=True):
-                if profile.student_id and re.sub(r'[^0-9]', '', profile.student_id) == clean_target:
-                    resolved_user = profile.user
-                    break
-
-        # Check if user exists but is currently deactivated (pending review)
-        if resolved_user and resolved_user.check_password(password) and not resolved_user.is_active:
-            messages.warning(
-                request,
-                "Your account registration is currently pending administrative verification. "
-                "You will be granted access once your student ID has been confirmed."
-            )
-            return render(request, 'core/login.html', {'form': form, 'entered_username': identifier})
-
-        if resolved_user and resolved_user.check_password(password) and resolved_user.is_active:
-            if resolved_user.is_staff or resolved_user.is_superuser or is_admin(resolved_user):
-                logout(request)
-                log_audit_event(
-                    resolved_user,
-                    "Blocked Admin Login (Student Portal)",
-                    "Admin account attempted to authenticate via Student Portal and was redirected to Admin Portal.",
-                    request
-                )
-                messages.error(
-                    request,
-                    "Access Denied: Administrative accounts must log in through the official Admin Portal."
-                )
-                return redirect('admin_login')
-
-            login(request, resolved_user)
-            log_audit_event(resolved_user, "User Login", "Authenticated via Main Portal.", request)
-            messages.success(request, f"Welcome back, {resolved_user.get_full_name() or resolved_user.username}!")
-            return redirect('dashboard')
+    user = authenticate(request, username=resolved_user.get_username(), password=password)
+    if user is None:
+        if not resolved_user.is_active and resolved_user.check_password(password):
+            # Correct password, but the account is still awaiting admin verification.
+            messages.warning(request, PENDING_MSG)
+            _log_failed_login(request, identifier, "account pending verification (inactive)", resolved_user)
         else:
             messages.error(request, "Invalid @ua.edu.ph email, Student ID, or password. Please verify your credentials.")
-            log_audit_event(
-                None,
-                "Failed Login Attempt",
-                f"Failed authentication attempt for identifier '{identifier}'.",
-                request
-            )
-            return render(request, 'core/login.html', {'form': form, 'entered_username': identifier})
-    else:
-        form = AuthenticationForm()
+            _log_failed_login(request, identifier, "wrong password", resolved_user)
+        return render(request, 'core/login.html', ctx)
 
-    return render(request, 'core/login.html', {'form': form})
+    if not user.is_active or not _is_verified_for_portal(user):
+        messages.warning(request, PENDING_MSG)
+        _log_failed_login(request, identifier, "account not verified", user)
+        return render(request, 'core/login.html', ctx)
+
+    login(request, user)
+    log_audit_event(user, "Successful Sign-In", "Authenticated via Main Portal.", request)
+    messages.success(request, f"Welcome back, {user.get_full_name() or user.username}!")
+    return redirect('dashboard')
 
 
 from django.views.decorators.csrf import csrf_exempt
 
 def verify_google_id_token(id_token):
     """
-    Safely verifies a Google ID token.
-    1. Attempts verification with Google's tokeninfo endpoint.
-    2. Fallback to decoding unverified payload if network timeout/offline (e.g., in testing).
-    Returns dict with email and claims, or None if invalid.
+    Verifies a Google ID token with Google's tokeninfo endpoint ONLY.
+    There is deliberately no offline/unsigned fallback: a forged or unsigned token must fail.
+    The token's audience must equal GOOGLE_CLIENT_ID and the e-mail must be verified by Google.
+    Returns the claims dict, or None if invalid.
     """
-    if not id_token:
+    client_id = getattr(settings, 'GOOGLE_CLIENT_ID', '')
+    if not id_token or not client_id:
         return None
     try:
-        # Standard Google OAuth2 token verification endpoint
         resp = requests.get(
             'https://oauth2.googleapis.com/tokeninfo',
             params={'id_token': id_token},
             timeout=5
         )
-        if resp.status_code == 200:
-            return resp.json()
+        if resp.status_code != 200:
+            return None
+        claims = resp.json()
     except Exception:
-        pass
+        return None
 
-    # Fallback parser for testing or transient network issues
-    try:
-        parts = id_token.split('.')
-        if len(parts) >= 2:
-            payload_segment = parts[1]
-            padded = payload_segment + '=' * (-len(payload_segment) % 4)
-            decoded_bytes = base64.urlsafe_b64decode(padded.encode('utf-8'))
-            return json.loads(decoded_bytes.decode('utf-8'))
-    except Exception:
-        pass
-    return None
+    if claims.get('aud') != client_id:
+        return None
+    if str(claims.get('email_verified', '')).lower() != 'true':
+        return None
+    return claims
 
 
 @csrf_exempt
@@ -237,14 +244,12 @@ def google_login_view(request):
             messages.error(request, "Google authentication verification failed: Invalid identity token.")
             return redirect('login')
 
-    # 2. Fallback to direct field if not using token
+    # No fallback to client-supplied form fields: an e-mail address that Google has not
+    # vouched for (signed token) must never be able to start a session.
     if not email:
-        email = request.POST.get('google_email', '').strip().lower()
-        first_name = request.POST.get('google_first_name', '').strip()
-        last_name = request.POST.get('google_last_name', '').strip()
-
-    if not email:
-        messages.error(request, "Google authentication failed: No institutional email provided.")
+        messages.error(request, "Google authentication failed: a verified Google sign-in is required.")
+        _log_failed_login(request, request.POST.get('google_email', '').strip() or 'anonymous',
+                          "Google sign-in attempted without a verified Google token")
         return redirect('login')
 
     # Strict backend validation: only @ua.edu.ph allowed across all devices
@@ -280,14 +285,12 @@ def google_login_view(request):
             request,
             "Account not registered. Please complete your registration first."
         )
+        _log_failed_login(request, email, "Google account not registered")
         return redirect(register_url)
 
-    if not user.is_active:
-        messages.warning(
-            request,
-            "Your account registration is currently pending administrative verification. "
-            "You will be granted access once your student ID has been confirmed."
-        )
+    if not (user.is_staff or user.is_superuser or is_admin(user)) and (not user.is_active or not _is_verified_for_portal(user)):
+        messages.warning(request, PENDING_MSG)
+        _log_failed_login(request, email, "Google account not verified / inactive", user)
         return redirect('login')
 
     if user.is_staff or user.is_superuser or is_admin(user):
@@ -305,7 +308,7 @@ def google_login_view(request):
         return redirect('admin_login')
 
     login(request, user)
-    log_audit_event(user, "User Google SSO Login", "Student/Faculty authenticated via Google SSO.", request)
+    log_audit_event(user, "Successful Sign-In", "Student/Faculty authenticated via Google SSO.", request)
     messages.success(request, f"Welcome, {user.get_full_name() or user.username}! Successfully signed in with UA Google Account.")
     return redirect('dashboard')
 
@@ -313,8 +316,8 @@ def google_login_view(request):
 def admin_login_view(request):
     """
     Dedicated Admin Portal (/admin-portal/login/).
-    - When Admin enters valid credentials: logs in and redirects to Admin Dashboard.
-    - When a Student/Teacher attempts login: blocks access immediately.
+    - Uses authenticate(); only active admin accounts are signed in.
+    - Student/Faculty credentials are blocked and flagged.
     """
     if request.user.is_authenticated:
         if is_admin(request.user):
@@ -326,8 +329,10 @@ def admin_login_view(request):
         username = request.POST.get('username', '').strip()
         password = request.POST.get('password', '')
 
-        user = User.objects.filter(username__iexact=username).first()
-        if user and user.check_password(password):
+        candidate = User.objects.filter(username__iexact=username).first()
+        user = authenticate(request, username=candidate.get_username(), password=password) if candidate else None
+
+        if user is not None:
             if not is_admin(user):
                 log_audit_event(
                     user,
@@ -346,37 +351,36 @@ def admin_login_view(request):
                 )
                 return render(request, 'core/admin_login.html', {'entered_username': username})
 
-            if not user.is_active:
-                messages.error(request, "Your administrative account is currently deactivated. Please contact campus IT.")
-                return render(request, 'core/admin_login.html', {'entered_username': username})
-
             login(request, user)
             log_audit_event(
                 user,
-                "Admin Portal Login",
+                "Successful Sign-In",
                 "Administrator successfully authenticated through Dedicated Admin Portal.",
                 request
             )
             messages.success(request, f"Welcome to the Admin Control Center, {user.get_full_name() or user.username}!")
             return redirect('admin_dashboard')
-        else:
-            messages.error(request, "Invalid administrator credentials.")
-            log_audit_event(
-                None,
-                "Failed Admin Portal Login",
-                f"Failed login attempt on Admin Portal for username '{username}'.",
-                request
-            )
+
+        if candidate and is_admin(candidate) and not candidate.is_active and candidate.check_password(password):
+            messages.error(request, "Your administrative account is currently deactivated. Please contact campus IT.")
+            _log_failed_login(request, username, "administrative account deactivated", candidate)
+            return render(request, 'core/admin_login.html', {'entered_username': username})
+
+        messages.error(request, "Invalid administrator credentials.")
+        _log_failed_login(request, username, "invalid administrator credentials (Admin Portal)", candidate)
+        return render(request, 'core/admin_login.html', {'entered_username': username})
 
     return render(request, 'core/admin_login.html')
 
 
 @login_required
 def logout_view(request):
-    """Safely logs out user and logs audit trail."""
+    """Sign out: capture request.user (and role) BEFORE logout() clears the session, then audit it."""
     user = request.user
-    log_audit_event(user, "User Logout", f"User {user.username} logged out safely.", request)
+    username = user.get_username()
+    role = get_user_role(user)
     logout(request)
+    log_audit_event(user, "Sign-Out", f"User {username} signed out safely.", request, username=username, role=role)
     messages.info(request, "You have been logged out safely.")
     return redirect('login')
 
@@ -475,14 +479,23 @@ def register_view(request):
             user.save()
 
             # Create UserProfile record with Front and Back ID photos
-            UserProfile.objects.create(
-                user=user,
-                role='student',
-                student_id=input_student_id,
-                id_picture=uploaded_front,
-                id_picture_back=uploaded_back,
-                is_verified=is_auto_verified
-            )
+            try:
+                UserProfile.objects.create(
+                    user=user,
+                    role='student',
+                    student_id=input_student_id,
+                    id_picture=uploaded_front,
+                    id_picture_back=uploaded_back,
+                    is_verified=is_auto_verified
+                )
+            except OSError:
+                # Fallback if filesystem storage is read-only
+                UserProfile.objects.create(
+                    user=user,
+                    role='student',
+                    student_id=input_student_id,
+                    is_verified=is_auto_verified
+                )
 
             # Log audit event
             log_audit_event(
@@ -553,7 +566,11 @@ def submit_report(request):
 
             report = form.save(commit=False)
             report.user = request.user
-            report.save()
+            try:
+                report.save()
+            except OSError:
+                report.photo = None
+                report.save()
 
             log_audit_event(
                 request.user,
@@ -777,7 +794,7 @@ def audit_logs_view(request):
         return redirect('dashboard')
 
     search_query = request.GET.get('q', '').strip()
-    logs_qs = AuditLog.objects.select_related('actor').order_by('-timestamp')
+    logs_qs = AuditLog.objects.select_related('actor', 'actor__profile').order_by('-timestamp', '-id')
 
     if search_query:
         logs_qs = logs_qs.filter(

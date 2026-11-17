@@ -77,13 +77,31 @@ def check_rate_limit_and_duplicates(user, location, category, is_urgent=False, r
     return True, None, None
 
 
-def log_audit_event(actor, action, details="", request=None):
+def get_user_role(user):
+    """Role label from UserProfile.role (admin for superusers/staff without a profile)."""
+    if user is None or not getattr(user, 'pk', None):
+        return 'unregistered'
+    profile = getattr(user, 'profile', None)
+    if profile is not None and profile.role:
+        return profile.role
+    if user.is_superuser or user.is_staff:
+        return 'admin'
+    return 'unknown'
+
+
+def log_audit_event(actor, action, details="", request=None, username=None, role=None):
+    """Record an audit entry. Timestamp is automatic; username and role are stored in the
+    details prefix so they survive even when there is no authenticated actor (failed logins)."""
     ip = get_client_ip(request)
     # Ensure actor is a valid User instance or None
     user_actor = actor if getattr(actor, 'is_authenticated', False) else None
+    if username is None:
+        username = user_actor.get_username() if user_actor else 'anonymous'
+    if role is None:
+        role = get_user_role(user_actor) if user_actor else 'anonymous'
     AuditLog.objects.create(
         actor=user_actor,
         action=action,
-        details=details,
+        details=f"[user={username}|role={role}] {details}".rstrip(),
         ip_address=ip
     )

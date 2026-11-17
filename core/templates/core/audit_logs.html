@@ -51,8 +51,8 @@
         <table class="table table-hover align-middle mb-0">
             <thead>
                 <tr style="border-bottom: 2px solid var(--card-border);">
-                    <th class="py-2.5 text-uppercase small text-muted">Timestamp</th>
-                    <th class="py-2.5 text-uppercase small text-muted">Actor</th>
+                    <th class="py-2.5 text-uppercase small text-muted">Timestamp (newest first)</th>
+                    <th class="py-2.5 text-uppercase small text-muted">Username / Role</th>
                     <th class="py-2.5 text-uppercase small text-muted">Action Category</th>
                     <th class="py-2.5 text-uppercase small text-muted">Event Details</th>
                     <th class="py-2.5 text-uppercase small text-muted">IP Address</th>
@@ -65,35 +65,31 @@
                         {{ log.timestamp|date:"Y-m-d H:i:s" }}
                     </td>
                     <td>
-                        {% if log.actor %}
-                            <div class="fw-semibold text-dark">
-                                <i class="bi bi-person text-primary me-1"></i>{{ log.actor.username }}
-                            </div>
-                            <small class="text-muted">{{ log.actor.email }}</small>
-                        {% else %}
-                            <span class="badge bg-secondary text-white">System / Anonymous</span>
-                        {% endif %}
+                        <div class="fw-semibold text-dark">
+                            <i class="bi bi-person text-primary me-1" aria-hidden="true"></i>{{ log.logged_username }}
+                        </div>
+                        <span class="badge text-bg-light border text-uppercase" style="font-size: 0.65rem;">{{ log.logged_role }}</span>
                     </td>
                     <td>
-                        {% if "Login" in log.action %}
-                            <span class="badge px-2.5 py-1 text-primary bg-primary-subtle border border-primary-subtle">
-                                <i class="bi bi-box-arrow-in-right"></i> {{ log.action }}
+                        {% if "Failed" in log.action or "Blocked" in log.action or "Unauthorized" in log.action or "Rejected" in log.action or "Violation" in log.action %}
+                            <span class="badge px-2.5 py-1 text-danger bg-danger-subtle border border-danger-subtle">
+                                <i class="bi bi-shield-x" aria-hidden="true"></i> {{ log.action }}
                             </span>
-                        {% elif "Logout" in log.action %}
+                        {% elif "Sign-In" in log.action or "Login" in log.action %}
+                            <span class="badge px-2.5 py-1 text-primary bg-primary-subtle border border-primary-subtle">
+                                <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> {{ log.action }}
+                            </span>
+                        {% elif "Sign-Out" in log.action or "Logout" in log.action %}
                             <span class="badge px-2.5 py-1 text-secondary bg-light border">
-                                <i class="bi bi-box-arrow-right"></i> {{ log.action }}
+                                <i class="bi bi-box-arrow-right" aria-hidden="true"></i> {{ log.action }}
                             </span>
                         {% elif "Approved" in log.action %}
                             <span class="badge px-2.5 py-1 text-success bg-success-subtle border border-success-subtle">
-                                <i class="bi bi-check2-circle"></i> {{ log.action }}
-                            </span>
-                        {% elif "Rejected" in log.action or "Blocked" in log.action or "Violation" in log.action %}
-                            <span class="badge px-2.5 py-1 text-danger bg-danger-subtle border border-danger-subtle">
-                                <i class="bi bi-shield-x"></i> {{ log.action }}
+                                <i class="bi bi-check2-circle" aria-hidden="true"></i> {{ log.action }}
                             </span>
                         {% elif "Status" in log.action %}
                             <span class="badge px-2.5 py-1 text-warning bg-warning-subtle border border-warning-subtle">
-                                <i class="bi bi-pencil-square"></i> {{ log.action }}
+                                <i class="bi bi-pencil-square" aria-hidden="true"></i> {{ log.action }}
                             </span>
                         {% else %}
                             <span class="badge px-2.5 py-1 text-dark bg-light border">
@@ -102,7 +98,7 @@
                         {% endif %}
                     </td>
                     <td class="small text-dark">
-                        {{ log.details|default:"No additional details provided." }}
+                        {{ log.clean_details|default:"No additional details provided." }}
                     </td>
                     <td class="small font-monospace text-muted" style="white-space: nowrap;">
                         {{ log.ip_address|default:"127.0.0.1" }}

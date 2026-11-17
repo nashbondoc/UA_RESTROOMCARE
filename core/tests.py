@@ -21,6 +21,15 @@ class UARestroomCareSystemTests(TestCase):
     def setUp(self):
         self.client = Client()
 
+        # Stub Google's tokeninfo verification: token "g:<email>" == Google vouches for <email>.
+        def fake_google(token):
+            if token and token.startswith('g:'):
+                return {'email': token[2:], 'email_verified': 'true', 'given_name': 'G'}
+            return None
+        patcher = patch('core.views.verify_google_id_token', side_effect=fake_google)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
         # Create Admin User
         self.admin_user = User.objects.create_superuser(
             username='admin_boss',
@@ -103,14 +112,14 @@ class UARestroomCareSystemTests(TestCase):
     def test_admin_blocked_from_google_student_login(self):
         """When an Admin attempts Google Sign-In on the Student Portal, they are logged out and redirected to Admin Portal."""
         response = self.client.post(reverse('google_login'), {
-            'google_email': self.admin_user.email,
+            'credential': 'g:' + self.admin_user.email,
             'google_first_name': 'Admin',
             'google_last_name': 'Boss'
         })
         self.assertRedirects(response, reverse('admin_login'))
 
         follow_response = self.client.post(reverse('google_login'), {
-            'google_email': self.admin_user.email,
+            'credential': 'g:' + self.admin_user.email,
             'google_first_name': 'Admin',
             'google_last_name': 'Boss'
         }, follow=True)
@@ -482,14 +491,14 @@ class UARestroomCareSystemTests(TestCase):
     def test_google_login_rejects_non_ua_domain(self):
         """Google sign-in strictly blocks non-@ua.edu.ph accounts and logs suspicious activity."""
         response = self.client.post(reverse('google_login'), {
-            'google_email': 'intruder@gmail.com',
+            'credential': 'g:' + 'intruder@gmail.com',
             'google_first_name': 'External'
         })
         self.assertRedirects(response, reverse('login'))
         
         # Verify error message was delivered
         response_follow = self.client.post(reverse('google_login'), {
-            'google_email': 'intruder@gmail.com',
+            'credential': 'g:' + 'intruder@gmail.com',
             'google_first_name': 'External'
         }, follow=True)
         self.assertContains(response_follow, "Access Restricted")
@@ -506,7 +515,7 @@ class UARestroomCareSystemTests(TestCase):
         """Google sign-in with unregistered @ua.edu.ph email redirects to registration with pre-filled email."""
         unregistered_email = 'newstudent@ua.edu.ph'
         response = self.client.post(reverse('google_login'), {
-            'google_email': unregistered_email,
+            'credential': 'g:' + unregistered_email,
             'google_first_name': 'New',
             'google_last_name': 'Student'
         })
@@ -515,7 +524,7 @@ class UARestroomCareSystemTests(TestCase):
 
         # Verify alert message appears on registration page
         follow_response = self.client.post(reverse('google_login'), {
-            'google_email': unregistered_email,
+            'credential': 'g:' + unregistered_email,
             'google_first_name': 'New',
             'google_last_name': 'Student'
         }, follow=True)
@@ -528,7 +537,7 @@ class UARestroomCareSystemTests(TestCase):
     def test_google_login_allows_existing_registered_ua_student(self):
         """Google sign-in directly authenticates existing registered @ua.edu.ph accounts."""
         response = self.client.post(reverse('google_login'), {
-            'google_email': self.student_user.email,
+            'credential': 'g:' + self.student_user.email,
             'google_first_name': 'Student',
             'google_last_name': 'User'
         })
@@ -539,44 +548,35 @@ class UARestroomCareSystemTests(TestCase):
         self.assertEqual(follow_response.status_code, 200)
 
     def test_google_id_token_server_verification(self):
-        """Backend securely verifies Google ID Token payload for valid and invalid domains."""
-        import json, base64
-
-        def make_jwt(payload):
-            h = base64.urlsafe_b64encode(json.dumps({'alg': 'none'}).encode()).decode().rstrip('=')
-            p = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip('=')
-            return f"{h}.{p}.signature"
-
-        # 1. Valid registered UA student with Google credential token
-        valid_token = make_jwt({'email': self.student_user.email, 'name': 'Registered Student'})
-        response = self.client.post(reverse('google_login'), {'credential': valid_token})
+        """Only Google-verified tokens can sign in; unsigned/forged tokens and raw e-mail fields are rejected."""
+        # 1. Valid registered UA student with a verified Google token
+        response = self.client.post(reverse('google_login'), {'credential': 'g:' + self.student_user.email})
         self.assertRedirects(response, reverse('dashboard'))
-
-        # Log out to clear session before testing unregistered user
         self.client.logout()
 
-        # 2. Unregistered UA student with Google credential token -> redirect to register with locked email
-        unreg_token = make_jwt({'email': 'token_student@ua.edu.ph', 'name': 'Token Student'})
-        response2 = self.client.post(reverse('google_login'), {'credential': unreg_token}, follow=True)
+        # 2. Unregistered UA student -> redirect to register with locked email
+        response2 = self.client.post(reverse('google_login'), {'credential': 'g:token_student@ua.edu.ph'}, follow=True)
         self.assertContains(response2, 'Account not registered. Please complete your registration first.')
-        self.assertContains(response2, 'token_student@ua.edu.ph')
         self.assertContains(response2, 'readonly="readonly"')
 
         # 3. Non-UA Google token -> strictly blocked
-        non_ua_token = make_jwt({'email': 'intruder.token@gmail.com', 'name': 'Intruder'})
-        response3 = self.client.post(reverse('google_login'), {'credential': non_ua_token})
-        self.assertRedirects(response3, reverse('login'))
-        follow_resp3 = self.client.post(reverse('google_login'), {'credential': non_ua_token}, follow=True)
-        self.assertContains(follow_resp3, "Access Restricted")
+        response3 = self.client.post(reverse('google_login'), {'credential': 'g:intruder.token@gmail.com'}, follow=True)
+        self.assertContains(response3, "Access Restricted")
 
+    def test_google_login_bypass_with_raw_email_or_unsigned_token_is_rejected(self):
+        """Posting a victim's e-mail or a hand-made unsigned JWT must NOT create a session."""
+        import json, base64
+        h = base64.urlsafe_b64encode(json.dumps({'alg': 'none'}).encode()).decode().rstrip('=')
+        pl = base64.urlsafe_b64encode(json.dumps({'email': self.student_user.email}).encode()).decode().rstrip('=')
+        forged = f"{h}.{pl}.sig"
 
-    def test_auth_diagnostics_reports_password_hash_mismatch(self):
-        """If a session no longer matches the user's password hash, the login card explains why."""
-        self.client.login(username='admin_boss', password='Password123!')
-        self.admin_user.set_password('Another#Pass456')
-        self.admin_user.save()
-        response = self.client.get(reverse('admin_verifications'), follow=True)
-        self.assertContains(response, 'password-hash-mismatch')
+        # Raw e-mail field with no token: never trusted.
+        r1 = self.client.post(reverse('google_login'), {'google_email': self.student_user.email}, follow=True)
+        self.assertFalse(r1.wsgi_request.user.is_authenticated)
+        # Forged unsigned token: the (stubbed) Google verifier rejects anything not issued by Google.
+        r2 = self.client.post(reverse('google_login'), {'credential': forged}, follow=True)
+        self.assertFalse(r2.wsgi_request.user.is_authenticated)
+        self.assertTrue(AuditLog.objects.filter(action='Failed Login Attempt').exists())
 
     def test_login_does_not_rewrite_password_hash(self):
         """Logging in must not re-hash the password (would desync sessions across serverless instances)."""
@@ -585,3 +585,168 @@ class UARestroomCareSystemTests(TestCase):
         after = User.objects.get(pk=self.admin_user.pk).password
         self.assertEqual(before, after)
         self.assertIn('$1500000$', before)
+
+    @patch('core.views.parse_ocr_text', return_value='')
+    def test_registration_survives_readonly_filesystem_oserror(self, mock_ocr):
+        """If file storage raises OSError (Errno 30 on serverless), registration still completes cleanly."""
+        test_front = create_test_image('front_ro.jpg')
+        test_back = create_test_image('back_ro.jpg')
+
+        original_create = UserProfile.objects.create
+        call_count = {'n': 0}
+
+        def create_with_first_oserror(**kwargs):
+            call_count['n'] += 1
+            if call_count['n'] == 1 and ('id_picture' in kwargs or 'id_picture_back' in kwargs):
+                raise OSError(30, "Read-only file system", "/var/task/media/student_ids")
+            return original_create(**kwargs)
+
+        with patch.object(UserProfile.objects, 'create', side_effect=create_with_first_oserror):
+            response = self.client.post(reverse('register'), {
+                'first_name': 'Carlo',
+                'last_name': 'Dizon',
+                'username': 'carlo_dizon',
+                'email': 'carlo.dizon@ua.edu.ph',
+                'student_id': '2024990011',
+                'id_picture': test_front,
+                'id_picture_back': test_back,
+                'password': 'SecretPassword123!',
+                'confirm_password': 'SecretPassword123!'
+            })
+
+        self.assertRedirects(response, reverse('login'))
+        self.assertTrue(User.objects.filter(username='carlo_dizon').exists())
+        self.assertTrue(UserProfile.objects.filter(student_id='2024990011').exists())
+
+
+    # -------------------------------------------------------------
+    # 8. LOGIN HARDENING, AUDIT TRAIL & SESSION STABILITY
+    # -------------------------------------------------------------
+
+    def _make_student(self, username, student_id, role='student', verified=True, active=True):
+        user = User.objects.create_user(
+            username=username, email=f'{username}@ua.edu.ph', password='Password123!', is_active=active
+        )
+        UserProfile.objects.create(user=user, role=role, student_id=student_id, is_verified=verified)
+        return user
+
+    def test_unregistered_identifier_and_wrong_password_rejected(self):
+        before_users = User.objects.count()
+        r1 = self.client.post(reverse('login'), {'username': 'ghost@ua.edu.ph', 'password': 'Password123!'})
+        self.assertEqual(r1.status_code, 200)
+        self.assertFalse(r1.wsgi_request.user.is_authenticated)
+        r2 = self.client.post(reverse('login'), {'username': '2099999999', 'password': 'Password123!'})
+        self.assertFalse(r2.wsgi_request.user.is_authenticated)
+        r3 = self.client.post(reverse('login'), {'username': 'john.doe@ua.edu.ph', 'password': 'WrongPass!'})
+        self.assertEqual(r3.status_code, 200)
+        self.assertFalse(r3.wsgi_request.user.is_authenticated)
+        self.assertEqual(User.objects.count(), before_users)  # nothing auto-created
+        self.assertEqual(AuditLog.objects.filter(action='Failed Login Attempt').count(), 3)
+
+    def test_unverified_or_inactive_student_and_professor_cannot_login(self):
+        self._make_student('pending_stu', '2025000001', verified=False, active=True)
+        self._make_student('pending_prof', '2025000002', role='professor', verified=False, active=True)
+        self._make_student('inactive_stu', '2025000003', verified=True, active=False)
+        for ident in ('pending_stu@ua.edu.ph', 'pending_prof@ua.edu.ph', '2025000003'):
+            resp = self.client.post(reverse('login'), {'username': ident, 'password': 'Password123!'})
+            self.assertEqual(resp.status_code, 200, ident)
+            self.assertFalse(resp.wsgi_request.user.is_authenticated, ident)
+            self.assertContains(resp, 'pending administrative verification')
+        # A verified professor is allowed in.
+        self._make_student('ok_prof', '2025000004', role='professor', verified=True)
+        resp = self.client.post(reverse('login'), {'username': 'ok_prof@ua.edu.ph', 'password': 'Password123!'})
+        self.assertRedirects(resp, reverse('dashboard'))
+
+    def test_google_login_requires_verified_profile(self):
+        self._make_student('g_pending', '2025000005', verified=False, active=True)
+        resp = self.client.post(reverse('google_login'), {'credential': 'g:g_pending@ua.edu.ph'}, follow=True)
+        self.assertFalse(resp.wsgi_request.user.is_authenticated)
+
+    def test_all_dashboards_require_login(self):
+        for name in ('dashboard', 'submit_report', 'admin_dashboard', 'admin_verifications', 'audit_logs'):
+            resp = self.client.get(reverse(name))
+            self.assertEqual(resp.status_code, 302, name)
+            self.assertIn(reverse('login'), resp.url, name)
+
+    def test_audit_log_records_sign_in_failed_and_sign_out_with_role(self):
+        # Failed (anonymous, unknown account)
+        self.client.post(reverse('login'), {'username': 'nobody@ua.edu.ph', 'password': 'x'})
+        # Successful student sign-in then sign-out
+        self.client.post(reverse('login'), {'username': 'john.doe@ua.edu.ph', 'password': 'Password123!'})
+        self.client.get(reverse('logout'))
+        # Admin sign-in
+        self.client.post(reverse('admin_login'), {'username': 'admin_boss', 'password': 'Password123!'})
+
+        failed = AuditLog.objects.get(action='Failed Login Attempt')
+        self.assertEqual(failed.logged_username, 'nobody@ua.edu.ph')
+        self.assertEqual(failed.logged_role, 'unregistered')
+        self.assertIsNotNone(failed.timestamp)
+
+        sign_in = AuditLog.objects.filter(action='Successful Sign-In', actor=self.student_user).get()
+        self.assertEqual(sign_in.logged_username, 'student_john')
+        self.assertEqual(sign_in.logged_role, 'student')
+
+        sign_out = AuditLog.objects.get(action='Sign-Out')
+        self.assertEqual(sign_out.actor, self.student_user)
+        self.assertEqual(sign_out.logged_username, 'student_john')
+        self.assertEqual(sign_out.logged_role, 'student')
+
+        admin_in = AuditLog.objects.filter(action='Successful Sign-In', actor=self.admin_user).get()
+        self.assertEqual(admin_in.logged_role, 'admin')
+
+    def test_audit_logs_page_lists_newest_first_with_username_and_role(self):
+        self.client.post(reverse('login'), {'username': 'older@ua.edu.ph', 'password': 'x'})
+        self.client.post(reverse('login'), {'username': 'newer@ua.edu.ph', 'password': 'x'})
+        self.client.post(reverse('admin_login'), {'username': 'admin_boss', 'password': 'Password123!'})
+        resp = self.client.get(reverse('audit_logs'))
+        self.assertEqual(resp.status_code, 200)
+        content = resp.content.decode()
+        self.assertLess(content.index('newer@ua.edu.ph'), content.index('older@ua.edu.ph'))
+        self.assertContains(resp, 'unregistered')
+        self.assertContains(resp, 'Successful Sign-In')
+        logs = list(resp.context['logs'])
+        self.assertEqual(logs, sorted(logs, key=lambda l: (l.timestamp, l.id), reverse=True))
+
+    def test_admin_session_survives_switching_between_all_admin_pages(self):
+        self.client.post(reverse('admin_login'), {'username': 'admin_boss', 'password': 'Password123!'})
+        sequence = ['admin_dashboard', 'admin_verifications', 'audit_logs'] * 4
+        for name in sequence:
+            resp = self.client.get(reverse(name))
+            self.assertEqual(resp.status_code, 200, name)
+            self.assertTrue(resp.wsgi_request.user.is_authenticated, name)
+        # POST actions in between keep the session too.
+        report = RestroomReport.objects.create(
+            user=self.student_user, location=self.location, category='Plumbing', description='x'
+        )
+        resp = self.client.post(reverse('update_status', args=[report.id]), {'status': 'In Progress'}, follow=True)
+        self.assertTrue(resp.wsgi_request.user.is_authenticated)
+        resp = self.client.get(reverse('audit_logs'))
+        self.assertEqual(resp.status_code, 200)
+
+
+class GoogleTokenVerifierTests(TestCase):
+    """verify_google_id_token must never trust an unsigned/forged token."""
+
+    def test_unsigned_token_rejected_without_google_confirmation(self):
+        import json, base64
+        from django.test import override_settings
+        from core.views import verify_google_id_token
+        h = base64.urlsafe_b64encode(json.dumps({'alg': 'none'}).encode()).decode().rstrip('=')
+        pl = base64.urlsafe_b64encode(json.dumps({'email': 'a@ua.edu.ph'}).encode()).decode().rstrip('=')
+        forged = f"{h}.{pl}.sig"
+        with override_settings(GOOGLE_CLIENT_ID='cid'):
+            with patch('core.views.requests.get', side_effect=Exception('offline')):
+                self.assertIsNone(verify_google_id_token(forged))
+            bad = MagicMock(status_code=400)
+            with patch('core.views.requests.get', return_value=bad):
+                self.assertIsNone(verify_google_id_token(forged))
+            wrong_aud = MagicMock(status_code=200)
+            wrong_aud.json.return_value = {'email': 'a@ua.edu.ph', 'aud': 'other', 'email_verified': 'true'}
+            with patch('core.views.requests.get', return_value=wrong_aud):
+                self.assertIsNone(verify_google_id_token(forged))
+            good = MagicMock(status_code=200)
+            good.json.return_value = {'email': 'a@ua.edu.ph', 'aud': 'cid', 'email_verified': 'true'}
+            with patch('core.views.requests.get', return_value=good):
+                self.assertEqual(verify_google_id_token(forged)['email'], 'a@ua.edu.ph')
+        with override_settings(GOOGLE_CLIENT_ID=''):
+            self.assertIsNone(verify_google_id_token(forged))

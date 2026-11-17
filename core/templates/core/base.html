@@ -13,12 +13,14 @@
 
     <style>
         :root {
-            /* Clean Light-Mode Institutional University Palette */
+            /* Clean Light-Mode Institutional University Palette (UI/UX Pro Max Tokens) */
             --bg-main: #eef2f6;
             --text-primary: #0f172a;
-            --text-muted: #64748b;
+            --text-secondary: #334155;
+            --text-muted: #475569;
             --card-bg: #ffffff;
-            --card-border: #e2e8f0;
+            --card-border: #cbd5e1;
+            --surface-subtle: #f8fafc;
             --primary-btn-bg: #1e3a8a;
             --primary-btn-hover: #1e40af;
             --primary-btn-fg: #ffffff;
@@ -26,7 +28,20 @@
             --secondary-btn-hover: #115e59;
             --admin-btn-bg: #b45309;
             --admin-btn-hover: #92400e;
-            --radius: 6px;
+            --radius: 8px;
+            --radius-lg: 14px;
+            --header-height: 72px;
+            --ring-focus: 0 0 0 3.5px rgba(30, 58, 138, 0.2);
+            --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.04), 0 12px 28px -6px rgba(15, 23, 42, 0.08), 0 4px 12px -4px rgba(15, 23, 42, 0.04);
+            --shadow-card-hover: 0 2px 4px rgba(15, 23, 42, 0.05), 0 18px 34px -6px rgba(15, 23, 42, 0.11), 0 8px 16px -6px rgba(15, 23, 42, 0.06);
+            --transition-fast: 160ms cubic-bezier(0.22, 1, 0.36, 1);
+            --transition-base: 220ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: var(--header-height);
+            -webkit-text-size-adjust: 100%;
         }
 
         * {
@@ -36,17 +51,21 @@
         }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background-color: var(--bg-main);
             background-image:
-                linear-gradient(180deg, rgba(15, 23, 42, 0.35) 0%, rgba(15, 23, 42, 0.35) 100%),
+                linear-gradient(180deg, rgba(15, 23, 42, 0.32) 0%, rgba(15, 23, 42, 0.38) 100%),
                 url("{% static 'img/ua_campus_bg.jpg' %}");
             background-size: cover;
             background-position: center center;
             background-repeat: no-repeat;
             background-attachment: scroll;
             color: var(--text-primary);
+            line-height: 1.55;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
             min-height: 100vh;
+            min-height: 100dvh;
             overflow-x: hidden;
             display: flex;
             flex-direction: column;
@@ -184,19 +203,19 @@
             color: #ffffff !important;
         }
 
-        /* Solid White University Card */
+        /* Solid White University Card (UI/UX Pro Max Elevation Scale) */
         .glass-card-pro {
             background: #ffffff !important;
             border: 1px solid #cbd5e1;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.06), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
-            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-card);
+            transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
             position: relative;
         }
 
         .glass-card-pro:hover {
             border-color: #94a3b8;
-            box-shadow: 0 14px 30px -5px rgba(15, 23, 42, 0.09), 0 8px 12px -6px rgba(15, 23, 42, 0.05);
+            box-shadow: var(--shadow-card-hover);
         }
 
         /* User Avatar Circle on Card */
@@ -222,7 +241,7 @@
             padding: 2px;
             background: #ffffff;
             border: 1px solid var(--card-border);
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -244,26 +263,28 @@
             color: var(--text-primary) !important;
             border-radius: 8px;
             padding: 0.65rem 0.9rem;
+            min-height: 44px;
             font-size: 0.94rem;
             box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
         }
 
         .form-control-water::placeholder {
-            color: #94a3b8 !important;
+            color: #64748b !important;
+            opacity: 0.85;
         }
 
         .form-control-water:focus, .form-select.form-control-water:focus {
             border-color: #1e3a8a !important;
-            box-shadow: 0 0 0 3.5px rgba(30, 58, 138, 0.18) !important;
+            box-shadow: var(--ring-focus) !important;
             background: #ffffff !important;
             outline: none;
         }
 
         .input-group:focus-within {
             border-radius: 8px;
-            box-shadow: 0 0 0 3.5px rgba(30, 58, 138, 0.18);
-            transition: box-shadow 0.2s ease;
+            box-shadow: var(--ring-focus);
+            transition: box-shadow var(--transition-fast);
         }
 
         .input-group:focus-within .form-control-water,
@@ -275,9 +296,9 @@
         .input-group-text.input-water-addon, .btn.input-water-addon {
             background: #f8fafc !important;
             border: 1px solid var(--card-border) !important;
-            color: #64748b !important;
+            color: #475569 !important;
             border-radius: 8px;
-            transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+            transition: border-color var(--transition-fast), color var(--transition-fast), background-color var(--transition-fast);
         }
 
         .btn.input-water-addon:hover {
@@ -293,20 +314,26 @@
             font-weight: 600;
             border-radius: 8px;
             padding: 0.75rem 1.4rem;
+            min-height: 44px;
             letter-spacing: 0.2px;
             box-shadow: 0 2px 4px rgba(30, 58, 138, 0.15);
-            transition: all 0.2s ease;
+            transition: all var(--transition-fast);
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
+            cursor: pointer;
+            touch-action: manipulation;
         }
         .btn-blue-signin:hover {
             background: var(--primary-btn-hover) !important;
             border-color: var(--primary-btn-hover) !important;
             color: #ffffff !important;
             transform: translateY(-1px);
-            box-shadow: 0 4px 10px rgba(30, 58, 138, 0.25);
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.26);
+        }
+        .btn-blue-signin:active {
+            transform: translateY(0) scale(0.99);
         }
 
         .btn-teal-secondary {
@@ -316,20 +343,26 @@
             font-weight: 600;
             border-radius: 8px;
             padding: 0.75rem 1.25rem;
+            min-height: 44px;
             box-shadow: 0 2px 4px rgba(15, 118, 110, 0.15);
-            transition: all 0.2s ease;
+            transition: all var(--transition-fast);
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
             text-decoration: none;
+            cursor: pointer;
+            touch-action: manipulation;
         }
         .btn-teal-secondary:hover {
             background: var(--secondary-btn-hover) !important;
             border-color: var(--secondary-btn-hover) !important;
             color: #ffffff !important;
             transform: translateY(-1px);
-            box-shadow: 0 4px 10px rgba(15, 118, 110, 0.22);
+            box-shadow: 0 4px 12px rgba(15, 118, 110, 0.24);
+        }
+        .btn-teal-secondary:active {
+            transform: translateY(0) scale(0.99);
         }
 
         /* Institutional Admin Callout Box */
@@ -351,14 +384,17 @@
             font-weight: 600;
             font-size: 0.85rem;
             padding: 0.55rem 1.15rem;
+            min-height: 40px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(180, 83, 9, 0.15);
-            transition: all 0.2s ease;
+            transition: all var(--transition-fast);
             display: inline-flex;
             align-items: center;
             gap: 0.35rem;
             text-decoration: none;
             white-space: nowrap;
+            cursor: pointer;
+            touch-action: manipulation;
         }
         .btn-admin-yellow:hover {
             background: var(--admin-btn-hover) !important;
@@ -367,16 +403,22 @@
             transform: translateY(-1px);
             box-shadow: 0 4px 10px rgba(180, 83, 9, 0.22);
         }
+        .btn-admin-yellow:active {
+            transform: translateY(0) scale(0.99);
+        }
 
-        /* Status Badges */
+        /* Status Badges (Compact Label Integrity) */
         .badge-status {
             font-size: 0.75rem;
             font-weight: 600;
             padding: 0.35rem 0.75rem;
-            border-radius: 4px;
+            border-radius: 6px;
             display: inline-flex;
             align-items: center;
             gap: 0.35rem;
+            white-space: nowrap;
+            letter-spacing: 0.01em;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
         }
         .badge-pending { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
         .badge-review { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
@@ -391,23 +433,26 @@
         /* Clean Upload Drop Card */
         .cyber-upload-card {
             background: #f8fafc;
-            border: 1px dashed #cbd5e1;
+            border: 1.5px dashed #cbd5e1;
             border-radius: var(--radius);
             padding: 1.15rem;
-            transition: all 0.15s ease;
+            transition: all var(--transition-fast);
         }
-        .cyber-upload-card:hover {
+        .cyber-upload-card:hover,
+        .cyber-upload-card:focus-within {
             border-color: #1e3a8a;
             background: #f1f5f9;
+            box-shadow: 0 2px 8px rgba(30, 58, 138, 0.06);
         }
 
         /* Clean Institutional Alert */
         .alert-care {
             background: #ffffff;
             border: 1px solid var(--card-border);
+            border-left: 4px solid #1e3a8a;
             border-radius: var(--radius);
             color: var(--text-primary);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
         }
 
         /* Modal viewport layering & smooth scrolling fixes */
@@ -418,8 +463,9 @@
         .modal-content {
             background-color: #ffffff !important;
             border: 1px solid var(--card-border) !important;
-            border-radius: var(--radius) !important;
+            border-radius: var(--radius-lg) !important;
             color: var(--text-primary) !important;
+            box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.2) !important;
         }
         .modal-header {
             border-bottom: 1px solid var(--card-border) !important;
@@ -438,7 +484,7 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        /* Table Clean Styling */
+        /* Table Clean Styling & Row Scannability */
         .table {
             color: var(--text-primary) !important;
         }
@@ -446,16 +492,52 @@
             background-color: transparent !important;
             border-bottom-color: var(--card-border) !important;
         }
+        .table-hover > tbody > tr:hover > * {
+            background-color: rgba(241, 245, 249, 0.72) !important;
+        }
 
         /* Admin Control Center Dashboard Backdrop Overlay */
         .admin-dashboard-container {
-            background: rgba(248, 250, 252, 0.88);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            background: rgba(248, 250, 252, 0.92);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border: 1px solid var(--card-border);
-            border-radius: 12px;
+            border-radius: var(--radius-lg);
             padding: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            box-shadow: var(--shadow-card);
+        }
+
+        /* WCAG 2.2 AA Accessible Keyboard Focus Ring & Mobile Anti-Zoom */
+        a:focus-visible,
+        button:focus-visible,
+        .btn:focus-visible,
+        .nav-btn-link:focus-visible,
+        .nav-btn-admin:focus-visible,
+        .nav-btn-register:focus-visible {
+            outline: 2px solid #1e3a8a !important;
+            outline-offset: 2px;
+            box-shadow: var(--ring-focus) !important;
+        }
+
+        @media (max-width: 767.98px) {
+            .form-control-water,
+            .form-select.form-control-water {
+                font-size: 16px;
+            }
+            .admin-dashboard-container {
+                padding: 1rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
         }
     </style>
     {% block extra_head %}{% endblock %}

@@ -32,10 +32,8 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'core.diagnostics.AuthDiagBefore',  # TEMPORARY: remove after logout issue is solved
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'core.diagnostics.AuthDiagAfter',  # TEMPORARY: remove after logout issue is solved
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -122,8 +120,17 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files (Student IDs and Report Evidence Photos)
+# Uses writable /tmp/media on Vercel serverless environment to prevent Errno 30 Read-only file system
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+if os.environ.get('VERCEL'):
+    MEDIA_ROOT = Path('/tmp/media')
+    (MEDIA_ROOT / 'student_ids').mkdir(parents=True, exist_ok=True)
+    (MEDIA_ROOT / 'report_photos').mkdir(parents=True, exist_ok=True)
+    original_media = BASE_DIR / 'media'
+    if original_media.exists():
+        shutil.copytree(original_media, MEDIA_ROOT, dirs_exist_ok=True)
+else:
+    MEDIA_ROOT = BASE_DIR / 'media'
 
 # Password Reset Email Settings (Console backend outputs email tokens securely)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

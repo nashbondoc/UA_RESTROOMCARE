@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 import datetime
+import re
 
 class UserProfile(models.Model):
     ROLE_CHOICES = (
@@ -87,6 +88,29 @@ class AuditLog(models.Model):
     details = models.TextField(blank=True, null=True)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
+
+    # `details` is stored as "[user=<name>|role=<role>] <text>" by core.utils.log_audit_event so every
+    # entry (including failed sign-ins by anonymous visitors) records who and in what role.
+    _PREFIX_RE = re.compile(r'^\[user=(?P<user>.*?)\|role=(?P<role>.*?)\]\s?(?P<text>.*)$', re.S)
+
+    def _parsed(self):
+        match = self._PREFIX_RE.match(self.details or '')
+        if match:
+            return match.group('user'), match.group('role'), match.group('text')
+        fallback_user = self.actor.username if self.actor else 'anonymous'
+        return fallback_user, 'unknown', self.details or ''
+
+    @property
+    def logged_username(self):
+        return self._parsed()[0]
+
+    @property
+    def logged_role(self):
+        return self._parsed()[1]
+
+    @property
+    def clean_details(self):
+        return self._parsed()[2]
 
     def __str__(self):
         actor_name = self.actor.username if self.actor else "System"
