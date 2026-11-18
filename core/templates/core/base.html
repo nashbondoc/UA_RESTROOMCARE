@@ -529,7 +529,160 @@
             }
         }
 
+        /* ===== UI/UX Pro Max visual enhancement layer (CSS only, no content changes) ===== */
+        body {
+            background-image:
+                radial-gradient(1200px 520px at 50% -10%, rgba(30, 58, 138, 0.30), transparent 70%),
+                linear-gradient(180deg, rgba(15, 23, 42, 0.42) 0%, rgba(15, 23, 42, 0.55) 100%),
+                url("{% static 'img/ua_campus_bg.jpg' %}");
+        }
+        body::before {
+            backdrop-filter: blur(5px) saturate(1.1);
+            -webkit-backdrop-filter: blur(5px) saturate(1.1);
+        }
+
+        /* Navbar: gold-to-navy accent line, softer glass */
+        .navbar-custom {
+            background: rgba(255, 255, 255, 0.88) !important;
+            backdrop-filter: blur(14px) saturate(1.4);
+            -webkit-backdrop-filter: blur(14px) saturate(1.4);
+            border-bottom: 1px solid rgba(203, 213, 225, 0.7);
+            box-shadow: 0 4px 24px -8px rgba(15, 23, 42, 0.18);
+            position: relative;
+        }
+        .navbar-custom::after {
+            content: "";
+            position: absolute;
+            left: 0; right: 0; bottom: -1px;
+            height: 3px;
+            background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 45%, #f59e0b 100%);
+        }
+        .brand-title {
+            background: linear-gradient(90deg, #1e3a8a, #2563eb);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Cards: top accent strip, rounder, softer elevation */
+        .glass-card-pro {
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 24px 48px -16px rgba(15, 23, 42, 0.35);
+            animation: uaCardIn 480ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+        }
+        .glass-card-pro::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #1e3a8a, #2563eb 55%, #0f766e);
+            pointer-events: none;
+        }
+        .glass-card-pro:hover {
+            transform: translateY(-2px);
+        }
+        .modal-content.glass-card-pro { animation: none; }
+        .modal-content.glass-card-pro:hover { transform: none; }
+        @keyframes uaCardIn {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Buttons: gradient fills, lift on hover, pressed state */
+        .btn-blue-signin,
+        .nav-btn-register {
+            background-image: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%) !important;
+            border-color: #1e3a8a !important;
+            box-shadow: 0 6px 16px -6px rgba(30, 58, 138, 0.55);
+        }
+        .btn-blue-signin:hover,
+        .nav-btn-register:hover {
+            background-image: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;
+            transform: translateY(-1px);
+            box-shadow: 0 10px 22px -8px rgba(30, 58, 138, 0.6);
+        }
+        .btn-blue-signin:active,
+        .nav-btn-register:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 8px -4px rgba(30, 58, 138, 0.5);
+        }
+        .btn-success, .btn-teal-secondary {
+            background-image: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+            border-color: #0f766e;
+            color: #ffffff;
+            box-shadow: 0 6px 16px -8px rgba(15, 118, 110, 0.55);
+            transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
+        }
+        .btn-success:hover, .btn-teal-secondary:hover {
+            filter: brightness(1.06);
+            transform: translateY(-1px);
+            color: #ffffff;
+        }
+        .btn-outline-danger, .btn-outline-primary, .btn-outline-secondary {
+            transition: transform var(--transition-fast), background-color var(--transition-fast), color var(--transition-fast);
+        }
+        .btn-outline-danger:hover, .btn-outline-primary:hover, .btn-outline-secondary:hover {
+            transform: translateY(-1px);
+        }
+
+        /* Navigation links */
+        .nav-btn-link, .nav-btn-admin {
+            transition: background-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+        }
+        .nav-btn-link:hover, .nav-btn-admin:hover { transform: translateY(-1px); }
+
+        /* Forms: calmer fields, clearer focus */
+        .form-control-water, .form-select.form-control-water {
+            border-radius: 10px;
+            background: #f8fafc !important;
+        }
+        .form-control-water:hover { border-color: #94a3b8 !important; }
+        .form-control-water:focus, .form-select.form-control-water:focus {
+            background: #ffffff !important;
+        }
+        .form-label { letter-spacing: 0.1px; }
+
+        /* Badges as soft pills */
+        .badge {
+            border-radius: 999px;
+            padding: 0.4em 0.8em;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+        }
+
+        /* Tables: clearer header, row hover */
+        .table thead th {
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            border-bottom: 2px solid #e2e8f0 !important;
+        }
+        .table tbody tr { transition: background-color var(--transition-fast); }
+        .table-hover > tbody > tr:hover > * { background-color: #eff6ff; }
+
+        /* Alerts: rounded with soft shadow */
+        .alert {
+            border-radius: 12px;
+            border-width: 1px;
+            box-shadow: 0 6px 18px -10px rgba(15, 23, 42, 0.25);
+        }
+
+        /* Seal emblem: subtle halo */
+        .school-seal-emblem {
+            box-shadow: 0 0 0 5px rgba(30, 58, 138, 0.08), 0 8px 22px -8px rgba(15, 23, 42, 0.35);
+        }
+
+        footer {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
         @media (prefers-reduced-motion: reduce) {
+            .glass-card-pro { animation: none; }
             *,
             *::before,
             *::after {
