@@ -104,7 +104,7 @@ class StudentRegistrationForm(forms.ModelForm):
             'accept': 'image/*',
             'id': 'student_id_picture_front'
         }),
-        help_text="Upload the FRONT of your Student ID (Student Photo & Full Name)."
+        help_text="Upload the FRONT of your University ID: full name, photo, and ID details must be clear and readable."
     )
     id_picture_back = forms.ImageField(
         label="Student ID (Back)",
@@ -114,7 +114,7 @@ class StudentRegistrationForm(forms.ModelForm):
             'accept': 'image/*',
             'id': 'student_id_picture_back'
         }),
-        help_text="Upload the BACK of your Student ID (ID Number & Barcode)."
+        help_text="Upload the BACK of your ID: the ID card number or barcode must be clearly legible and match your entered Student ID."
     )
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={

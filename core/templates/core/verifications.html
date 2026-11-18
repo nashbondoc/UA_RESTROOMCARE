@@ -72,8 +72,20 @@
                             <span class="badge bg-light text-dark border">{{ profile.student_id|default:"N/A" }}</span>
                         </td>
                         <td>
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                {% if profile.id_picture %}
+                                <a href="{{ profile.id_picture.url }}" target="_blank" rel="noopener" title="Open Front ID full size">
+                                    <img src="{{ profile.id_picture.url }}" alt="Front ID of {{ profile.user.username }}" style="width: 96px; height: 62px; object-fit: cover; border-radius: 6px; border: 1px solid var(--card-border);">
+                                </a>
+                                {% else %}<span class="small text-muted">No front</span>{% endif %}
+                                {% if profile.id_picture_back %}
+                                <a href="{{ profile.id_picture_back.url }}" target="_blank" rel="noopener" title="Open Back ID full size">
+                                    <img src="{{ profile.id_picture_back.url }}" alt="Back ID of {{ profile.user.username }}" style="width: 96px; height: 62px; object-fit: cover; border-radius: 6px; border: 1px solid var(--card-border);">
+                                </a>
+                                {% else %}<span class="small text-muted">No back</span>{% endif %}
+                            </div>
                             <button type="button" class="btn btn-sm btn-outline-primary px-3 py-1" data-bs-toggle="modal" data-bs-target="#studentDualIdModal{{ profile.id }}">
-                                <i class="bi bi-images me-1"></i> Inspect Front & Back
+                                <i class="bi bi-images me-1"></i> Inspect Front &amp; Back
                             </button>
                         </td>
                         <td class="text-center">
@@ -132,7 +144,7 @@
                             <span class="small fw-bold text-dark"><i class="bi bi-person-bounding-box me-1 text-primary"></i> Front Face (Photo & Name)</span>
                         </div>
                         {% if profile.id_picture %}
-                            <img src="{{ profile.id_picture.url }}" alt="Front ID" class="img-fluid rounded shadow-sm" style="max-height: 380px; object-fit: contain; border: 1px solid var(--card-border);">
+                            <a href="{{ profile.id_picture.url }}" target="_blank" rel="noopener" title="Open full size"><img src="{{ profile.id_picture.url }}" alt="Front ID" class="img-fluid rounded shadow-sm" style="max-height: 380px; object-fit: contain; border: 1px solid var(--card-border); cursor: zoom-in;"></a>
                         {% else %}
                             <div class="p-4 small text-muted">No front image uploaded</div>
                         {% endif %}
@@ -144,7 +156,7 @@
                             <span class="small fw-bold text-dark"><i class="bi bi-upc-scan me-1 text-primary"></i> Back Face (Student ID & Barcode)</span>
                         </div>
                         {% if profile.id_picture_back %}
-                            <img src="{{ profile.id_picture_back.url }}" alt="Back ID" class="img-fluid rounded shadow-sm" style="max-height: 380px; object-fit: contain; border: 1px solid var(--card-border);">
+                            <a href="{{ profile.id_picture_back.url }}" target="_blank" rel="noopener" title="Open full size"><img src="{{ profile.id_picture_back.url }}" alt="Back ID" class="img-fluid rounded shadow-sm" style="max-height: 380px; object-fit: contain; border: 1px solid var(--card-border); cursor: zoom-in;"></a>
                         {% else %}
                             <div class="p-4 small text-muted">No back image uploaded</div>
                         {% endif %}
