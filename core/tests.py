@@ -280,7 +280,11 @@ class UARestroomCareSystemTests(TestCase):
         )
 
         self.client.login(username='admin_boss', password='Password123!')
-        response = self.client.get(reverse('verify_student', args=[pending_profile.id, 'approve']))
+        get_resp = self.client.get(reverse('verify_student', args=[pending_profile.id, 'approve']))
+        self.assertEqual(get_resp.status_code, 405)
+        pending_profile.refresh_from_db()
+        self.assertFalse(pending_profile.is_verified)
+        response = self.client.post(reverse('verify_student', args=[pending_profile.id, 'approve']))
         self.assertRedirects(response, reverse('admin_verifications'))
 
         pending_user.refresh_from_db()
@@ -303,7 +307,7 @@ class UARestroomCareSystemTests(TestCase):
         )
 
         self.client.login(username='admin_boss', password='Password123!')
-        response = self.client.get(reverse('verify_student', args=[reject_profile.id, 'reject']))
+        response = self.client.post(reverse('verify_student', args=[reject_profile.id, 'reject']))
         self.assertRedirects(response, reverse('admin_verifications'))
 
         self.assertFalse(User.objects.filter(username='reject_student').exists())

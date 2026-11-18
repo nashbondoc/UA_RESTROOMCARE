@@ -78,12 +78,18 @@
                         </td>
                         <td class="text-center">
                             <div class="d-inline-flex gap-2">
-                                <a href="{% url 'verify_student' profile.id 'approve' %}" class="btn btn-success btn-sm px-3 fw-semibold">
-                                    <i class="bi bi-check-lg"></i> Approve
-                                </a>
-                                <a href="{% url 'verify_student' profile.id 'reject' %}" class="btn btn-outline-danger btn-sm px-3 fw-semibold" onclick="return confirm('Are you sure you want to reject and remove this student registration?');">
-                                    <i class="bi bi-trash3"></i> Reject
-                                </a>
+                                <form method="post" action="{% url 'verify_student' profile.id 'approve' %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success btn-sm px-3 fw-semibold">
+                                        <i class="bi bi-check-lg"></i> Approve
+                                    </button>
+                                </form>
+                                <form method="post" action="{% url 'verify_student' profile.id 'reject' %}" class="d-inline" onsubmit="return confirm('Are you sure you want to reject and remove this student registration?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-danger btn-sm px-3 fw-semibold">
+                                        <i class="bi bi-trash3"></i> Reject
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>
@@ -148,12 +154,18 @@
             <div class="modal-footer border-0 pt-2 d-flex justify-content-between flex-wrap gap-2">
                 <small class="text-muted">Email: {{ profile.user.email }}</small>
                 <div class="d-flex gap-2">
-                    <a href="{% url 'verify_student' profile.id 'approve' %}" class="btn btn-success btn-sm px-3 fw-bold">
-                        <i class="bi bi-check-lg"></i> Approve Identity
-                    </a>
-                    <a href="{% url 'verify_student' profile.id 'reject' %}" class="btn btn-outline-danger btn-sm px-3 fw-bold" onclick="return confirm('Are you sure you want to reject and delete this registration?');">
-                        <i class="bi bi-trash3"></i> Reject
-                    </a>
+                    <form method="post" action="{% url 'verify_student' profile.id 'approve' %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success btn-sm px-3 fw-bold">
+                            <i class="bi bi-check-lg"></i> Approve Identity
+                        </button>
+                    </form>
+                    <form method="post" action="{% url 'verify_student' profile.id 'reject' %}" class="d-inline" onsubmit="return confirm('Are you sure you want to reject and delete this registration?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-sm px-3 fw-bold">
+                            <i class="bi bi-trash3"></i> Reject
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>

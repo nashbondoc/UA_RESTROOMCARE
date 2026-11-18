@@ -4,6 +4,8 @@ import base64
 import requests
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponseNotAllowed
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
@@ -684,6 +686,9 @@ def verify_student(request, profile_id, action):
         messages.error(request, "Access Denied: Administrative privileges required.")
         return redirect('dashboard')
 
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+
     target_profile = get_object_or_404(UserProfile, id=profile_id)
     student_user = target_profile.user
     student_name = student_user.get_full_name() or student_user.username
@@ -714,8 +719,8 @@ def verify_student(request, profile_id, action):
         messages.warning(request, f"Student registration for '{student_name}' has been rejected and permanently removed.")
 
     # Redirect back to referring page (Verifications or Admin Dashboard)
-    next_url = request.GET.get('next')
-    if next_url:
+    next_url = request.POST.get('next')
+    if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
         return redirect(next_url)
     return redirect('admin_verifications')
 
