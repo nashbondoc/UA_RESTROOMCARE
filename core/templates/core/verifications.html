@@ -70,6 +70,13 @@
                         </td>
                         <td>
                             <span class="badge bg-light text-dark border">{{ profile.student_id|default:"N/A" }}</span>
+                            <div class="mt-1">
+                                {% if profile.role == 'professor' %}
+                                <span class="badge bg-info text-dark"><i class="bi bi-person-workspace me-1"></i>Professor / Teacher</span>
+                                {% else %}
+                                <span class="badge bg-primary"><i class="bi bi-mortarboard me-1"></i>Student</span>
+                                {% endif %}
+                            </div>
                         </td>
                         <td>
                             <div class="d-flex align-items-center gap-2 mb-2">
@@ -131,7 +138,7 @@
                 <div class="d-flex align-items-center gap-2">
                     <i class="bi bi-person-vcard text-primary fs-5"></i>
                     <h6 class="modal-title fw-bold text-dark mb-0" id="studentDualIdModalLabel{{ profile.id }}">
-                        Identity Verification: {{ profile.user.get_full_name|default:profile.user.username }} (ID: {{ profile.student_id }})
+                        Identity Verification: {{ profile.user.get_full_name|default:profile.user.username }} (ID: {{ profile.student_id }}) — {{ profile.get_role_display }}
                     </h6>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

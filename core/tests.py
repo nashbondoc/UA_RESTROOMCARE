@@ -180,6 +180,7 @@ class UARestroomCareSystemTests(TestCase):
         test_front = create_test_image('front.jpg')
         test_back = create_test_image('back.jpg')
         response = self.client.post(reverse('register'), {
+            'role': 'student',
             'first_name': 'Alice',
             'last_name': 'Smith',
             'username': 'alice_smith',
@@ -201,6 +202,7 @@ class UARestroomCareSystemTests(TestCase):
 
         # Attempt to register with existing student_id '2024-00123'
         response = self.client.post(reverse('register'), {
+            'role': 'student',
             'first_name': 'Imposter',
             'last_name': 'User',
             'username': 'imposter_user',
@@ -219,6 +221,7 @@ class UARestroomCareSystemTests(TestCase):
         test_front2 = create_test_image('front2.jpg')
         test_back2 = create_test_image('back2.jpg')
         response2 = self.client.post(reverse('register'), {
+            'role': 'student',
             'first_name': 'Imposter2',
             'last_name': 'User2',
             'username': 'imposter_user2',
@@ -247,6 +250,7 @@ class UARestroomCareSystemTests(TestCase):
         test_back = create_test_image('back_id.jpg')
 
         response = self.client.post(reverse('register'), {
+            'role': 'student',
             'first_name': 'Maria',
             'last_name': 'Santos',
             'username': 'maria_santos',
@@ -607,6 +611,7 @@ class UARestroomCareSystemTests(TestCase):
 
         with patch.object(UserProfile.objects, 'create', side_effect=create_with_first_oserror):
             response = self.client.post(reverse('register'), {
+            'role': 'student',
                 'first_name': 'Carlo',
                 'last_name': 'Dizon',
                 'username': 'carlo_dizon',
@@ -754,3 +759,55 @@ class GoogleTokenVerifierTests(TestCase):
                 self.assertEqual(verify_google_id_token(forged)['email'], 'a@ua.edu.ph')
         with override_settings(GOOGLE_CLIENT_ID=''):
             self.assertIsNone(verify_google_id_token(forged))
+
+class FacultyRegistrationTests(TestCase):
+    """Unified Student / Teacher-Faculty registration, verification and ID login."""
+
+    def _payload(self, **extra):
+        data = {
+            'first_name': 'Maria', 'last_name': 'Santos', 'username': 'maria_prof',
+            'email': 'maria.santos@ua.edu.ph', 'student_id': 'FAC-778899',
+            'id_picture': create_test_image('front.jpg'), 'id_picture_back': create_test_image('back.jpg'),
+            'password': 'SecretPassword123!', 'confirm_password': 'SecretPassword123!',
+        }
+        data.update(extra)
+        return data
+
+    def test_role_is_required(self):
+        response = self.client.post(reverse('register'), self._payload())
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(User.objects.filter(username='maria_prof').exists())
+        response = self.client.post(reverse('register'), self._payload(role='admin'))
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(User.objects.filter(username='maria_prof').exists())
+
+    def test_faculty_registration_saves_role_then_admin_approves_and_id_login_works(self):
+        from unittest.mock import patch
+        with patch('core.views.parse_ocr_text', return_value=''):
+            response = self.client.post(reverse('register'), self._payload(role='professor'))
+        self.assertEqual(response.status_code, 302)
+        user = User.objects.get(username='maria_prof')
+        self.assertEqual(user.profile.role, 'professor')
+        self.assertFalse(user.profile.is_verified)
+
+        # Unverified faculty cannot log in yet
+        resp = self.client.post(reverse('login'), {'username': 'FAC-778899', 'password': 'SecretPassword123!'})
+        self.assertFalse(resp.wsgi_request.user.is_authenticated)
+
+        admin = User.objects.create_superuser('boss', 'boss@ua.edu.ph', 'Password123!')
+        UserProfile.objects.create(user=admin, role='admin', is_verified=True)
+        self.client.login(username='boss', password='Password123!')
+        page = self.client.get(reverse('admin_verifications'))
+        self.assertContains(page, 'Professor / Teacher')
+        self.assertContains(page, 'FAC-778899')
+        self.client.post(reverse('verify_student', args=[user.profile.id, 'approve']))
+        self.client.logout()
+
+        user.refresh_from_db()
+        self.assertTrue(user.profile.is_verified)
+        # Faculty ID uses non-numeric prefix; digits are matched by the portal's numeric ID resolver
+        resp = self.client.post(reverse('login'), {'username': '778899', 'password': 'SecretPassword123!'})
+        self.assertTrue(resp.wsgi_request.user.is_authenticated)
+        self.client.logout()
+        resp = self.client.post(reverse('login'), {'username': 'maria.santos@ua.edu.ph', 'password': 'SecretPassword123!'})
+        self.assertTrue(resp.wsgi_request.user.is_authenticated)

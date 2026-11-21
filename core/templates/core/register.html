@@ -1,6 +1,6 @@
 {% extends 'core/base.html' %}
 {% load static %}
-{% block title %}Student Identity Registration — UA RESTROOMCARE{% endblock %}
+{% block title %}Student &amp; Faculty Registration — UA RESTROOMCARE{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center my-3 my-md-4">
@@ -12,8 +12,8 @@
                     <img src="{% static 'img/ua_seal.png' %}" alt="University of the Assumption Seal">
                 </div>
                 <div>
-                    <h3 class="fw-bold mb-0 text-dark">Student Account Registration</h3>
-                    <p class="small mb-0 text-muted">University identity & student ID verification</p>
+                    <h3 class="fw-bold mb-0 text-dark">Student &amp; Faculty Account Registration</h3>
+                    <p class="small mb-0 text-muted">University identity & ID verification</p>
                 </div>
             </div>
 
@@ -21,10 +21,10 @@
             <div class="p-3 mb-4 rounded-2 small" style="background: #f0fdfa; border: 1px solid #ccfbf1;">
                 <div class="d-flex align-items-center gap-2 text-dark mb-1">
                     <i class="bi bi-shield-check text-primary fs-5"></i>
-                    <strong>Official Student Verification:</strong>
+                    <strong>Official Student &amp; Faculty Verification:</strong>
                 </div>
                 <p class="mb-0 text-muted">
-                    Use your official <code>@ua.edu.ph</code> institutional email. Upload clear photos of both the <strong>front</strong> (Name & Photo) and <strong>back</strong> (Student ID Number & Barcode) of your physical ID card to verify your identity.
+                    Register with your official <code>@ua.edu.ph</code> institutional email and your physical University ID card. Upload clear photos of both the <strong>front</strong> (Name & Photo) and <strong>back</strong> (Student or Faculty ID Number & Barcode) of your ID card to verify your identity.
                 </p>
             </div>
 
@@ -47,6 +47,44 @@
             <form method="post" enctype="multipart/form-data" id="student_register_form">
                 {% csrf_token %}
 
+                <!-- Account Role / Type -->
+                <div class="mb-4">
+                    <label class="form-label small fw-semibold text-dark">Account Role / Type <span class="text-danger">*</span></label>
+                    <div class="row g-2" id="role_selector">
+                        {% for radio in form.role %}
+                        <div class="col-12 col-sm-6">
+                            <label for="{{ radio.id_for_label }}" class="role-card d-flex align-items-center gap-2 p-3 rounded-3 w-100" style="border: 1.5px solid var(--card-border); cursor: pointer; background: #f8fafc;">
+                                {{ radio.tag }}
+                                <i class="bi {% if radio.data.value == 'professor' %}bi-person-workspace{% else %}bi-mortarboard{% endif %} text-primary fs-5"></i>
+                                <span class="fw-semibold text-dark">{{ radio.choice_label }}</span>
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const radios = document.querySelectorAll('#role_selector input[type="radio"]');
+                        const label = document.getElementById('id_number_label_text');
+                        const idInput = document.getElementById('id_student_id');
+                        function sync() {
+                            let role = 'student';
+                            radios.forEach(function (r) { if (r.checked) role = r.value; });
+                            radios.forEach(function (r) {
+                                const card = r.closest('.role-card');
+                                if (card) {
+                                    card.style.borderColor = r.checked ? '#1e3a8a' : '';
+                                    card.style.background = r.checked ? '#eff6ff' : '#f8fafc';
+                                }
+                            });
+                            if (label) label.textContent = role === 'professor' ? 'Official Faculty / Employee ID Number' : 'Official Student ID Number';
+                            if (idInput) idInput.placeholder = role === 'professor' ? 'Faculty / Employee ID Number' : 'Student ID Number';
+                        }
+                        radios.forEach(function (r) { r.addEventListener('change', sync); });
+                        sync();
+                    });
+                </script>
+
                 <!-- Full Name Fields -->
                 <div class="row g-3 mb-3">
                     <div class="col-12 col-sm-6">
@@ -66,7 +104,7 @@
                         {{ form.username }}
                     </div>
                     <div class="col-12 col-sm-6">
-                        <label class="form-label small fw-semibold text-dark">Official Student ID Number <span class="text-danger">*</span></label>
+                        <label class="form-label small fw-semibold text-dark"><span id="id_number_label_text">Official Student / Faculty ID Number</span> <span class="text-danger">*</span></label>
                         {{ form.student_id }}
                     </div>
                 </div>
@@ -105,7 +143,7 @@
                                 <label class="form-label small fw-bold text-dark d-flex align-items-center gap-1.5 mb-1">
                                     <i class="bi bi-upc-scan text-primary"></i> ID Card (Back Face) <span class="text-danger">*</span>
                                 </label>
-                                <small class="d-block mb-2 text-muted">Upload a clear photo of the back of your ID. The ID card number or barcode must be clearly legible and match the Student ID Number you entered.</small>
+                                <small class="d-block mb-2 text-muted">Upload a clear photo of the back of your ID. The Student or Faculty ID Number or barcode must be clearly legible and match the ID Number you entered.</small>
                                 {{ form.id_picture_back }}
                             </div>
                             <!-- Live Back Preview -->

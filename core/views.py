@@ -421,6 +421,9 @@ def register_view(request):
             input_first_name = form.cleaned_data['first_name'].strip()
             input_last_name = form.cleaned_data['last_name'].strip()
             input_email = form.cleaned_data['email'].strip().lower()
+            chosen_role = form.cleaned_data['role']
+            if chosen_role not in ('student', 'professor'):
+                chosen_role = 'student'
 
             # Strict Duplication Check Safeguard
             clean_target = re.sub(r'[^a-zA-Z0-9]', '', input_student_id).lower()
@@ -460,13 +463,13 @@ def register_view(request):
                 is_auto_verified = True
                 is_active_status = True
                 ocr_detail = f"ID '{input_student_id}' & Name '{input_last_name}' confirmed from front/back card."
-                user_msg = "Identity Verified! Your Student ID details have been verified. You may now log in."
+                user_msg = "Identity Verified! Your ID details have been verified. You may now log in."
             elif id_matched or name_matched:
                 ocr_detail = f"Partial card match (ID={id_matched}, Name={name_matched}). Sent to admin approval."
-                user_msg = "Registration Received: Your student identity verification is pending administrative review."
+                user_msg = "Registration Received: Your identity verification is pending administrative review."
             else:
                 ocr_detail = "OCR scans unclear. Sent to manual admin review."
-                user_msg = "Registration Received: Your student verification request has been queued for review."
+                user_msg = "Registration Received: Your verification request has been queued for review."
 
             # Reset file pointers before model saving
             if uploaded_front:
@@ -484,7 +487,7 @@ def register_view(request):
             try:
                 UserProfile.objects.create(
                     user=user,
-                    role='student',
+                    role=chosen_role,
                     student_id=input_student_id,
                     id_picture=uploaded_front,
                     id_picture_back=uploaded_back,
@@ -494,7 +497,7 @@ def register_view(request):
                 # Fallback if filesystem storage is read-only
                 UserProfile.objects.create(
                     user=user,
-                    role='student',
+                    role=chosen_role,
                     student_id=input_student_id,
                     is_verified=is_auto_verified
                 )
@@ -502,8 +505,8 @@ def register_view(request):
             # Log audit event
             log_audit_event(
                 user,
-                "Student Registration Submitted",
-                f"Student ID: {input_student_id} | Verified: {is_auto_verified} | Card Scans: {ocr_detail}",
+                "Faculty Registration Submitted" if chosen_role == 'professor' else "Student Registration Submitted",
+                f"Role: {chosen_role} | ID: {input_student_id} | Verified: {is_auto_verified} | Card Scans: {ocr_detail}",
                 request
             )
 
@@ -636,7 +639,7 @@ def admin_dashboard(request):
         return redirect('dashboard')
 
     reports = RestroomReport.objects.all().order_by('-created_at')
-    pending_students_count = UserProfile.objects.filter(is_verified=False, role='student').count()
+    pending_students_count = UserProfile.objects.filter(is_verified=False, role__in=['student', 'professor']).count()
     suspicious_logs = SuspiciousActivityLog.objects.filter(reviewed=False).order_by('-flagged_at')[:20]
 
     stats = {
@@ -668,7 +671,7 @@ def admin_verifications_view(request):
         messages.error(request, "Access Denied: Administrative privileges required.")
         return redirect('dashboard')
 
-    pending_students = UserProfile.objects.filter(is_verified=False, role='student').select_related('user').order_by('-user__date_joined')
+    pending_students = UserProfile.objects.filter(is_verified=False, role__in=['student', 'professor']).select_related('user').order_by('-user__date_joined')
     return render(request, 'core/verifications.html', {
         'pending_students': pending_students,
         'pending_count': pending_students.count(),

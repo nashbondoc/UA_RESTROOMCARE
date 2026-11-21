@@ -7,7 +7,7 @@ def google_oauth_settings(request):
     user = getattr(request, 'user', None)
     if user and user.is_authenticated and (user.is_superuser or user.is_staff or getattr(getattr(user, 'profile', None), 'role', None) == 'admin'):
         try:
-            pending_count = UserProfile.objects.filter(is_verified=False, role='student').count()
+            pending_count = UserProfile.objects.filter(is_verified=False, role__in=['student', 'professor']).count()
         except Exception:
             pending_count = 0
 

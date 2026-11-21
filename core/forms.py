@@ -61,6 +61,14 @@ class RestroomReportForm(forms.ModelForm):
 
 
 class StudentRegistrationForm(forms.ModelForm):
+    role = forms.ChoiceField(
+        label="Account Role / Type",
+        required=True,
+        initial='student',
+        choices=(('student', 'Student'), ('professor', 'Teacher / Faculty')),
+        widget=forms.RadioSelect(attrs={'class': 'role-radio-input'}),
+        error_messages={'required': 'Please choose whether you are registering as a Student or Teacher / Faculty.'}
+    )
     first_name = forms.CharField(
         max_length=30,
         required=True,
@@ -83,7 +91,7 @@ class StudentRegistrationForm(forms.ModelForm):
         required=True,
         widget=forms.EmailInput(attrs={
             'class': 'form-control form-control-water',
-            'placeholder': 'student.id@ua.edu.ph',
+            'placeholder': 'name@ua.edu.ph',
             'autocomplete': 'email'
         }),
         help_text="Official university email (@ua.edu.ph)"
@@ -93,7 +101,7 @@ class StudentRegistrationForm(forms.ModelForm):
         required=True,
         widget=forms.TextInput(attrs={
             'class': 'form-control form-control-water',
-            'placeholder': 'Student ID Number (e.g. 2024001234)'
+            'placeholder': 'Student or Employee/Faculty ID Number'
         })
     )
     id_picture = forms.ImageField(
@@ -114,7 +122,7 @@ class StudentRegistrationForm(forms.ModelForm):
             'accept': 'image/*',
             'id': 'student_id_picture_back'
         }),
-        help_text="Upload the BACK of your ID: the ID card number or barcode must be clearly legible and match your entered Student ID."
+        help_text="Upload the BACK of your ID: the ID card number or barcode must be clearly legible and match your entered Student or Faculty ID Number."
     )
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={
