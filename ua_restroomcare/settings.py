@@ -107,7 +107,11 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'core' / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Static assets via WhiteNoise; uploaded media (ID cards, incident photos) persisted in the database
+STORAGES = {
+    'default': {'BACKEND': 'core.storage.DatabaseStorage'},
+    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
+}
 
 # Media files (Student IDs and Report Evidence Photos)
 # Uses writable /tmp/media on Vercel serverless environment to prevent Errno 30 Read-only file system

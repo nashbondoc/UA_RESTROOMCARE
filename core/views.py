@@ -4,7 +4,9 @@ import base64
 import requests
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponseNotAllowed
+from django.http import HttpResponseNotAllowed, HttpResponse, FileResponse, Http404
+from django.utils._os import safe_join
+from django.core.exceptions import SuspiciousFileOperation
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import AuthenticationForm
@@ -20,7 +22,7 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.db.models import Q
 
-from .models import RestroomReport, RestroomLocation, AuditLog, SuspiciousActivityLog, UserProfile
+from .models import RestroomReport, RestroomLocation, AuditLog, SuspiciousActivityLog, UserProfile, StoredFile
 from .forms import RestroomReportForm, StudentRegistrationForm, InstitutionalPasswordResetForm
 from .utils import check_rate_limit_and_duplicates, log_audit_event, get_client_ip, get_user_role
 
@@ -33,6 +35,22 @@ def is_admin(user):
         return True
     profile = getattr(user, 'profile', None)
     return bool(profile and profile.role == 'admin')
+
+
+def protected_media(request, path):
+    """Serve uploaded files stored in the database (StoredFile model).
+
+    ID card photos and incident report photos are persisted in PostgreSQL via
+    core.storage.DatabaseStorage so they survive Vercel cold-starts and ephemeral
+    filesystem resets. This view retrieves a row by its path name and streams the
+    binary content back with the correct MIME type.
+    """
+    clean_path = path.strip('/')
+    try:
+        stored = StoredFile.objects.get(name=clean_path)
+    except StoredFile.DoesNotExist:
+        raise Http404
+    return HttpResponse(bytes(stored.content), content_type=stored.content_type)
 
 
 def parse_ocr_text(image_file):
@@ -479,6 +497,7 @@ def register_view(request):
 
             # Create User record
             user = form.save(commit=False)
+            user.username = input_email  # institutional email is the account username
             user.set_password(form.cleaned_data['password'])
             user.is_active = is_active_status
             user.save()

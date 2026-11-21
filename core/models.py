@@ -127,3 +127,14 @@ class SuspiciousActivityLog(models.Model):
     def __str__(self):
         username = self.user.username if self.user else "Unauthenticated"
         return f"Flagged User: {username} - {self.reason}"
+
+
+class StoredFile(models.Model):
+    """Binary upload (ID card / incident photo) persisted in the database for serverless hosting."""
+    name = models.CharField(max_length=255, unique=True)
+    content = models.BinaryField()
+    content_type = models.CharField(max_length=100, default='application/octet-stream')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name

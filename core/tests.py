@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from core.models import RestroomLocation, RestroomReport, UserProfile, AuditLog, SuspiciousActivityLog
+from core.models import RestroomLocation, RestroomReport, UserProfile, AuditLog, SuspiciousActivityLog, StoredFile
 
 
 def create_test_image(name='test.jpg'):
@@ -183,7 +183,6 @@ class UARestroomCareSystemTests(TestCase):
             'role': 'student',
             'first_name': 'Alice',
             'last_name': 'Smith',
-            'username': 'alice_smith',
             'email': 'alice@gmail.com',  # Invalid non-institutional email
             'student_id': '2024-99887',
             'id_picture': test_front,
@@ -193,7 +192,7 @@ class UARestroomCareSystemTests(TestCase):
         })
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "@ua.edu.ph")
-        self.assertFalse(User.objects.filter(username='alice_smith').exists())
+        self.assertFalse(User.objects.filter(email='alice@gmail.com').exists())
 
     def test_duplicate_student_id_strictly_blocked(self):
         """Once an ID's identity has been registered, that ID cannot be used to create another account."""
@@ -205,7 +204,6 @@ class UARestroomCareSystemTests(TestCase):
             'role': 'student',
             'first_name': 'Imposter',
             'last_name': 'User',
-            'username': 'imposter_user',
             'email': 'imposter@ua.edu.ph',
             'student_id': '2024-00123',  # Duplicate!
             'id_picture': test_front,
@@ -215,7 +213,7 @@ class UARestroomCareSystemTests(TestCase):
         })
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Duplication")
-        self.assertFalse(User.objects.filter(username='imposter_user').exists())
+        self.assertFalse(User.objects.filter(email='imposter@ua.edu.ph').exists())
 
         # Attempt with normalized format '202400123' without hyphen
         test_front2 = create_test_image('front2.jpg')
@@ -224,7 +222,6 @@ class UARestroomCareSystemTests(TestCase):
             'role': 'student',
             'first_name': 'Imposter2',
             'last_name': 'User2',
-            'username': 'imposter_user2',
             'email': 'imposter2@ua.edu.ph',
             'student_id': '202400123',  # Same normalized ID!
             'id_picture': test_front2,
@@ -234,7 +231,7 @@ class UARestroomCareSystemTests(TestCase):
         })
         self.assertEqual(response2.status_code, 200)
         self.assertContains(response2, "Duplication")
-        self.assertFalse(User.objects.filter(username='imposter_user2').exists())
+        self.assertFalse(User.objects.filter(email='imposter2@ua.edu.ph').exists())
 
     @patch('core.views.parse_ocr_text')
     def test_registration_ocr_success_with_front_and_back_id(self, mock_ocr):
@@ -253,7 +250,6 @@ class UARestroomCareSystemTests(TestCase):
             'role': 'student',
             'first_name': 'Maria',
             'last_name': 'Santos',
-            'username': 'maria_santos',
             'email': 'maria.santos@ua.edu.ph',
             'student_id': '2024-11223',
             'id_picture': test_front,
@@ -263,7 +259,7 @@ class UARestroomCareSystemTests(TestCase):
         })
         self.assertRedirects(response, reverse('login'))
 
-        user = User.objects.get(username='maria_santos')
+        user = User.objects.get(username='maria.santos@ua.edu.ph')
         self.assertTrue(user.is_active)
         self.assertTrue(user.profile.is_verified)
         self.assertTrue(bool(user.profile.id_picture))
@@ -611,10 +607,9 @@ class UARestroomCareSystemTests(TestCase):
 
         with patch.object(UserProfile.objects, 'create', side_effect=create_with_first_oserror):
             response = self.client.post(reverse('register'), {
-            'role': 'student',
+                'role': 'student',
                 'first_name': 'Carlo',
                 'last_name': 'Dizon',
-                'username': 'carlo_dizon',
                 'email': 'carlo.dizon@ua.edu.ph',
                 'student_id': '2024990011',
                 'id_picture': test_front,
@@ -624,7 +619,7 @@ class UARestroomCareSystemTests(TestCase):
             })
 
         self.assertRedirects(response, reverse('login'))
-        self.assertTrue(User.objects.filter(username='carlo_dizon').exists())
+        self.assertTrue(User.objects.filter(username='carlo.dizon@ua.edu.ph').exists())
         self.assertTrue(UserProfile.objects.filter(student_id='2024990011').exists())
 
 
@@ -732,6 +727,64 @@ class UARestroomCareSystemTests(TestCase):
         resp = self.client.get(reverse('audit_logs'))
         self.assertEqual(resp.status_code, 200)
 
+    @patch('core.views.parse_ocr_text')
+    def test_registration_uses_email_as_username_and_database_storage_serves_images(self, mock_ocr):
+        """Registration without username sets username=email and uploads are persisted & served via StoredFile."""
+        def ocr_side_effect(image_file):
+            if 'back' in getattr(image_file, 'name', ''):
+                return 'official student id: 2024-11223'
+            return 'republic of the philippines name: maria santos'
+
+        mock_ocr.side_effect = ocr_side_effect
+
+        response = self.client.post(reverse('register'), {
+            'role': 'student',
+            'first_name': 'Maria',
+            'last_name': 'Santos',
+            'email': 'maria.santos@ua.edu.ph',
+            'student_id': '2024-11223',
+            'id_picture': create_test_image('front_db.jpg'),
+            'id_picture_back': create_test_image('back_db.jpg'),
+            'password': 'SecretPassword123!',
+            'confirm_password': 'SecretPassword123!',
+        })
+        self.assertRedirects(response, reverse('login'))
+
+        user = User.objects.get(email='maria.santos@ua.edu.ph')
+        self.assertEqual(user.username, 'maria.santos@ua.edu.ph')
+        self.assertEqual(user.email, 'maria.santos@ua.edu.ph')
+
+        profile = user.profile
+        self.assertTrue(StoredFile.objects.filter(name=profile.id_picture.name).exists())
+        self.assertTrue(StoredFile.objects.filter(name=profile.id_picture_back.name).exists())
+
+        for url in (profile.id_picture.url, profile.id_picture_back.url):
+            self.assertTrue(url.startswith('/media/'))
+            img_resp = self.client.get(url)
+            self.assertEqual(img_resp.status_code, 200)
+            self.assertEqual(img_resp['Content-Type'], 'image/jpeg')
+
+        login_resp = self.client.post(reverse('login'), {
+            'username': 'maria.santos@ua.edu.ph',
+            'password': 'SecretPassword123!',
+        })
+        self.assertRedirects(login_resp, reverse('dashboard'))
+
+        report_resp = self.client.post(reverse('submit_report'), {
+            'location': self.location.id,
+            'category': 'Plumbing',
+            'description': 'Leaking faucet in sink',
+            'photo': create_test_image('report_evidence.jpg'),
+        })
+        self.assertRedirects(report_resp, reverse('dashboard'))
+
+        report = RestroomReport.objects.get(user=user)
+        self.assertTrue(StoredFile.objects.filter(name=report.photo.name).exists())
+        self.assertTrue(report.photo.url.startswith('/media/'))
+        photo_resp = self.client.get(report.photo.url)
+        self.assertEqual(photo_resp.status_code, 200)
+        self.assertEqual(photo_resp['Content-Type'], 'image/jpeg')
+
 
 class GoogleTokenVerifierTests(TestCase):
     """verify_google_id_token must never trust an unsigned/forged token."""
@@ -765,7 +818,7 @@ class FacultyRegistrationTests(TestCase):
 
     def _payload(self, **extra):
         data = {
-            'first_name': 'Maria', 'last_name': 'Santos', 'username': 'maria_prof',
+            'first_name': 'Maria', 'last_name': 'Santos',
             'email': 'maria.santos@ua.edu.ph', 'student_id': 'FAC-778899',
             'id_picture': create_test_image('front.jpg'), 'id_picture_back': create_test_image('back.jpg'),
             'password': 'SecretPassword123!', 'confirm_password': 'SecretPassword123!',
@@ -776,17 +829,17 @@ class FacultyRegistrationTests(TestCase):
     def test_role_is_required(self):
         response = self.client.post(reverse('register'), self._payload())
         self.assertEqual(response.status_code, 200)
-        self.assertFalse(User.objects.filter(username='maria_prof').exists())
+        self.assertFalse(User.objects.filter(email='maria.santos@ua.edu.ph').exists())
         response = self.client.post(reverse('register'), self._payload(role='admin'))
         self.assertEqual(response.status_code, 200)
-        self.assertFalse(User.objects.filter(username='maria_prof').exists())
+        self.assertFalse(User.objects.filter(email='maria.santos@ua.edu.ph').exists())
 
     def test_faculty_registration_saves_role_then_admin_approves_and_id_login_works(self):
         from unittest.mock import patch
         with patch('core.views.parse_ocr_text', return_value=''):
             response = self.client.post(reverse('register'), self._payload(role='professor'))
         self.assertEqual(response.status_code, 302)
-        user = User.objects.get(username='maria_prof')
+        user = User.objects.get(username='maria.santos@ua.edu.ph')
         self.assertEqual(user.profile.role, 'professor')
         self.assertFalse(user.profile.is_verified)
 

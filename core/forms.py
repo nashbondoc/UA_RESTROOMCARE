@@ -148,20 +148,15 @@ class StudentRegistrationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email']
-        widgets = {
-            'username': forms.TextInput(attrs={
-                'class': 'form-control form-control-water',
-                'placeholder': 'Username (e.g. student.handle)',
-                'autocomplete': 'username'
-            }),
-        }
+        fields = ['first_name', 'last_name', 'email']
 
     def clean_email(self):
         email = self.cleaned_data.get('email', '').strip().lower()
         if not email.endswith('@ua.edu.ph'):
             raise forms.ValidationError("Registration is restricted to institutional email addresses ending with '@ua.edu.ph'.")
-        if User.objects.filter(email__iexact=email).exists():
+        if len(email) > 150:
+            raise forms.ValidationError("This email address is too long to use as an account name.")
+        if User.objects.filter(email__iexact=email).exists() or User.objects.filter(username__iexact=email).exists():
             raise forms.ValidationError("This school email is already registered. Please sign in or use password recovery.")
         return email
 
@@ -184,12 +179,6 @@ class StudentRegistrationForm(forms.ModelForm):
                         "Each identity cannot be used to create another account."
                     )
         return student_id
-
-    def clean_username(self):
-        username = self.cleaned_data.get('username', '').strip()
-        if User.objects.filter(username__iexact=username).exists():
-            raise forms.ValidationError("This username is already taken. Please choose another.")
-        return username
 
     def clean(self):
         cleaned_data = super().clean()
