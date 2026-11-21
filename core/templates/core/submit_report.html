@@ -9,22 +9,19 @@
 
             <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="avatar-circle-teal mb-0" style="width: 50px; height: 50px; font-size: 1.4rem;">
-                        <i class="bi bi-clipboard-plus"></i>
-                    </div>
                     <div>
                         <h3 class="fw-bold mb-0 text-dark">Submit Incident Report</h3>
                         <p class="small mb-0 text-muted">Report sanitation, maintenance, or facility concerns across campus</p>
                     </div>
                 </div>
                 <a href="{% url 'dashboard' %}" class="btn btn-teal-secondary btn-sm px-3 py-1.5">
-                    <i class="bi bi-arrow-left"></i> My Reports
+                    My Reports
                 </a>
             </div>
 
             {% if form.errors %}
                 <div class="alert alert-danger p-3 small mb-4 rounded-2">
-                    <div class="fw-bold mb-1"><i class="bi bi-exclamation-octagon-fill me-1"></i> Submission Notice:</div>
+                    <div class="fw-bold mb-1">Submission Notice:</div>
                     <ul class="mb-0 ps-3">
                         {% for field in form %}
                             {% for error in field.errors %}
@@ -44,7 +41,7 @@
                 <!-- Restroom Location Select -->
                 <div class="mb-3">
                     <label class="form-label small fw-semibold text-dark">
-                        <i class="bi bi-geo-alt text-primary me-1"></i>Restroom Location <span class="text-danger">*</span>
+                        Restroom Location <span class="text-danger">*</span>
                     </label>
                     {{ form.location }}
                     <small class="d-block mt-1 text-muted">Select the campus building, floor, room number, and gender designation.</small>
@@ -53,7 +50,7 @@
                 <!-- Issue Category Select -->
                 <div class="mb-3">
                     <label class="form-label small fw-semibold text-dark">
-                        <i class="bi bi-tag text-primary me-1"></i>Issue Category <span class="text-danger">*</span>
+                        Issue Category <span class="text-danger">*</span>
                     </label>
                     {{ form.category }}
                 </div>
@@ -61,7 +58,7 @@
                 <!-- Detailed Description -->
                 <div class="mb-3">
                     <label class="form-label small fw-semibold text-dark">
-                        <i class="bi bi-card-text text-primary me-1"></i>Detailed Description <span class="text-danger">*</span>
+                        Detailed Description <span class="text-danger">*</span>
                     </label>
                     {{ form.description }}
                 </div>
@@ -69,13 +66,13 @@
                 <!-- Required Photo Evidence -->
                 <div class="mb-4 cyber-upload-card">
                     <label class="form-label small fw-bold text-dark d-flex align-items-center gap-1.5">
-                        <i class="bi bi-camera text-primary"></i> Attach Photo Evidence (Required) <span class="text-danger">*</span>
+                        Attach Photo Evidence (Required) <span class="text-danger">*</span>
                     </label>
                     {{ form.photo }}
                     <small class="d-block mt-1 text-muted">Upload clear photo evidence of the facility concern.</small>
                     
                     <div id="photo_preview_box" class="mt-3 text-center d-none">
-                        <div class="small mb-1 fw-semibold text-muted"><i class="bi bi-eye"></i> Evidence Preview:</div>
+                        <div class="small mb-1 fw-semibold text-muted">Evidence Preview:</div>
                         <img id="photo_preview_img" src="#" alt="Report Photo Preview" class="img-fluid rounded shadow-sm mb-1" style="max-height: 220px; border: 1px solid var(--card-border);">
                         <div id="photo_status" class="mt-1"></div>
                     </div>
@@ -95,7 +92,7 @@
                 <!-- Submit Action -->
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-blue-signin py-3 fw-bold">
-                        <i class="bi bi-send-check-fill"></i> Transmit Incident Report
+                        Transmit Incident Report
                     </button>
                 </div>
             </form>
@@ -191,7 +188,7 @@
                     photoInput.files = dt.files;
                 }
                 photoImg.src = URL.createObjectURL(compressed || file);
-                photoStatus.innerHTML = `<span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; font-size: 0.72rem;"><i class="bi bi-check-circle me-1"></i> Evidence Ready &bull; ${formatFileSize(compressed.size)}</span>`;
+                photoStatus.innerHTML = `<span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; font-size: 0.72rem;">Evidence Ready &bull; ${formatFileSize(compressed.size)}</span>`;
             } catch (err) {
                 photoImg.src = URL.createObjectURL(file);
                 photoStatus.innerHTML = '';

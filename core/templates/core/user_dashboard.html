@@ -6,9 +6,6 @@
 <div class="row align-items-center justify-content-between mb-4 g-3">
     <div class="col-12 col-md-8">
         <div class="d-flex align-items-center gap-3">
-            <div class="avatar-circle-teal mb-0" style="width: 50px; height: 50px; font-size: 1.4rem;">
-                <i class="bi bi-clipboard-check"></i>
-            </div>
             <div>
                 <h3 class="fw-bold mb-0 text-dark">My Restroom Reports</h3>
                 <p class="small mb-0 text-muted">
@@ -21,7 +18,7 @@
     </div>
     <div class="col-12 col-md-4 text-md-end">
         <a href="{% url 'submit_report' %}" class="btn btn-blue-signin py-2.5 px-4 shadow-sm">
-            <i class="bi bi-plus-circle-fill"></i> Submit New Report
+            Submit New Report
         </a>
     </div>
 </div>
@@ -67,7 +64,7 @@
                         <td>
                             {% if report.photo %}
                                 <button type="button" class="btn btn-sm btn-outline-primary px-3 py-1" data-bs-toggle="modal" data-bs-target="#userPhotoModal{{ report.id }}">
-                                    <i class="bi bi-image me-1"></i> View Photo
+                                    View Photo
                                 </button>
                             {% else %}
                                 <span class="small text-muted">No photo</span>
@@ -75,15 +72,15 @@
                         </td>
                         <td>
                             {% if report.status == 'Pending' %}
-                                <span class="badge-status badge-pending"><i class="bi bi-clock-history"></i> Pending</span>
+                                <span class="badge-status badge-pending">Pending</span>
                             {% elif report.status == 'Under Review' %}
-                                <span class="badge-status badge-review"><i class="bi bi-search"></i> Under Review</span>
+                                <span class="badge-status badge-review">Under Review</span>
                             {% elif report.status == 'In Progress' %}
-                                <span class="badge-status badge-progress"><i class="bi bi-gear-fill"></i> In Progress</span>
+                                <span class="badge-status badge-progress">In Progress</span>
                             {% elif report.status == 'Resolved' %}
-                                <span class="badge-status badge-resolved"><i class="bi bi-check-circle-fill"></i> Resolved</span>
+                                <span class="badge-status badge-resolved">Resolved</span>
                             {% elif report.status == 'Rejected' %}
-                                <span class="badge-status badge-rejected"><i class="bi bi-x-circle-fill"></i> Rejected</span>
+                                <span class="badge-status badge-rejected">Rejected</span>
                             {% else %}
                                 <span class="badge-status badge-pending">{{ report.status }}</span>
                             {% endif %}
@@ -109,12 +106,12 @@
         <!-- Empty State -->
         <div class="text-center py-5">
             <div class="mb-3">
-                <i class="bi bi-inbox" style="font-size: 3.5rem; color: #94a3b8;"></i>
+
             </div>
             <h5 class="fw-bold mb-1 text-dark">No reports recorded yet</h5>
             <p class="small mb-4 text-muted">You have not submitted any sanitation or restroom maintenance reports.</p>
             <a href="{% url 'submit_report' %}" class="btn btn-blue-signin px-4 py-2.5 shadow-sm">
-                <i class="bi bi-plus-circle me-1"></i> Submit Your First Incident
+                Submit Your First Incident
             </a>
         </div>
     {% endif %}
@@ -130,8 +127,7 @@
             <div class="modal-content glass-card-pro p-3 text-start">
                 <div class="modal-header border-0 pb-2">
                     <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-camera-fill text-primary fs-5"></i>
-                        <h6 class="modal-title fw-bold text-dark mb-0" id="userPhotoModalLabel{{ report.id }}">
+<h6 class="modal-title fw-bold text-dark mb-0" id="userPhotoModalLabel{{ report.id }}">
                             Report #{{ report.id }} Evidence Photo &bull; {{ report.location.building }}
                         </h6>
                     </div>

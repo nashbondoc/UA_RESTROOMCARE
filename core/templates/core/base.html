@@ -529,6 +529,54 @@
             }
         }
 
+        /* ===== Clean layout & mobile responsiveness ===== */
+        /* Desktop navbar: single line, no wrapped labels */
+        .navbar-custom .navbar-nav { flex-wrap: nowrap; }
+        .navbar-custom .nav-link,
+        .navbar-custom .nav-btn-link,
+        .navbar-custom .nav-btn-admin,
+        .navbar-custom .nav-btn-register,
+        .navbar-custom .btn,
+        .navbar-custom .badge,
+        .navbar-custom .brand-title {
+            white-space: nowrap;
+        }
+        @media (min-width: 992px) and (max-width: 1199.98px) {
+            .navbar-custom .navbar-nav { gap: 0.25rem !important; }
+            .navbar-custom .nav-btn-link,
+            .navbar-custom .nav-btn-admin { padding-left: 0.6rem; padding-right: 0.6rem; font-size: 0.88rem; }
+        }
+        @media (max-width: 991.98px) {
+            .navbar-custom .navbar-nav { flex-wrap: wrap; align-items: stretch !important; gap: 0.5rem !important; }
+            .navbar-custom .nav-btn-link,
+            .navbar-custom .nav-btn-admin,
+            .navbar-custom .nav-btn-register,
+            .navbar-custom .navbar-nav .btn { width: 100%; justify-content: center; min-height: 44px; }
+        }
+
+        /* Data tables: scroll horizontally instead of stacking/squeezing columns */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-x: contain;
+        }
+        .table-responsive > .table { min-width: 720px; }
+        .table thead th { white-space: nowrap; }
+        .table td .badge, .table td .badge-status { white-space: nowrap; }
+
+        /* Mobile (Android & iPhone) */
+        @media (max-width: 768px) {
+            main.container { padding-left: 0.75rem; padding-right: 0.75rem; }
+            .glass-card-pro { border-radius: 14px; }
+            .glass-card-pro.p-4, .glass-card-pro.p-md-5, .glass-card-pro.p-md-4 { padding: 1.1rem !important; }
+            main .d-flex.flex-wrap, main .d-inline-flex, main .d-grid { gap: 0.75rem !important; }
+            main .btn { border-radius: 10px; }
+            .table-responsive > .table { min-width: 680px; }
+            .table th, .table td { padding: 0.65rem 0.6rem; }
+            h2 { font-size: 1.4rem; }
+            h3 { font-size: 1.25rem; }
+        }
+
         /* ===== UI/UX Pro Max visual enhancement layer (CSS only, no content changes) ===== */
         body {
             background-image:
@@ -719,12 +767,12 @@
                         {% if user.is_superuser or user.is_staff or user.profile.role == 'admin' %}
                             <li class="nav-item">
                                 <a class="nav-btn-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}" href="{% url 'admin_dashboard' %}">
-                                    <i class="bi bi-speedometer2 text-primary"></i> Control Center
+                                    Control Center
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-btn-link d-inline-flex align-items-center gap-1.5 {% if request.resolver_match.url_name == 'admin_verifications' %}active{% endif %}" href="{% url 'admin_verifications' %}">
-                                    <i class="bi bi-person-vcard text-success"></i> Verifications
+                                    Verifications
                                     {% if pending_verifications_count > 0 %}
                                         <span class="badge rounded-pill bg-danger" style="font-size: 0.65rem; padding: 0.25em 0.55em;">{{ pending_verifications_count }}</span>
                                     {% endif %}
@@ -732,25 +780,25 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-btn-link {% if request.resolver_match.url_name == 'audit_logs' %}active{% endif %}" href="{% url 'audit_logs' %}">
-                                    <i class="bi bi-shield-check text-warning"></i> Audit Logs
+                                    Audit Logs
                                 </a>
                             </li>
                         {% else %}
                             <li class="nav-item">
                                 <a class="nav-btn-link" href="{% url 'dashboard' %}">
-                                    <i class="bi bi-clipboard-data text-primary"></i> My Reports
+                                    My Reports
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="btn btn-blue-signin btn-sm px-3.5 py-1.5 me-lg-2" href="{% url 'submit_report' %}">
-                                    <i class="bi bi-plus-circle-fill"></i> Submit Incident
+                                    Submit Incident
                                 </a>
                             </li>
                         {% endif %}
 
                         <li class="nav-item ms-lg-2">
                             <div class="d-flex align-items-center gap-2 px-3 py-1.5 rounded bg-light border" style="border-color: var(--card-border) !important;">
-                                <i class="bi bi-person-circle text-primary"></i>
+
                                 <span class="fw-semibold text-dark small">{{ user.username }}</span>
                                 {% if user.profile %}
                                     <span class="badge bg-primary text-white fw-normal" style="font-size: 0.65rem;">
@@ -765,19 +813,19 @@
                         </li>
                         <li class="nav-item ms-lg-1">
                             <a href="{% url 'logout' %}" class="btn btn-outline-secondary btn-sm px-3 py-1.5 fw-semibold">
-                                <i class="bi bi-box-arrow-right"></i> Logout
+                                Logout
                             </a>
                         </li>
                     {% else %}
                         <!-- Unauthenticated Minimal Navigation Buttons -->
                         <li class="nav-item">
                             <a href="{% url 'admin_login' %}" class="nav-btn-admin">
-                                <i class="bi bi-shield-lock"></i> Admin Portal
+                                Admin Portal
                             </a>
                         </li>
                         <li class="nav-item ms-lg-1">
                             <a href="{% url 'login_alias' %}" class="nav-btn-register" id="header_student_login_btn">
-                                <i class="bi bi-box-arrow-in-right"></i> Students/Faculty Login
+                                Students/Faculty Login
                             </a>
                         </li>
                     {% endif %}

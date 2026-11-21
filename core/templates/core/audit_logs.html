@@ -8,29 +8,12 @@
         <a href="{% url 'admin_dashboard' %}" class="btn btn-teal-secondary btn-sm p-2" title="Back to Control Center">
             <i class="bi bi-arrow-left fs-5"></i>
         </a>
-        <div class="avatar-circle-teal mb-0" style="width: 48px; height: 48px; font-size: 1.4rem;">
-            <i class="bi bi-shield-check"></i>
-        </div>
         <div>
             <h3 class="fw-bold mb-0 text-dark">System Audit Trail</h3>
             <p class="small mb-0 text-muted">Authentication, incident reporting, dual identity verification, and status logs</p>
         </div>
     </div>
     
-    <div class="d-flex gap-2 flex-wrap align-items-center">
-        <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary btn-sm px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5">
-            <i class="bi bi-speedometer2"></i> Control Center
-        </a>
-        <a href="{% url 'admin_verifications' %}" class="btn btn-outline-primary btn-sm px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5">
-            <i class="bi bi-person-vcard"></i> Verifications
-            {% if pending_verifications_count > 0 %}
-                <span class="badge bg-danger rounded-pill">{{ pending_verifications_count }}</span>
-            {% endif %}
-        </a>
-        <a href="{% url 'audit_logs' %}" class="btn btn-teal-secondary btn-sm px-3 py-2 fw-bold d-inline-flex align-items-center gap-1.5 shadow-sm">
-            <i class="bi bi-shield-check"></i> Audit Logs
-        </a>
-    </div>
 </div>
 
 <!-- Search / Filter Form -->
@@ -66,30 +49,30 @@
                     </td>
                     <td>
                         <div class="fw-semibold text-dark">
-                            <i class="bi bi-person text-primary me-1" aria-hidden="true"></i>{{ log.logged_username }}
+{{ log.logged_username }}
                         </div>
                         <span class="badge text-bg-light border text-uppercase" style="font-size: 0.65rem;">{{ log.logged_role }}</span>
                     </td>
                     <td>
                         {% if "Failed" in log.action or "Blocked" in log.action or "Unauthorized" in log.action or "Rejected" in log.action or "Violation" in log.action %}
                             <span class="badge px-2.5 py-1 text-danger bg-danger-subtle border border-danger-subtle">
-                                <i class="bi bi-shield-x" aria-hidden="true"></i> {{ log.action }}
+{{ log.action }}
                             </span>
                         {% elif "Sign-In" in log.action or "Login" in log.action %}
                             <span class="badge px-2.5 py-1 text-primary bg-primary-subtle border border-primary-subtle">
-                                <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i> {{ log.action }}
+{{ log.action }}
                             </span>
                         {% elif "Sign-Out" in log.action or "Logout" in log.action %}
                             <span class="badge px-2.5 py-1 text-secondary bg-light border">
-                                <i class="bi bi-box-arrow-right" aria-hidden="true"></i> {{ log.action }}
+{{ log.action }}
                             </span>
                         {% elif "Approved" in log.action %}
                             <span class="badge px-2.5 py-1 text-success bg-success-subtle border border-success-subtle">
-                                <i class="bi bi-check2-circle" aria-hidden="true"></i> {{ log.action }}
+{{ log.action }}
                             </span>
                         {% elif "Status" in log.action %}
                             <span class="badge px-2.5 py-1 text-warning bg-warning-subtle border border-warning-subtle">
-                                <i class="bi bi-pencil-square" aria-hidden="true"></i> {{ log.action }}
+{{ log.action }}
                             </span>
                         {% else %}
                             <span class="badge px-2.5 py-1 text-dark bg-light border">

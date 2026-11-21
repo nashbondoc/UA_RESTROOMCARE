@@ -10,27 +10,10 @@
             <a href="{% url 'admin_dashboard' %}" class="btn btn-teal-secondary btn-sm p-2" title="Back to Control Center">
                 <i class="bi bi-arrow-left fs-5"></i>
             </a>
-            <div class="avatar-circle-teal mb-0" style="width: 50px; height: 50px; font-size: 1.4rem; border-color: #2563eb; background: #dbeafe; color: #1d4ed8;">
-                <i class="bi bi-person-vcard"></i>
-            </div>
             <div>
                 <h2 class="fw-bold mb-0 text-dark">Student Identity Verifications</h2>
                 <p class="small mb-0 text-muted">Review, inspect dual-sided ID cards, and approve or reject student account registrations</p>
             </div>
-        </div>
-        <div class="d-flex gap-2 flex-wrap align-items-center">
-            <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary btn-sm px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5">
-                <i class="bi bi-speedometer2"></i> Control Center
-            </a>
-            <a href="{% url 'admin_verifications' %}" class="btn btn-teal-secondary btn-sm px-3 py-2 fw-bold d-inline-flex align-items-center gap-1.5 shadow-sm">
-                <i class="bi bi-person-vcard"></i> Verifications
-                {% if pending_count > 0 %}
-                    <span class="badge bg-danger rounded-pill">{{ pending_count }}</span>
-                {% endif %}
-            </a>
-            <a href="{% url 'audit_logs' %}" class="btn btn-outline-secondary btn-sm px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5">
-                <i class="bi bi-shield-check"></i> Audit Logs
-            </a>
         </div>
     </div>
 
@@ -38,8 +21,7 @@
     <div class="glass-card-pro p-3 p-md-4 mb-4">
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
             <div class="d-flex align-items-center gap-2">
-                <i class="bi bi-shield-lock text-primary fs-5"></i>
-                <h5 class="fw-bold mb-0 text-dark">Pending Dual-Card Identity Submissions</h5>
+<h5 class="fw-bold mb-0 text-dark">Pending Dual-Card Identity Submissions</h5>
             </div>
             <span class="badge {% if pending_count > 0 %}bg-warning text-dark{% else %}bg-secondary text-white{% endif %} px-3 py-1.5 fw-bold" style="font-size: 0.75rem;">
                 {{ pending_count }} Requiring Review
@@ -72,9 +54,9 @@
                             <span class="badge bg-light text-dark border">{{ profile.student_id|default:"N/A" }}</span>
                             <div class="mt-1">
                                 {% if profile.role == 'professor' %}
-                                <span class="badge bg-info text-dark"><i class="bi bi-person-workspace me-1"></i>Professor / Teacher</span>
+                                <span class="badge bg-info text-dark">Professor / Teacher</span>
                                 {% else %}
-                                <span class="badge bg-primary"><i class="bi bi-mortarboard me-1"></i>Student</span>
+                                <span class="badge bg-primary">Student</span>
                                 {% endif %}
                             </div>
                         </td>
@@ -92,7 +74,7 @@
                                 {% else %}<span class="small text-muted">No back</span>{% endif %}
                             </div>
                             <button type="button" class="btn btn-sm btn-outline-primary px-3 py-1" data-bs-toggle="modal" data-bs-target="#studentDualIdModal{{ profile.id }}">
-                                <i class="bi bi-images me-1"></i> Inspect Front &amp; Back
+                                Inspect Front &amp; Back
                             </button>
                         </td>
                         <td class="text-center">
@@ -100,13 +82,13 @@
                                 <form method="post" action="{% url 'verify_student' profile.id 'approve' %}" class="d-inline">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-success btn-sm px-3 fw-semibold">
-                                        <i class="bi bi-check-lg"></i> Approve
+                                        Approve
                                     </button>
                                 </form>
                                 <form method="post" action="{% url 'verify_student' profile.id 'reject' %}" class="d-inline" onsubmit="return confirm('Are you sure you want to reject and remove this student registration?');">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-outline-danger btn-sm px-3 fw-semibold">
-                                        <i class="bi bi-trash3"></i> Reject
+                                        Reject
                                     </button>
                                 </form>
                             </div>
@@ -115,7 +97,7 @@
                     {% empty %}
                     <tr>
                         <td colspan="6" class="text-center py-5 text-muted">
-                            <i class="bi bi-check2-circle text-success fs-3 d-block mb-2"></i>
+
                             <div class="fw-semibold">No student identity verifications currently awaiting review.</div>
                             <small class="text-muted">All student accounts are verified or no pending registrations exist.</small>
                         </td>
@@ -136,8 +118,7 @@
         <div class="modal-content glass-card-pro p-3 text-start">
             <div class="modal-header border-0 pb-2">
                 <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-person-vcard text-primary fs-5"></i>
-                    <h6 class="modal-title fw-bold text-dark mb-0" id="studentDualIdModalLabel{{ profile.id }}">
+<h6 class="modal-title fw-bold text-dark mb-0" id="studentDualIdModalLabel{{ profile.id }}">
                         Identity Verification: {{ profile.user.get_full_name|default:profile.user.username }} (ID: {{ profile.student_id }}) — {{ profile.get_role_display }}
                     </h6>
                 </div>
@@ -148,7 +129,7 @@
                     <!-- Front ID -->
                     <div class="col-12 col-md-6 text-center">
                         <div class="p-2 rounded mb-2 bg-light border">
-                            <span class="small fw-bold text-dark"><i class="bi bi-person-bounding-box me-1 text-primary"></i> Front Face (Photo & Name)</span>
+                            <span class="small fw-bold text-dark">Front Face (Photo & Name)</span>
                         </div>
                         {% if profile.id_picture %}
                             <a href="{{ profile.id_picture.url }}" target="_blank" rel="noopener" title="Open full size"><img src="{{ profile.id_picture.url }}" alt="Front ID" class="img-fluid rounded shadow-sm" style="max-height: 380px; object-fit: contain; border: 1px solid var(--card-border); cursor: zoom-in;"></a>
@@ -160,7 +141,7 @@
                     <!-- Back ID -->
                     <div class="col-12 col-md-6 text-center">
                         <div class="p-2 rounded mb-2 bg-light border">
-                            <span class="small fw-bold text-dark"><i class="bi bi-upc-scan me-1 text-primary"></i> Back Face (Student ID & Barcode)</span>
+                            <span class="small fw-bold text-dark">Back Face (Student ID & Barcode)</span>
                         </div>
                         {% if profile.id_picture_back %}
                             <a href="{{ profile.id_picture_back.url }}" target="_blank" rel="noopener" title="Open full size"><img src="{{ profile.id_picture_back.url }}" alt="Back ID" class="img-fluid rounded shadow-sm" style="max-height: 380px; object-fit: contain; border: 1px solid var(--card-border); cursor: zoom-in;"></a>
@@ -176,13 +157,13 @@
                     <form method="post" action="{% url 'verify_student' profile.id 'approve' %}" class="d-inline">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-success btn-sm px-3 fw-bold">
-                            <i class="bi bi-check-lg"></i> Approve Identity
+                            Approve Identity
                         </button>
                     </form>
                     <form method="post" action="{% url 'verify_student' profile.id 'reject' %}" class="d-inline" onsubmit="return confirm('Are you sure you want to reject and delete this registration?');">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-outline-danger btn-sm px-3 fw-bold">
-                            <i class="bi bi-trash3"></i> Reject
+                            Reject
                         </button>
                     </form>
                 </div>

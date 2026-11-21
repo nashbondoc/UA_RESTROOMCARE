@@ -6,27 +6,10 @@
 <div class="admin-dashboard-container mb-4">
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
     <div class="d-flex align-items-center gap-3">
-        <div class="avatar-circle-teal mb-0" style="width: 50px; height: 50px; font-size: 1.4rem; border-color: #b45309; background: #fef3c7; color: #b45309;">
-            <i class="bi bi-speedometer2"></i>
-        </div>
         <div>
             <h2 class="fw-bold mb-0 text-dark">Restroom Operations Command</h2>
             <p class="small mb-0 text-muted">Campus Facilities Management, Dual-ID Verification & Security Oversight</p>
         </div>
-    </div>
-    <div class="d-flex gap-2 flex-wrap align-items-center">
-        <a href="{% url 'admin_dashboard' %}" class="btn btn-teal-secondary btn-sm px-3 py-2 fw-bold d-inline-flex align-items-center gap-1.5 shadow-sm">
-            <i class="bi bi-speedometer2"></i> Control Center
-        </a>
-        <a href="{% url 'admin_verifications' %}" class="btn btn-outline-primary btn-sm px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5">
-            <i class="bi bi-person-vcard"></i> Verifications
-            {% if stats.pending_registrations > 0 %}
-                <span class="badge bg-danger rounded-pill">{{ stats.pending_registrations }}</span>
-            {% endif %}
-        </a>
-        <a href="{% url 'audit_logs' %}" class="btn btn-outline-secondary btn-sm px-3 py-2 fw-semibold d-inline-flex align-items-center gap-1.5">
-            <i class="bi bi-shield-check"></i> Audit Logs
-        </a>
     </div>
 </div>
 
@@ -80,8 +63,7 @@
 <div class="glass-card-pro p-3 p-md-4 mb-4">
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
         <div class="d-flex align-items-center gap-2">
-            <i class="bi bi-clipboard-data text-primary fs-5"></i>
-            <h5 class="fw-bold mb-0 text-dark">Campus Incident Queue & Maintenance Dispatch</h5>
+<h5 class="fw-bold mb-0 text-dark">Campus Incident Queue & Maintenance Dispatch</h5>
         </div>
         <span class="badge bg-primary text-white px-3 py-1.5" style="font-size: 0.75rem;">
             {{ stats.total }} Total Reports
@@ -125,7 +107,7 @@
                         </span>
                         {% if report.photo %}
                             <button type="button" class="btn btn-sm btn-link text-primary p-0 ms-1" data-bs-toggle="modal" data-bs-target="#adminPhotoModal{{ report.id }}">
-                                <i class="bi bi-paperclip"></i> Photo
+                                Photo
                             </button>
                         {% endif %}
                         <div class="small mt-1 text-truncate text-muted" style="max-width: 180px;" title="{{ report.description }}">
@@ -134,22 +116,22 @@
                     </td>
                     <td>
                         {% if report.status == 'Pending' %}
-                            <span class="badge-status badge-pending"><i class="bi bi-clock-history"></i> Pending</span>
+                            <span class="badge-status badge-pending">Pending</span>
                         {% elif report.status == 'Under Review' %}
-                            <span class="badge-status badge-review"><i class="bi bi-search"></i> Under Review</span>
+                            <span class="badge-status badge-review">Under Review</span>
                         {% elif report.status == 'In Progress' %}
-                            <span class="badge-status badge-progress"><i class="bi bi-gear-fill"></i> In Progress</span>
+                            <span class="badge-status badge-progress">In Progress</span>
                         {% elif report.status == 'Resolved' %}
-                            <span class="badge-status badge-resolved"><i class="bi bi-check-circle-fill"></i> Resolved</span>
+                            <span class="badge-status badge-resolved">Resolved</span>
                         {% elif report.status == 'Rejected' %}
-                            <span class="badge-status badge-rejected"><i class="bi bi-x-circle-fill"></i> Rejected</span>
+                            <span class="badge-status badge-rejected">Rejected</span>
                         {% else %}
                             <span class="badge-status badge-pending">{{ report.status }}</span>
                         {% endif %}
 
                         {% if report.resolution_notes or report.rejection_reason %}
                             <div class="small mt-1 text-truncate text-dark" style="max-width: 170px;" title="{{ report.resolution_notes|default:report.rejection_reason }}">
-                                <i class="bi bi-chat-left-text text-primary"></i> {{ report.resolution_notes|default:report.rejection_reason }}
+                                {{ report.resolution_notes|default:report.rejection_reason }}
                             </div>
                         {% endif %}
                     </td>
@@ -188,8 +170,7 @@
 <div class="glass-card-pro p-3 p-md-4">
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
         <div class="d-flex align-items-center gap-2">
-            <i class="bi bi-shield-slash text-danger fs-5"></i>
-            <h5 class="fw-bold mb-0 text-dark">Suspicious Activity & Security Log</h5>
+<h5 class="fw-bold mb-0 text-dark">Suspicious Activity & Security Log</h5>
         </div>
         <span class="badge bg-danger text-white px-3 py-1.5" style="font-size: 0.75rem;">
             {{ stats.suspicious }} Unreviewed Flags
@@ -220,14 +201,14 @@
                     <td class="small font-monospace text-muted">{{ log.ip_address|default:"N/A" }}</td>
                     <td class="text-center">
                         <a href="{% url 'mark_suspicious_reviewed' log.id %}" class="btn btn-outline-secondary btn-sm px-3 py-1 small">
-                            <i class="bi bi-check2"></i> Mark Reviewed
+                            Mark Reviewed
                         </a>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
                     <td colspan="5" class="text-center py-4 text-muted">
-                        <i class="bi bi-shield-check text-success fs-5 me-1"></i> No unreviewed suspicious activities detected.
+                        No unreviewed suspicious activities detected.
                     </td>
                 </tr>
                 {% endfor %}
@@ -249,8 +230,7 @@
             <div class="modal-content glass-card-pro p-3 text-start">
                 <div class="modal-header border-0 pb-2">
                     <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-camera-fill text-primary fs-5"></i>
-                        <h6 class="modal-title fw-bold text-dark mb-0" id="adminPhotoModalLabel{{ report.id }}">
+<h6 class="modal-title fw-bold text-dark mb-0" id="adminPhotoModalLabel{{ report.id }}">
                             Incident #{{ report.id }} Photo Proof &bull; {{ report.location.building }}
                         </h6>
                     </div>
