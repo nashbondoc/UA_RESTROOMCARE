@@ -62,7 +62,7 @@
                             </div>
                         </td>
                         <td>
-                            {% if report.photo %}
+                            {% if report.photo_url %}
                                 <button type="button" class="btn btn-sm btn-outline-primary px-3 py-1" data-bs-toggle="modal" data-bs-target="#userPhotoModal{{ report.id }}">
                                     View Photo
                                 </button>
@@ -121,7 +121,7 @@
 <!-- TOP-LEVEL REPORT EVIDENCE PHOTO MODALS                         -->
 <!-- ============================================================== -->
 {% for report in reports %}
-    {% if report.photo %}
+    {% if report.photo_url %}
     <div class="modal fade" id="userPhotoModal{{ report.id }}" tabindex="-1" aria-labelledby="userPhotoModalLabel{{ report.id }}" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
             <div class="modal-content glass-card-pro p-3 text-start">
@@ -134,7 +134,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center py-3" style="max-height: 75vh; overflow-y: auto;">
-                    <img src="{{ report.photo.url }}" alt="Evidence" class="img-fluid rounded shadow-sm" style="max-height: 520px; width: auto; object-fit: contain; border: 1px solid var(--card-border);">
+                    <img src="{{ report.photo_url }}" alt="Evidence" class="img-fluid rounded shadow-sm" style="max-height: 520px; width: auto; object-fit: contain; border: 1px solid var(--card-border);">
                     <div class="mt-3 text-start p-3 rounded bg-light border">
                         <div class="row g-2 small">
                             <div class="col-12 col-sm-6 text-dark"><strong>Location:</strong> {{ report.location }}</div>

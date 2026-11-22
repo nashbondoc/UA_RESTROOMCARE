@@ -60,14 +60,14 @@
                         </td>
                         <td>
                             <div class="d-flex align-items-center gap-2 mb-2">
-                                {% if profile.id_picture %}
-                                <a href="{{ profile.id_picture.url }}" target="_blank" rel="noopener" title="Open Front ID full size">
-                                    <img src="{{ profile.id_picture.url }}" alt="Front ID of {{ profile.user.username }}" style="width: 96px; height: 62px; object-fit: cover; border-radius: 6px; border: 1px solid var(--card-border);">
+                                {% if profile.id_front_url %}
+                                <a href="{{ profile.id_front_url }}" target="_blank" rel="noopener" title="Open Front ID full size">
+                                    <img src="{{ profile.id_front_url }}" alt="Front ID of {{ profile.user.username }}" style="width: 96px; height: 62px; object-fit: cover; border-radius: 6px; border: 1px solid var(--card-border);">
                                 </a>
                                 {% else %}<span class="small text-muted">No front</span>{% endif %}
-                                {% if profile.id_picture_back %}
-                                <a href="{{ profile.id_picture_back.url }}" target="_blank" rel="noopener" title="Open Back ID full size">
-                                    <img src="{{ profile.id_picture_back.url }}" alt="Back ID of {{ profile.user.username }}" style="width: 96px; height: 62px; object-fit: cover; border-radius: 6px; border: 1px solid var(--card-border);">
+                                {% if profile.id_back_url %}
+                                <a href="{{ profile.id_back_url }}" target="_blank" rel="noopener" title="Open Back ID full size">
+                                    <img src="{{ profile.id_back_url }}" alt="Back ID of {{ profile.user.username }}" style="width: 96px; height: 62px; object-fit: cover; border-radius: 6px; border: 1px solid var(--card-border);">
                                 </a>
                                 {% else %}<span class="small text-muted">No back</span>{% endif %}
                             </div>
@@ -129,8 +129,8 @@
                         <div class="p-2 rounded mb-2 bg-light border">
                             <span class="small fw-bold text-dark">Front Face (Photo & Name)</span>
                         </div>
-                        {% if profile.id_picture %}
-                            <a href="{{ profile.id_picture.url }}" target="_blank" rel="noopener" title="Open full size"><img src="{{ profile.id_picture.url }}" alt="Front ID" class="img-fluid rounded shadow-sm" style="max-height: 380px; object-fit: contain; border: 1px solid var(--card-border); cursor: zoom-in;"></a>
+                        {% if profile.id_front_url %}
+                            <a href="{{ profile.id_front_url }}" target="_blank" rel="noopener" title="Open full size"><img src="{{ profile.id_front_url }}" alt="Front ID" class="img-fluid rounded shadow-sm" style="max-height: 380px; object-fit: contain; border: 1px solid var(--card-border); cursor: zoom-in;"></a>
                         {% else %}
                             <div class="p-4 small text-muted">No front image uploaded</div>
                         {% endif %}
@@ -141,8 +141,8 @@
                         <div class="p-2 rounded mb-2 bg-light border">
                             <span class="small fw-bold text-dark">Back Face (Student ID & Barcode)</span>
                         </div>
-                        {% if profile.id_picture_back %}
-                            <a href="{{ profile.id_picture_back.url }}" target="_blank" rel="noopener" title="Open full size"><img src="{{ profile.id_picture_back.url }}" alt="Back ID" class="img-fluid rounded shadow-sm" style="max-height: 380px; object-fit: contain; border: 1px solid var(--card-border); cursor: zoom-in;"></a>
+                        {% if profile.id_back_url %}
+                            <a href="{{ profile.id_back_url }}" target="_blank" rel="noopener" title="Open full size"><img src="{{ profile.id_back_url }}" alt="Back ID" class="img-fluid rounded shadow-sm" style="max-height: 380px; object-fit: contain; border: 1px solid var(--card-border); cursor: zoom-in;"></a>
                         {% else %}
                             <div class="p-4 small text-muted">No back image uploaded</div>
                         {% endif %}

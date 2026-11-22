@@ -105,7 +105,7 @@
                         <span class="badge bg-light text-dark border">
                             {{ report.get_category_display }}
                         </span>
-                        {% if report.photo %}
+                        {% if report.photo_url %}
                             <button type="button" class="btn btn-sm btn-link text-primary p-0 ms-1" data-bs-toggle="modal" data-bs-target="#adminPhotoModal{{ report.id }}">
                                 Photo
                             </button>
@@ -224,7 +224,7 @@
 
 <!-- Incident Photo Proof Modals -->
 {% for report in reports %}
-    {% if report.photo %}
+    {% if report.photo_url %}
     <div class="modal fade" id="adminPhotoModal{{ report.id }}" tabindex="-1" aria-labelledby="adminPhotoModalLabel{{ report.id }}" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
             <div class="modal-content glass-card-pro p-3 text-start">
@@ -237,7 +237,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center py-3" style="max-height: 75vh; overflow-y: auto;">
-                    <img src="{{ report.photo.url }}" alt="Incident Evidence Proof" class="img-fluid rounded shadow-sm" style="max-height: 520px; width: auto; object-fit: contain; border: 1px solid var(--card-border);">
+                    <img src="{{ report.photo_url }}" alt="Incident Evidence Proof" class="img-fluid rounded shadow-sm" style="max-height: 520px; width: auto; object-fit: contain; border: 1px solid var(--card-border);">
                     <div class="mt-3 text-start p-3 rounded bg-light border">
                         <div class="row g-2 small">
                             <div class="col-12 col-sm-6 text-dark"><strong>Reporter:</strong> {{ report.user.email|default:report.user.username }}</div>

@@ -24,7 +24,7 @@ from django.db.models import Q
 
 from .models import RestroomReport, RestroomLocation, AuditLog, SuspiciousActivityLog, UserProfile, StoredFile
 from .forms import RestroomReportForm, StudentRegistrationForm, InstitutionalPasswordResetForm
-from .utils import check_rate_limit_and_duplicates, log_audit_event, get_client_ip, get_user_role
+from .utils import check_rate_limit_and_duplicates, log_audit_event, get_client_ip, get_user_role, compress_image_to_base64
 
 
 def is_admin(user):
@@ -489,6 +489,10 @@ def register_view(request):
                 ocr_detail = "OCR scans unclear. Sent to manual admin review."
                 user_msg = "Registration Received: Your verification request has been queued for review."
 
+            # Convert uploaded ID pictures to base64 data URIs for persistent DB storage
+            front_b64 = compress_image_to_base64(uploaded_front) if uploaded_front else ""
+            back_b64 = compress_image_to_base64(uploaded_back) if uploaded_back else ""
+
             # Reset file pointers before model saving
             if uploaded_front:
                 uploaded_front.seek(0)
@@ -510,6 +514,8 @@ def register_view(request):
                     student_id=input_student_id,
                     id_picture=uploaded_front,
                     id_picture_back=uploaded_back,
+                    id_picture_data=front_b64,
+                    id_picture_back_data=back_b64,
                     is_verified=is_auto_verified
                 )
             except OSError:
@@ -518,6 +524,8 @@ def register_view(request):
                     user=user,
                     role=chosen_role,
                     student_id=input_student_id,
+                    id_picture_data=front_b64,
+                    id_picture_back_data=back_b64,
                     is_verified=is_auto_verified
                 )
 
@@ -588,8 +596,14 @@ def submit_report(request):
                     )
                 return render(request, 'core/submit_report.html', {'form': form})
 
+            uploaded_photo = request.FILES.get('photo')
+            photo_b64 = compress_image_to_base64(uploaded_photo) if uploaded_photo else ""
+            if uploaded_photo:
+                uploaded_photo.seek(0)
+
             report = form.save(commit=False)
             report.user = request.user
+            report.photo_data = photo_b64
             try:
                 report.save()
             except OSError:

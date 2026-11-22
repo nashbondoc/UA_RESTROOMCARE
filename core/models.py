@@ -18,11 +18,35 @@ class UserProfile(models.Model):
     student_id = models.CharField(max_length=50, blank=True, null=True, unique=True)
     id_picture = models.ImageField(upload_to='student_ids/', blank=True, null=True)  # Front
     id_picture_back = models.ImageField(upload_to='student_ids/', blank=True, null=True)  # Back
+    id_picture_data = models.TextField(blank=True, null=True)  # Base64 Data URI (Front)
+    id_picture_back_data = models.TextField(blank=True, null=True)  # Base64 Data URI (Back)
     is_verified = models.BooleanField(default=False)
 
     @property
     def id_picture_front(self):
         return self.id_picture
+
+    @property
+    def id_front_url(self):
+        if self.id_picture_data:
+            return self.id_picture_data
+        try:
+            if self.id_picture and hasattr(self.id_picture, 'url'):
+                return self.id_picture.url
+        except Exception:
+            pass
+        return ""
+
+    @property
+    def id_back_url(self):
+        if self.id_picture_back_data:
+            return self.id_picture_back_data
+        try:
+            if self.id_picture_back and hasattr(self.id_picture_back, 'url'):
+                return self.id_picture_back.url
+        except Exception:
+            pass
+        return ""
 
     def __str__(self):
         return f"{self.user.username} ({self.get_role_display()})"
@@ -71,12 +95,24 @@ class RestroomReport(models.Model):
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
     description = models.TextField()
     photo = models.ImageField(upload_to='report_photos/', blank=True, null=True)
+    photo_data = models.TextField(blank=True, null=True)  # Base64 Data URI
     is_urgent = models.BooleanField(default=False)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
     rejection_reason = models.TextField(blank=True, null=True)
     resolution_notes = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def photo_url(self):
+        if self.photo_data:
+            return self.photo_data
+        try:
+            if self.photo and hasattr(self.photo, 'url'):
+                return self.photo.url
+        except Exception:
+            pass
+        return ""
 
     def __str__(self):
         return f"Report #{self.id} - {self.location} ({self.status})"

@@ -1,6 +1,54 @@
+import io
+import base64
+from PIL import Image, ImageOps
 from django.utils import timezone
 import datetime
 from .models import RestroomReport, SuspiciousActivityLog, AuditLog
+
+
+def compress_image_to_base64(image_file, max_dimension=1200, quality=80):
+    """
+    Compresses an uploaded image file to max width/height (default 1200px)
+    at JPEG quality (default 80), and returns a data URI string: 'data:image/jpeg;base64,...'
+    Safe against corrupt files, resets file seek pointer.
+    """
+    if not image_file:
+        return ""
+    try:
+        if hasattr(image_file, 'seek'):
+            image_file.seek(0)
+        img = Image.open(image_file)
+        try:
+            img = ImageOps.exif_transpose(img)
+        except Exception:
+            pass
+
+        if img.mode in ('RGBA', 'LA'):
+            background = Image.new('RGB', img.size, (255, 255, 255))
+            background.paste(img, mask=img.split()[-1])
+            img = background
+        elif img.mode != 'RGB':
+            img = img.convert('RGB')
+
+        if img.width > max_dimension or img.height > max_dimension:
+            resample_filter = getattr(getattr(Image, 'Resampling', Image), 'LANCZOS', Image.LANCZOS)
+            img.thumbnail((max_dimension, max_dimension), resample=resample_filter)
+
+        buffer = io.BytesIO()
+        img.save(buffer, format='JPEG', quality=quality, optimize=True)
+        encoded = base64.b64encode(buffer.getvalue()).decode('utf-8')
+
+        if hasattr(image_file, 'seek'):
+            image_file.seek(0)
+
+        return f"data:image/jpeg;base64,{encoded}"
+    except Exception:
+        if hasattr(image_file, 'seek'):
+            try:
+                image_file.seek(0)
+            except Exception:
+                pass
+        return ""
 
 
 def get_client_ip(request):

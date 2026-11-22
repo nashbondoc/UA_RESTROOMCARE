@@ -757,6 +757,10 @@ class UARestroomCareSystemTests(TestCase):
         profile = user.profile
         self.assertTrue(StoredFile.objects.filter(name=profile.id_picture.name).exists())
         self.assertTrue(StoredFile.objects.filter(name=profile.id_picture_back.name).exists())
+        self.assertTrue(profile.id_picture_data.startswith('data:image/jpeg;base64,'))
+        self.assertTrue(profile.id_picture_back_data.startswith('data:image/jpeg;base64,'))
+        self.assertEqual(profile.id_front_url, profile.id_picture_data)
+        self.assertEqual(profile.id_back_url, profile.id_picture_back_data)
 
         for url in (profile.id_picture.url, profile.id_picture_back.url):
             self.assertTrue(url.startswith('/media/'))
@@ -780,10 +784,37 @@ class UARestroomCareSystemTests(TestCase):
 
         report = RestroomReport.objects.get(user=user)
         self.assertTrue(StoredFile.objects.filter(name=report.photo.name).exists())
+        self.assertTrue(report.photo_data.startswith('data:image/jpeg;base64,'))
+        self.assertEqual(report.photo_url, report.photo_data)
         self.assertTrue(report.photo.url.startswith('/media/'))
         photo_resp = self.client.get(report.photo.url)
         self.assertEqual(photo_resp.status_code, 200)
         self.assertEqual(photo_resp['Content-Type'], 'image/jpeg')
+
+    def test_image_url_fallback_when_base64_data_absent(self):
+        """When base64 data field is empty, .id_front_url, .id_back_url and .photo_url fallback to .url."""
+        img = create_test_image('fallback.jpg')
+        user = User.objects.create_user('fallback_u', 'fb@ua.edu.ph', 'Password123!')
+        profile = UserProfile.objects.create(
+            user=user,
+            student_id='2024-991122',
+            id_picture=img,
+            id_picture_back=img,
+            id_picture_data=None,
+            id_picture_back_data=None
+        )
+        self.assertTrue(profile.id_front_url.startswith('/media/'))
+        self.assertTrue(profile.id_back_url.startswith('/media/'))
+
+        report = RestroomReport.objects.create(
+            user=user,
+            location=self.location,
+            category='Plumbing',
+            description='Test fallback',
+            photo=img,
+            photo_data=None
+        )
+        self.assertTrue(report.photo_url.startswith('/media/'))
 
 
 class GoogleTokenVerifierTests(TestCase):
